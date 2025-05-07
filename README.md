@@ -64,7 +64,7 @@ El frontend de IdeartSv está construido con React, ofreciendo una interfaz visu
 
 Este proyecto fue desarrollado con dedicación y pasión por el siguiente equipo:
 
-- 👨‍💻 César Geovany Landaverde Larios – *20230355*  
+- 👨‍💻 César Geovany Landaverde Larios   
 - 👩‍💻 Luz María Gasparío Méndez  
 - 👩‍💻 Doris Abigail Manzano González  
 - 👨‍💻 Jason Alessandro Méndez Blanco  
