@@ -1,5 +1,13 @@
 # 🎨 IdeartSv
 
+**¡Configuraciones iniciales:!**
++ Npm install del lado del Server  
++ Npm install del lado de Frontend  
++ Crear archivo .env  
++ node index.js para correr backend  
++ npm run dev para levantar el frontend  
++ Verificar las rutas y puertos  
+
 **¡Capturamos tus recuerdos en cada diseño!**
 
 **IdeartSv** es una plataforma web y móvil dedicada a ofrecer artículos personalizados mediante la técnica de sublimación, pensada para quienes desean transformar momentos especiales en recuerdos únicos. Ya sea un evento familiar, empresarial o una fecha significativa, IdeartSv proporciona productos creativos, de alta calidad y completamente personalizados para cada ocasión.
