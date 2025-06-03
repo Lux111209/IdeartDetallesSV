@@ -1,0 +1,52 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #4b6c53;
+  padding: 0.8rem 2rem;
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.logo span {
+  font-weight: normal;
+  font-size: 0.9rem;
+  display: block;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.search-container input {
+  padding: 0.5rem;
+  border-radius: 1rem;
+  border: none;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 1rem;
+}
+
+.nav-links li {
+  cursor: pointer;
+}
+
+.nav-links .active {
+  font-weight: bold;
+  border-bottom: 2px solid white;
+}
+
+.icons span {
+  margin-left: 1rem;
+  font-size: 1.2rem;
+}

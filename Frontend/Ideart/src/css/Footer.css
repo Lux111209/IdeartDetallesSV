@@ -1,0 +1,17 @@
+.footer {
+  background-color: #c2ded1;
+  text-align: center;
+  padding: 2rem 1rem;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+.footer .title {
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.footer a {
+  color: #333;
+  text-decoration: underline;
+}
