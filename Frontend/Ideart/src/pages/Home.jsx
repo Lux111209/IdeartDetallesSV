@@ -6,27 +6,25 @@ import '../css/Home.css';
 const Home = () => {
   return (
     <>
-      {/* Top bar with logo and icons */}
       <div className="top-bar">
-        <img src="/assets/logooo.png" alt="Ideart logo" className="logo" />
+        <img src="/assets/images/logooo.png" className="logo" />
 
         <div className="search-section">
-          <input type="text" placeholder="Buscar..." className="lupa" />
-          <img src="/assets/lupa.png" alt="Buscar" className="img" />
+          <input type="text" placeholder="Buscar" className="lupa" />
+          <img src="/assets/images/lupa.png" className="img" />
         </div>
 
-        <img src="/assets/perfil.png" alt="Perfil" className="img" />
-        <img src="/assets/carrito.png" alt="Carrito" className="img" />
+        <img src="/assets/images/perfil.png" className="img" />
+        <img src="/assets/images/carrito.png" className="img" />
       </div>
 
-      {/* Green navbar container */}
       <div className="navbar-wrapper">
         <Navbar />
       </div>
 
       <div className="home">
         <section className="carousel">
-          <img src="/assets/mugs.png" alt="Tazas coloridas" />
+          <img src="/assets/mugs.png" alt="Imagenes de sublimados" />
         </section>
 
         <section className="promotions">
