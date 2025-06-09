@@ -1,21 +1,14 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import TopBar from '../components/TopBar';
 import '../css/Home.css';
 
 const Home = () => {
   return (
     <>
       <div className="top-bar">
-        <img src="/assets/images/logooo.png" className="logo" />
-
-        <div className="search-section">
-          <input type="text" placeholder="Buscar" className="lupa" />
-          <img src="/assets/images/lupa.png" className="img" />
-        </div>
-
-        <img src="/assets/images/perfil.png" className="img" />
-        <img src="/assets/images/carrito.png" className="img" />
+        <TopBar />
       </div>
 
       <div className="navbar-wrapper">

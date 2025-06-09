@@ -11,6 +11,12 @@
 .logo {
   font-size: 1.5rem;
   font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.logo:hover {
+  opacity: 0.8;
 }
 
 .logo span {
@@ -35,13 +41,30 @@
   display: flex;
   list-style: none;
   gap: 1rem;
+  padding: 0;
+  margin: 0;
 }
 
 .nav-links li {
   cursor: pointer;
+  transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
-.nav-links .active {
+.nav-links li:hover {
+  transform: scale(1.1);
+  color: #c9dbc8;
+}
+
+/* Para evitar que los <Link> parezcan links */
+.nav-links li .nav-item {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  padding: 8px 12px;
+}
+
+/* Estado activo */
+.nav-links li.active .nav-item {
   font-weight: bold;
   border-bottom: 2px solid white;
 }
@@ -49,4 +72,11 @@
 .icons span {
   margin-left: 1rem;
   font-size: 1.2rem;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.icons span:hover {
+  color: #c9dbc8;
+  transform: scale(1.2);
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import '../css/AuthForm.css';
-import registerImg from '../assets/Images/Login.jpg';
+//import registerImg from '../assets/Images/Login.jpg';
  
 const Register = () => {
   return (
