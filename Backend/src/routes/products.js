@@ -1,16 +1,19 @@
 import express from 'express';
 const router = express.Router();
 import productsController from '../controllers/productsController.js';
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
-
+import { uploadFlexible } from '../config/multer.js';
 
 
 //Nos aseguramos que exista la carpeta de subida 
+router.route("/")
+.get(productsController.getProducts)
+.post(uploadFlexible, productsController.createProducts);
 
-const uploadDir = path.join(process.cwd(), "public/uploads");
+router.route("/:id")
+.get(productsController.getProductById)
+.put(uploadFlexible, productsController.updateProduct)
+.delete(productsController.deleteProduct);
 
-if (!fs.existsSync(uploadDir)) {
-    
-}
+export default router;
+
+
