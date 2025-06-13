@@ -22,7 +22,7 @@ const productsSchema = new Schema(
     productType: {
       type: String,
       required: [true, "Product type is required"],
-      enum: ["clothing", "accessory", "home", "other"], // puedes ajustar los valores
+      enum: ["clothing", "accessory", "home", "other"], 
     },
 
     subType: {
@@ -34,7 +34,7 @@ const productsSchema = new Schema(
     usageCategory: {
       type: String,
       required: [true, "Usage category is required"],
-      enum: ["casual", "formal", "sports", "custom"], // ejemplo de categorías
+      enum: ["casual", "formal", "sports", "custom"], 
     },
 
     color: {
