@@ -24,8 +24,22 @@ const Navbar = () => {
         <li className={path === '/contactus' ? 'active' : ''}>
           <Link to="/contactus" className="nav-item">Contáctanos</Link>
         </li>
+        <li className={path === '/reviews' ? 'active' : ''}>
+          <Link to="/reviews" className="nav-item">Reseñas</Link>
+        </li>
         <li className={path === '/profile' ? 'active' : ''}>
           <Link to="/profile" className="nav-item">Mi Perfil</Link>
+        </li>
+
+        {/* Ícono de configuración, siempre al final */}
+        <li className={`nav-settings ${path === '/settings' ? 'active' : ''}`}>
+          <Link to="/settings" className="nav-item nav-icon-link">
+            <img
+              src="/settings.png"
+              alt="Configuración"
+              className="settings-icon"
+            />
+          </Link>
         </li>
       </ul>
     </nav>

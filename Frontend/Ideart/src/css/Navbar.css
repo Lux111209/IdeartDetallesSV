@@ -8,41 +8,14 @@
   font-family: 'Segoe UI', sans-serif;
 }
 
-.logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: opacity 0.2s ease-in-out;
-}
-
-.logo:hover {
-  opacity: 0.8;
-}
-
-.logo span {
-  font-weight: normal;
-  font-size: 0.9rem;
-  display: block;
-}
-
-.search-container {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.search-container input {
-  padding: 0.5rem;
-  border-radius: 1rem;
-  border: none;
-}
-
 .nav-links {
   display: flex;
+  align-items: center;
   list-style: none;
   gap: 1rem;
   padding: 0;
   margin: 0;
+  width: 100%;
 }
 
 .nav-links li {
@@ -55,7 +28,6 @@
   color: #c9dbc8;
 }
 
-/* Para evitar que los <Link> parezcan links */
 .nav-links li .nav-item {
   text-decoration: none;
   color: inherit;
@@ -63,20 +35,34 @@
   padding: 8px 12px;
 }
 
-/* Estado activo */
+/* Activo */
 .nav-links li.active .nav-item {
   font-weight: bold;
   border-bottom: 2px solid white;
 }
 
-.icons span {
-  margin-left: 1rem;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+/* Ícono de configuración */
+.settings-icon {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
 }
 
-.icons span:hover {
-  color: #c9dbc8;
-  transform: scale(1.2);
+.settings-icon:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+/* Alineación al extremo derecho */
+.nav-settings {
+  margin-left: auto;
+}
+
+/* Opcional: evitar que el <Link> con el icono se desborde */
+.nav-icon-link {
+  display: flex;
+  align-items: center;
+  padding: 8px;
 }
