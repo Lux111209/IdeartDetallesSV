@@ -19,23 +19,41 @@ const Product = () => {
       </div>
 
       <div className="product-page">
-        <section className="categories">
-          <h3>Categorías</h3>
-          <div className="category-cards">
-            <CategoryCard image="/assets/shirt.png" title="Category" />
-            <CategoryCard image="/assets/keychain.png" title="Category" />
-            <CategoryCard image="/assets/photo.png" title="Category" />
-            <CategoryCard image="/assets/mug.png" title="Category" />
-          </div>
-        </section>
-
         <section className="products">
           <h3>Productos</h3>
           <div className="product-cards">
-            <ProductCard image="/assets/mousepad-snoopy.png" title="Mousepad Snoopy" />
-            <ProductCard image="/assets/mousepad-dc.png" title="3 Pack mousepad DC" />
-            <ProductCard image="/assets/keychain-dad.png" title="Llavero para papá" />
-            <ProductCard image="/assets/termo.png" title="Termo Personalizado" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
+            <ProductCard image="/P3.jpg" title="Llavero para papá" />
+            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
+            <ProductCard image="/P3.jpg" title="Llavero para papá" />
+            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
+            <ProductCard image="/P3.jpg" title="Llavero para papá" />
+            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
+            <ProductCard image="/P3.jpg" title="Llavero para papá" />
+            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
+            <ProductCard image="/P3.jpg" title="Llavero para papá" />
+            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
+            <ProductCard image="/P3.jpg" title="Llavero para papá" />
+            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
+            <ProductCard image="/P3.jpg" title="Llavero para papá" />
+            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
+            <ProductCard image="/P3.jpg" title="Llavero para papá" />
+            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
           </div>
         </section>
       </div>

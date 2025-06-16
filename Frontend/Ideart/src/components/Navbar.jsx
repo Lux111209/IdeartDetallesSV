@@ -30,8 +30,7 @@ const Navbar = () => {
         <li className={path === '/profile' ? 'active' : ''}>
           <Link to="/profile" className="nav-item">Mi Perfil</Link>
         </li>
-
-        {/* Ícono de configuración, siempre al final */}
+        
         <li className={`nav-settings ${path === '/settings' ? 'active' : ''}`}>
           <Link to="/settings" className="nav-item nav-icon-link">
             <img
@@ -41,6 +40,7 @@ const Navbar = () => {
             />
           </Link>
         </li>
+
       </ul>
     </nav>
   );

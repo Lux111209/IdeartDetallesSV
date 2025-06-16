@@ -38,14 +38,14 @@ const Home = () => {
         {/* Sección de promociones */}
         <section className="promotions">
           <h2>Promociones</h2>
-          <div className="products">
-            <div className="product-card">
+          <div className="promotion-cards">
+            <div className="promotion-card">
               <img src="/H8.jpg" alt="Camiseta promocional" />
             </div>
-            <div className="product-card">
+            <div className="promotion-card">
               <img src="/H7.jpg" alt="Taza promocional" />
             </div>
-            <div className="product-card">
+            <div className="promotion-card">
               <img src="/H9.jpg" alt="Llaveros promocionales" />
             </div>
           </div>

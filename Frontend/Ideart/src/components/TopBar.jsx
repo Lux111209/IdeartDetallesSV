@@ -1,10 +1,13 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "../css/TopBar.css";
 
 const TopBar = () => {
   return (
     <div className="top-bar">
-      <img src="/logooo.png" className="logo" alt="Logo" />
+      <Link to="/">
+        <img src="/logooo.png" className="logo" alt="Logo" />
+      </Link>
 
       <div className="search-section">
         <input type="text" placeholder="Buscar" className="lupa" />
@@ -12,8 +15,13 @@ const TopBar = () => {
       </div>
 
       <div className="icon-container">
-        <img src="/perfil.png" className="img" alt="Perfil" />
-        <img src="/carrito.png" className="img" alt="Carrito" />
+        <Link to="/profile">
+          <img src="/perfil.png" className="img" alt="Perfil" />
+        </Link>
+
+        <Link to="/shoppingcart">
+          <img src="/carrito.png" className="img" alt="Carrito" />
+        </Link>
       </div>
     </div>
   );

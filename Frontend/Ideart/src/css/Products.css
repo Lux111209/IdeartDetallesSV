@@ -1,4 +1,6 @@
-.product-page {
+/* --- ESTRUCTURA GENERAL --- */
+.product-page,
+.category-page {
   background-color: #e8f3ec;
   padding: 20px;
 }
@@ -17,20 +19,21 @@
   color: #2f4932;
   font-size: 1.5rem;
   text-align: left;
-  align-self: flex-start;   /* Mantiene el título alineado a la izquierda */
-  margin: 0 0 10px 20px;    /* Espaciado inferior y hacia la izquierda */
+  align-self: flex-start;
+  margin: 0 0 10px 20px;
 }
 
 .category-cards,
 .product-cards {
   display: flex;
-  justify-content: center;   /* Centra las cards horizontalmente */
+  justify-content: center;
   flex-wrap: wrap;
   gap: 20px;
-  max-width: 1000px;         /* Limita el ancho del grupo de cards */
-  margin: 0 auto;            /* Centra el contenedor horizontalmente */
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
+/* --- CARD GENERAL --- */
 .category-card,
 .product-card {
   background: white;
@@ -41,6 +44,9 @@
   text-align: center;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .category-card:hover,
@@ -50,21 +56,37 @@
   filter: brightness(1.05);
 }
 
-.category-card img,
-.product-card img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
+/* --- CÍRCULO VERDE DECORATIVO --- */
+.image-wrapper {
+  width: 100px;
+  height: 100px;
+  background-color: #9dd8ac;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+/* --- IMAGEN CENTRADA DENTRO DEL CÍRCULO --- */
+.image-wrapper img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
   transition: transform 0.2s ease-in-out;
 }
 
-.category-card:hover img,
-.product-card:hover img {
+.product-card:hover .image-wrapper img {
   transform: scale(1.05);
 }
 
+/* --- TEXTO BAJO EL CÍRCULO --- */
 .product-card p {
-  margin-top: 8px;
+  margin: 0;
   font-weight: 500;
   color: #2f4932;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  text-align: center;
 }

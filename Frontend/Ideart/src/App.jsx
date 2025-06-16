@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Product from "./pages/Product";
-import Category from "./pages/Product";
+import Category from "./pages/Category";
 //import ContactUs from "./pages/ContactUs";
 //import Profile from "./pages/Profile";
 //import ShoppingCart from "./pages/ShoppingCart";

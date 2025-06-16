@@ -5,10 +5,11 @@ import '../css/Products.css';
 const ProductCard = ({ image, title }) => {
   return (
     <div className="product-card">
-      <img src={image} />
+      <img src={image} alt={title} />
       <p>{title}</p>
     </div>
   );
 };
 
 export default ProductCard;
+
