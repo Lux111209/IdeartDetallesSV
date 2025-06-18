@@ -1,5 +1,5 @@
-import moongose from "moongose";
-import dotenv from dotenv;
+import mongoose from "mongoose";
+import dotenv from 'dotenv';
 import { config } from "./config.js";
 //cargamos la variable de entorno
 dotenv.config();
@@ -14,7 +14,7 @@ const URI = config.bd.URI;
 const connectWithRetry  = () => {
      console.log('Trying to connect to mongoDB....');
 
-     moongose.connect(URI,{
+     mongoose.connect(URI,{
           useNewUrlParser:true,
           useUnifiedTopology: true,
           serverSelectionTimeoutMS: 5000,  // Timeout para selección de servidor
@@ -31,7 +31,7 @@ const connectWithRetry  = () => {
 connectWithRetry();
 
 // in the const y keep the conection , can have different values 
-const connection = moongose.connection;
+const connection = mongoose.connection;
 
 
 // Evento para cunado se conencte a la db
@@ -42,8 +42,8 @@ connection.once("open",  () => {
 
 //evento q detecte si se desconecta
 
-connection.on("disconnecte", () => {
-    console.log("DAtatbse is disconnected ");
+connection.on("disconnected", () => {
+    console.log("Db  is disconnected ");
     connectWithRetry(); //Retry to reconnect automatic
     
 });
@@ -54,7 +54,9 @@ connection.on("error", (err) => {
     console.log("DB CONECCTION ERROR;",err);
 
 });
-export default moongose;
+
+
+export default mongoose;
 
 
 

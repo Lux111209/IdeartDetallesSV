@@ -2,6 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
+   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,5 +20,6 @@
     "mongoose": "^8.14.1",
     "multer": "^2.0.0",
     "multer-storage-cloudinary": "^4.0.0"
+
   }
 }
