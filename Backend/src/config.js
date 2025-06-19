@@ -1,12 +1,15 @@
 import dotenv from "dotenv";
 dotenv.config();
+
+console.log("CLOUDINARY_API_KEY:", process.env.CLOUDINARY_API_KEY);
+console.log("CLOUDINARY_API_SECRET:", process.env.CLOUDINARY_API_SECRET);
  export const config ={
 bd:{
  URI:process.env.DB_URI || "mongodb://localhost:27017/IdeartDetalles",
 
 },
 server:{
- port:process.env.DB_URI|| 4000,
+ port:process.env.PORT || 4000,
 
 },
 jwt:{
@@ -31,3 +34,4 @@ cloudinary:
 },
  };
  
+ //sdadasSDSD
