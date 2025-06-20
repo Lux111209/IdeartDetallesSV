@@ -4,6 +4,7 @@ import productRoutes from "./routes/products.js";
 import loginRoutes from "./routes/login.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import logoutRoutes from "./routes/logout.js";
 
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.use(cookieParser());
 
 app.use("/api/products",productRoutes);
 app.use("/api/login", loginRoutes);
+app.use("/api/logout",logoutRoutes);
 
 
 export default app;
