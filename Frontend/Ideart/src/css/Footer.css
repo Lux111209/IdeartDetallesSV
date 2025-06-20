@@ -8,10 +8,42 @@
 
 .footer .title {
   font-weight: bold;
-  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer p {
+  margin: 0.4rem 0;
+  text-align: center;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.footer .social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 1.4rem;
+  margin: 1rem 0;
+}
+
+.footer .social-icons a {
+  color: #333;
+  transition: transform 0.2s ease;
+}
+
+.footer .social-icons a:hover {
+  transform: scale(1.2);
 }
 
 .footer a {
-  color: #333;
+  color: inherit; 
   text-decoration: underline;
+}
+
+.footer a:visited,
+.footer a:hover,
+.footer a:active {
+  color: inherit; 
 }

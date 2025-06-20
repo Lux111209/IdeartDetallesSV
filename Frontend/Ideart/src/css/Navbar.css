@@ -6,6 +6,7 @@
   padding: 0.8rem 2rem;
   color: white;
   font-family: 'Segoe UI', sans-serif;
+  max-width: 100vw;
 }
 
 .nav-links {
@@ -35,13 +36,13 @@
   padding: 8px 12px;
 }
 
-/* Activo */
+
 .nav-links li.active .nav-item {
   font-weight: bold;
   border-bottom: 2px solid white;
 }
 
-/* Ícono de configuración */
+
 .settings-icon {
   width: 45px;
   height: 45px;
@@ -55,12 +56,12 @@
   filter: brightness(1.2);
 }
 
-/* Alineación al extremo derecho */
+
 .nav-settings {
   margin-left: auto;
 }
 
-/* Opcional: evitar que el <Link> con el icono se desborde */
+
 .nav-icon-link {
   display: flex;
   align-items: center;
