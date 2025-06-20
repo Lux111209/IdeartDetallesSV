@@ -1,0 +1,102 @@
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  padding: 0.4rem 2rem;
+  border-bottom: 1px solid #ccc;
+  font-family: 'Segoe UI', sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  height: 100px;
+  overflow: hidden;
+}
+
+.top-bar .logo {
+  height: 160px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Buscador: ligeramente más alto y más largo */
+.search-section {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  border: 2px solid #2e5647;
+  border-radius: 999px;
+  padding: 8px 16px;            /* Un poco más alto */
+  margin: 0 2rem;
+  max-width: 700px;
+  height: 48px;                 /* Aumentada ligeramente */
+  box-sizing: border-box;
+}
+
+.lupa {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+/* Contenedor verde más pequeño */
+.search-icon {
+  width: 28px;               /* Reducido (antes 32px) */
+  height: 28px;
+  background-color: #2e5647;
+  border-radius: 50%;
+  padding: 2px;              /* Más ajustado */
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-icon {
+  width: 28px;
+  height: 28px;
+  background-color: #2e5647;
+  border-radius: 50%;
+  padding: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-icon img {
+  width: 50px;  /* antes 22px o menos */
+  height: 50px;
+  object-fit: contain;
+}
+
+.search-icon:hover {
+  background-color: #3b7359;
+  transform: scale(1.1);
+}
+
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.img {
+  width: 72px;
+  height: 72px;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.img:hover {
+  transform: scale(1.05);
+  filter: brightness(1.2);
+}

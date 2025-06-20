@@ -1,0 +1,68 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #4b6c53;
+  padding: 0.8rem 2rem;
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  gap: 1rem;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.nav-links li {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.nav-links li:hover {
+  transform: scale(1.1);
+  color: #c9dbc8;
+}
+
+.nav-links li .nav-item {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  padding: 8px 12px;
+}
+
+/* Activo */
+.nav-links li.active .nav-item {
+  font-weight: bold;
+  border-bottom: 2px solid white;
+}
+
+/* Ícono de configuración */
+.settings-icon {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
+}
+
+.settings-icon:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+/* Alineación al extremo derecho */
+.nav-settings {
+  margin-left: auto;
+}
+
+/* Opcional: evitar que el <Link> con el icono se desborde */
+.nav-icon-link {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+}
