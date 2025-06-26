@@ -1,4 +1,4 @@
-/* --- ESTRUCTURA GENERAL --- */
+
 .product-page,
 .category-page {
   background-color: #e8f3ec;
@@ -33,13 +33,14 @@
   margin: 0 auto;
 }
 
-/* --- CARD GENERAL --- */
+
 .category-card,
 .product-card {
   background: white;
   border-radius: 12px;
   padding: 10px;
   width: 150px;
+  height: 250px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
   cursor: pointer;
@@ -56,32 +57,40 @@
   filter: brightness(1.05);
 }
 
-/* --- CÍRCULO VERDE DECORATIVO --- */
+
 .image-wrapper {
-  width: 100px;
-  height: 100px;
-  background-color: #9dd8ac;
-  border-radius: 50%;
+  width: 150px;
+  height: 200px;
+  background-color: transparent;
+  border-radius: 8px;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+
   margin-bottom: 15px;
 }
 
-/* --- IMAGEN CENTRADA DENTRO DEL CÍRCULO --- */
+
 .image-wrapper img {
-  width: 70%;
-  height: 70%;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   transition: transform 0.2s ease-in-out;
 }
+
+.category-card:hover .image-wrapper img,
+.product-card:hover .image-wrapper img {
+  transform: scale(1.05);
+}
+
+
 
 .product-card:hover .image-wrapper img {
   transform: scale(1.05);
 }
 
-/* --- TEXTO BAJO EL CÍRCULO --- */
+
 .product-card p {
   margin: 0;
   font-weight: 500;
@@ -89,4 +98,6 @@
   font-size: 0.95rem;
   line-height: 1.4;
   text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+
 }

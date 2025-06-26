@@ -5,13 +5,13 @@
   font-family: 'Segoe UI', sans-serif;
   background-image: url('/Login.jpg');
   background-size: cover;
-  background-position: center -25px; /* Imagen subida 25px */
+  background-position: center -25px; 
   background-repeat: no-repeat;
   background-attachment: fixed; 
   color: white;
 }
 
-/* Responsive Mobile Design */
+
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
