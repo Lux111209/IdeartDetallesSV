@@ -10,12 +10,8 @@ ofertaAplicada
 descuento
 totalconDescuento*/ 
 
+import { Schema,model} from "mongoose";
 
-
-
-
-import {Model, Schema,model} from "mongoose";
-import Products from "./Products";
 
 const CarritoComprasSchema = new Schema(
 {
@@ -23,7 +19,7 @@ products:[
 {
     idProducts:{
         type:Schema.Types.ObjectId,
-        refs:"Products",
+        ref:"Products",
         required:[true,"El id del producto es obligatorio"]
 
     },
@@ -41,14 +37,14 @@ products:[
 ],
 idUser:{
     type:Schema.Types.ObjectId,
-    refs:"User",
+    ref:"User",
     required:[true,"El id del usuario es obligatorio"]
 },
 Ofertas:[
     {
         idOfertas:{
             type:Schema.Types.ObjectId,
-            refs:"Ofertas",
+            ref:"Ofertas",
             required:[true,"El id de la oferta es obligatorio"]
         },
          nombreOferta: {
