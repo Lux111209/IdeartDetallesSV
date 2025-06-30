@@ -22,38 +22,38 @@ const Product = () => {
         <section className="products">
           <h3>Productos</h3>
           <div className="product-cards">
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
-            <ProductCard image="/P3.jpg" title="Llavero para papá" />
-            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
-            <ProductCard image="/P3.jpg" title="Llavero para papá" />
-            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
-            <ProductCard image="/P3.jpg" title="Llavero para papá" />
-            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
-            <ProductCard image="/P3.jpg" title="Llavero para papá" />
-            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
-            <ProductCard image="/P3.jpg" title="Llavero para papá" />
-            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
-            <ProductCard image="/P3.jpg" title="Llavero para papá" />
-            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
-            <ProductCard image="/P3.jpg" title="Llavero para papá" />
-            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" />
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" />
-            <ProductCard image="/P3.jpg" title="Llavero para papá" />
-            <ProductCard image="/P4.jpg" title="Termo Personalizado" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" price="12" />
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" price="12"/>
+            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12"/>
+            <ProductCard image="/P4.jpg" title="Termo Personalizado"price="12" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" price="12"/>
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC"price="12" />
+            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12"/>
+            <ProductCard image="/P4.jpg" title="Termo Personalizado" price="12" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" price="12"/>
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" price="12"/>
+            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12"/>
+            <ProductCard image="/P4.jpg" title="Termo Personalizado" price="12" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" price="12" />
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" price="12" />
+            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12" />
+            <ProductCard image="/P4.jpg" title="Termo Personalizado" price="12" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" price="12" />
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" price="12" />
+            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12" />
+            <ProductCard image="/P4.jpg" title="Termo Personalizado" price="12" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" price="12" />
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" price="12" />
+            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12" />
+            <ProductCard image="/P4.jpg" title="Termo Personalizado" price="12" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" price="12" />
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" price="12" />
+            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12" />
+            <ProductCard image="/P4.jpg" title="Termo Personalizado" price="12" />
+            <ProductCard image="/P1.jpg" title="Mousepad Snoopy"price="12" />
+            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" price="12" />
+            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12" />
+            <ProductCard image="/P4.jpg" title="Termo Personalizado" price="12" />
           </div>
         </section>
       </div>

@@ -54,7 +54,7 @@ const ReviewForm = ({ onSubmit, onCancel }) => {
   return (
     <div className="review-modal" onClick={handleBackgroundClick}>
       <form className="review-form" onSubmit={handleSubmit}>
-        <h3>Agregar Reseña</h3>
+        <h3>Agregar reseña</h3>
 
         <div className="input-group">
           <input

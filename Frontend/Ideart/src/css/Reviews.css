@@ -5,7 +5,11 @@
 }
 
 .review-section h2 {
-  font-size: 2rem;
+  font-weight: bold;
+  color: #2f4932;
+  font-size: 1.5rem;
+  text-align: left;
+  align-self: flex-start;
   margin-bottom: 0.2rem;
 }
 

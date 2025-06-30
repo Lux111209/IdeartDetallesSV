@@ -1,0 +1,148 @@
+/* Aplica fuente global */
+body {
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.product-detail-container {
+  padding: 2rem;
+  background-color: #f0f9f4;
+}
+
+.back-button {
+  margin-bottom: 1rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #333;
+}
+
+.product-detail-card {
+  display: flex;
+  gap: 2rem;
+  background: white;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.left-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+}
+
+.main-image {
+  width: 100%;
+  max-width: 300px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+.thumbnail-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.thumb {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.thumb.extra {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ccc;
+  font-size: 0.9rem;
+}
+
+.left-section h2 {
+  margin: 1rem 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.description {
+  margin-top: auto;
+  font-size: 0.95rem;
+  color: #444;
+  max-width: 400px;
+}
+
+.right-section {
+  flex: 1;
+}
+
+.right-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.sizes button {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: white;
+  color: #333;
+  cursor: pointer;
+}
+
+.sizes button.selected {
+  background-color: #000;
+  color: white;
+  border: 2px solid #000;
+}
+
+.color-dots {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid #aaa;
+  cursor: pointer;
+}
+
+.dot.selected {
+  box-shadow: 0 0 0 2px #333;
+}
+
+.dot.black { background: black; }
+.dot.white { background: white; border: 1px solid #333; }
+.dot.red { background: red; }
+.dot.blue { background: blue; }
+
+.reviews, .price, .custom-image-upload {
+  margin-top: 1rem;
+}
+
+.custom-image-upload input[type="file"] {
+  margin-top: 10px;
+}
+
+.add-to-cart {
+  background: black;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  margin-top: 1rem;
+  cursor: pointer;
+}
