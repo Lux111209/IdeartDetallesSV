@@ -8,13 +8,7 @@ userController.getUsers = async (req, res) => {
   res.json(users);
 };
 
-// INSERT - Crear un nuevo usuario
-userController.createUser = async (req, res) => {
-  const { correo, password, nombre, fechaNacimiento, favoritos } = req.body;
-  const newUser = new User({ correo, password, nombre, fechaNacimiento, favoritos });
-  await newUser.save();
-  res.json({ message: "Usuario guardado" });
-};
+
 
 // DELETE - Eliminar un usuario por ID
 userController.deleteUser = async (req, res) => {
@@ -27,10 +21,10 @@ userController.deleteUser = async (req, res) => {
 
 // UPDATE - Actualizar un usuario por ID
 userController.updateUser = async (req, res) => {
-  const { correo, password, nombre, fechaNacimiento, favoritos } = req.body;
+  const { correo,  nombre, fechaNacimiento, favoritos } = req.body;
   await User.findByIdAndUpdate(
     req.params.id,
-    { correo, password, nombre, fechaNacimiento, favoritos },
+    { correo, nombre, fechaNacimiento, favoritos },
     { new: true }
   );
   res.json({ message: "Usuario actualizado" });
