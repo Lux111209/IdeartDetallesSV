@@ -5,6 +5,7 @@ import loginRoutes from "./routes/login.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import logoutRoutes from "./routes/logout.js";
+import CarritoCompra from "./routes/carrito.js";
 
 
 dotenv.config();
@@ -29,6 +30,7 @@ app.use(cookieParser());
 app.use("/api/products",productRoutes);
 app.use("/api/login", loginRoutes);
 app.use("/api/logout",logoutRoutes);
+app.use("/api/carrito",CarritoCompra);
 
 
 export default app;
