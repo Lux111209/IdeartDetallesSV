@@ -1,9 +1,9 @@
+import dotenv from 'dotenv';
+dotenv.config(); 
+
 import app from './src/app.js';
 import './src/database.js';
-import dotenv from 'dotenv';
 import { config } from './src/config.js';
-
-dotenv.config();
 
 async function main() {
   try {

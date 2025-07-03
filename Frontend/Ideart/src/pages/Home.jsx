@@ -1,21 +1,14 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import TopBar from '../components/TopBar';
 import '../css/Home.css';
 
 const Home = () => {
   return (
     <>
       <div className="top-bar">
-        <img src="/assets/images/logooo.png" className="logo" />
-
-        <div className="search-section">
-          <input type="text" placeholder="Buscar" className="lupa" />
-          <img src="/assets/images/lupa.png" className="img" />
-        </div>
-
-        <img src="/assets/images/perfil.png" className="img" />
-        <img src="/assets/images/carrito.png" className="img" />
+        <TopBar />
       </div>
 
       <div className="navbar-wrapper">
@@ -23,19 +16,42 @@ const Home = () => {
       </div>
 
       <div className="home">
-        <section className="carousel">
-          <img src="/assets/mugs.png" alt="Imagenes de sublimados" />
-        </section>
-
-        <section className="promotions">
-          <h2>Promociones</h2>
-          <div className="products">
-            <img src="/assets/shirt.png" alt="Camisa promocional" />
-            <img src="/assets/mug.png" alt="Taza personalizada" />
-            <img src="/assets/keychain.png" alt="Llavero personalizado" />
+        {/* Galería de imágenes estilo collage */}
+        <section className="collage-grid">
+          <div className="grid-item img5">
+            <img src="/H2.jpg" alt="Decoración 1" />
+          </div>
+          <div className="grid-item img1">
+            <img src="/H1.jpg" alt="Decoración 2" />
+          </div>
+          <div className="grid-item img2">
+            <img src="/H3.jpg" alt="Decoración 3" />
+          </div>
+          <div className="grid-item img3">
+            <img src="/H5.jpg" alt="Decoración 4" />
+          </div>
+          <div className="grid-item img4">
+            <img src="/H6.jpg" alt="Decoración 5" />
           </div>
         </section>
 
+        {/* Sección de promociones */}
+        <section className="promotions">
+          <h2>Promociones</h2>
+          <div className="promotion-cards">
+            <div className="promotion-card">
+              <img src="/H8.jpg" alt="Camiseta promocional" />
+            </div>
+            <div className="promotion-card">
+              <img src="/H7.jpg" alt="Taza promocional" />
+            </div>
+            <div className="promotion-card">
+              <img src="/H9.jpg" alt="Llaveros promocionales" />
+            </div>
+          </div>
+        </section>
+
+        {/* Sección de confianza */}
         <section className="trust">
           <div className="trust-text">
             <h2>¿Por qué confiar en Ideart?</h2>
@@ -45,7 +61,7 @@ const Home = () => {
               con un enfoque en el detalle, la durabilidad y la creatividad.
             </p>
           </div>
-          <img src="/assets/back-shirts.png" alt="Camisetas estampadas" />
+          <img src="/H4.jpg" />
         </section>
       </div>
 

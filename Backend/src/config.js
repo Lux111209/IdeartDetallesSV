@@ -17,8 +17,8 @@ secret: process.env.JWT_SECRET,
 expiresIn: process.env.JWT_EXPIRES,
 },
 email:{
-email:"noreply.ideartdetallessv3@gmail.com",
-password:process.env.APP_PASSWORD_EMAIL,
+email:process.env.USER_EMAIL,
+password:process.env.USER_PASS,
 
 },
 admin:{
@@ -34,4 +34,4 @@ cloudinary:
 },
  };
  
- //sdadasSDSD
+ //sdadasSDSDas

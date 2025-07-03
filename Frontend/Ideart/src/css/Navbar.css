@@ -6,47 +6,64 @@
   padding: 0.8rem 2rem;
   color: white;
   font-family: 'Segoe UI', sans-serif;
-}
-
-.logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.logo span {
-  font-weight: normal;
-  font-size: 0.9rem;
-  display: block;
-}
-
-.search-container {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.search-container input {
-  padding: 0.5rem;
-  border-radius: 1rem;
-  border: none;
+  max-width: 100vw;
 }
 
 .nav-links {
   display: flex;
+  align-items: center;
   list-style: none;
   gap: 1rem;
+  padding: 0;
+  margin: 0;
+  width: 100%;
 }
 
 .nav-links li {
   cursor: pointer;
+  transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
-.nav-links .active {
+.nav-links li:hover {
+  transform: scale(1.1);
+  color: #c9dbc8;
+}
+
+.nav-links li .nav-item {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  padding: 8px 12px;
+}
+
+
+.nav-links li.active .nav-item {
   font-weight: bold;
   border-bottom: 2px solid white;
 }
 
-.icons span {
-  margin-left: 1rem;
-  font-size: 1.2rem;
+
+.settings-icon {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
+}
+
+.settings-icon:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+
+.nav-settings {
+  margin-left: auto;
+}
+
+
+.nav-icon-link {
+  display: flex;
+  align-items: center;
+  padding: 8px;
 }
