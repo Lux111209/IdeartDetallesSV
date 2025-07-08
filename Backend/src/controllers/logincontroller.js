@@ -1,7 +1,7 @@
 import userModel from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { config } from "../config.js";
+import { config } from "../../config.js";
 
 const loginController = {};
 

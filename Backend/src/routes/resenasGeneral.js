@@ -3,16 +3,16 @@ import resenaGeneralController from '../controllers/resenaGeneralController.js';
 
 const router = express.Router();
 
-// Rutas básicas CRUD
-router.get('/', resenaGeneralController.getResenas);
-router.get('/producto/:id_producto', resenaGeneralController.getResenasByProducto); // ANTES de /:id
-router.get('/usuario/:id_user', resenaGeneralController.getResenasByUsuario); // ANTES de /:id
-router.get('/:id', resenaGeneralController.getResenaById);
-router.post('/', resenaGeneralController.createResena);
-router.put('/:id', resenaGeneralController.updateResena);
-router.delete('/:id', resenaGeneralController.deleteResena);
+// CRUD principal
+router.route("/")
+  .get(resenaGeneralController.getResenas)
+  .post(resenaGeneralController.createResena);
 
-// Rutas especiales
-router.put('/:id/util', resenaGeneralController.marcarUtil);
+
+// CRUD por id
+router.route("/:id")
+  .get(resenaGeneralController.getResenaById)
+  .put(resenaGeneralController.updateResena)
+  .delete(resenaGeneralController.deleteResena);
 
 export default router;

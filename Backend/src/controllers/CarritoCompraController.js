@@ -1,5 +1,5 @@
 import cartModel from '../models/CarritoCompra.js';
-import { config } from '../config.js';
+import { config } from "../../config.js";
 
 
 const CarritoCompraController ={};
