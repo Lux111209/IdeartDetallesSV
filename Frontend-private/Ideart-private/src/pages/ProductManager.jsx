@@ -1,76 +1,134 @@
-import { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import EmpleadoCard from "../components/providersCart";
-import "../css/Providers.css";
+// src/pages/ProductManager.jsx
+import React, { useState, useEffect } from "react";
+import Sidebar from "../components/Sidebar.jsx";
+import ProductCard from "../components/ProductCard.jsx";
+import ProductModal from "../components/ProductModal.jsx";
+import AddProductModal from "../components/AddProductModal.jsx";
+import "../css/ProductManager.css";
 
-const proveedores = [
-  {
-    id: 1,
-    nombre: "Jason Alberto",
-    email: "jasonalberto@gmail.com",
-    foto: "https://via.placeholder.com/80",
-    titulo: "Proveedor de Ropa",
-    descripcion: "Entrega semanal de mercancía desde Colombia.",
-    edad: 35,
-    genero: "Masculino",
-  },
-  {
-    id: 2,
-    nombre: "Carolina Paredes",
-    email: "carolina.paredes@outlook.com",
-    foto: "https://via.placeholder.com/80",
-    titulo: "Proveedor de Calzado",
-    descripcion: "Especialista en calzado de cuero artesanal.",
-    edad: 42,
-    genero: "Femenino",
-  },
-];
+const ProductManager = () => {
+  const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
 
-export default function Providers() {
-  const [activo, setActivo] = useState(null);
+  useEffect(() => {
+    const fakeProducts = [
+      {
+        _id: "1",
+        name: "Camiseta Blanca",
+        price: 15.99,
+        stock: 20,
+        productType: "Ropa",
+        size: "M",
+        images: ["/charli.jpg"],
+      },
+      {
+        _id: "2",
+        name: "Camisa Negra",
+        price: 45.5,
+        stock: 10,
+        productType: "Camisas",
+        size: "42",
+        images: ["/maxi.jpg"],
+      },
+      {
+        _id: "3",
+        name: "Gorra Azul",
+        price: 12.0,
+        stock: 5,
+        productType: "Accesorios",
+        size: "Único",
+        images: ["/gorra.jpg"],
+      },
+    ];
+    setProducts(fakeProducts);
+  }, []);
+
+  const handleCardClick = (product) => {
+    setSelectedProduct(product);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProduct(null);
+  };
+
+  const handleSave = (updatedProduct) => {
+    setProducts((prev) =>
+      prev.map((p) => (p._id === updatedProduct._id ? updatedProduct : p))
+    );
+    handleCloseModal();
+  };
+
+  const handleDelete = (id) => {
+    setProducts((prev) => prev.filter((p) => p._id !== id));
+    handleCloseModal();
+  };
+
+  const handleAdd = (newProduct) => {
+    setProducts((prev) => [...prev, newProduct]);
+    setShowAddModal(false);
+  };
+
+  const filteredProducts = products.filter((p) =>
+    p.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div className="layout">
+    <div className="product-manager-layout" style={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar />
 
-      <div className="main-content">
-        <div className="panel-izquierdo">
-          <h1 className="titulo">Proveedores</h1>
-          {proveedores.map((prov) => (
-            <EmpleadoCard
-              key={prov.id}
-              empleado={prov}
-              onSelect={setActivo} // aquí le pasas directamente el setActivo
-            />
-          ))}
+      <div className="product-manager-content" style={{ flex: 1, padding: "20px" }}>
+        <div
+          className="top-bar"
+          style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}
+        >
+          <h1>Gestor de Productos</h1>
+          <button className="add-btn" onClick={() => setShowAddModal(true)}>
+            + Agregar producto
+          </button>
+          <input
+            className="search-input"
+            type="text"
+            placeholder="Buscar"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
 
-        {activo ? (
-          <div className="panel-derecho">
-            <img
-              src={activo.foto}
-              alt={activo.nombre}
-              className="avatar-grande"
-            />
-            <h2>{activo.nombre}</h2>
-            <p className="subtitulo">{activo.titulo}</p>
-            <p>{activo.descripcion}</p>
-            <p>
-              <strong>Edad:</strong> {activo.edad}
-            </p>
-            <p>
-              <strong>Género:</strong> {activo.genero}
-            </p>
-            <p>
-              <strong>Email:</strong> {activo.email}
-            </p>
-          </div>
-        ) : (
-          <div className="panel-derecho placeholder">
-            <p>Selecciona un proveedor para ver detalles</p>
-          </div>
-        )}
+        <div
+          className="product-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+            gap: "15px",
+          }}
+        >
+          {filteredProducts.map((product) => (
+            <div
+              key={product._id}
+              onClick={() => handleCardClick(product)}
+              style={{ cursor: "pointer" }}
+            >
+              <ProductCard product={product} />
+            </div>
+          ))}
+          {filteredProducts.length === 0 && <p>No se encontraron productos.</p>}
+        </div>
       </div>
+
+      {selectedProduct && (
+        <ProductModal
+          product={selectedProduct}
+          onClose={handleCloseModal}
+          onSave={handleSave}
+          onDelete={handleDelete}
+        />
+      )}
+
+      {showAddModal && <AddProductModal onClose={() => setShowAddModal(false)} onAdd={handleAdd} />}
     </div>
   );
-}
+};
+
+export default ProductManager;
