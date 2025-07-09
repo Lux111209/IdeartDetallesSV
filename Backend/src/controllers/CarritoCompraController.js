@@ -1,5 +1,6 @@
 import cartModel from '../models/CarritoCompra.js';
 import { config } from "../../config.js";
+import mongoose from 'mongoose';  
 
 
 const CarritoCompraController ={};
