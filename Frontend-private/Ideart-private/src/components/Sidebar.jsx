@@ -23,7 +23,7 @@ const Sidebar = () => {
         <NavLink to="/Offers" className={({ isActive }) => (isActive ? "active" : "")}>
           Ofertas
         </NavLink>
-        <NavLink to="/ventas" className={({ isActive }) => (isActive ? "active" : "")}>
+        <NavLink to="/Sales" className={({ isActive }) => (isActive ? "active" : "")}>
           Ventas
         </NavLink>
         <NavLink to="/Review" className={({ isActive }) => (isActive ? "active" : "")}>
