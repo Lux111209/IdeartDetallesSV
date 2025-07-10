@@ -19,8 +19,8 @@ import userRoutes from "./src/routes/User.js";
 import ventasRoutes from "./src/routes/venta.js";
 
 // Importar middleware de validación (cuando lo tengas)
-// import { validateAuthToken } from "./src/middleware/validateAuthToken.js";
-
+import { validateAuthToken } from "./src/middlewares/validateAuthToken.js";
+const allowedOrigins = ["http://localhost:5174", "http://localhost:5173"]
 // Crear una instancia de Express
 const app = express();
 
