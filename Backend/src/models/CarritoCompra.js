@@ -52,4 +52,4 @@ const CarritoComprasSchema = new Schema({
   timestamps: true,
   
 });
-export default model('CarritoCompra',CarritoComprasSchema);
+export default model('c',CarritoComprasSchema);

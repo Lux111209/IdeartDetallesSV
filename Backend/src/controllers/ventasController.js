@@ -56,8 +56,86 @@ ventasController.createVenta = async (req,res) => {
              return res.json({message:"FALTA INFORMACION NECESARIA: (Id de carrito , la direccion y el metodo de pago)"})
         }
         //validamos que si exitas el carrito:
+        const carrito = await carritoModel.findById(idShoppingCart);
+        if (!carrito) {
+            return res.status(404).json({message:"El carrito de compras no fue encontrado"})
+        }
+        
+
+        //Creamos la venta:
+
+        const newVenta = new ventasModel({
+            idShoppingCart,
+            direction,
+            metodoPago,
+            statusPago,
+            statusTransaccion
+        });
+
+        await newVenta.save();
+
+        res.status(201).json({
+            message:"Venta se creo con exito"
+        });
+
+
 
     } catch (error) {
-        
+        res.status(400).json({message:"Error al crear la venta", error: error.message});
+
     }
+};
+
+//Funcion para actualizar una venta por Id 
+
+ventasController.updateVenta = async (req,res) => {
+    const {
+        idShoppingCart,
+        direction,
+        metodoPago,
+        statusPago,
+        statusTransaccion,
+    }= req.body;
+
+    try {
+         const update ={
+        idShoppingCart,
+        direction,
+        metodoPago,
+        statusPago,
+        statusTransaccion,
+    };
+
+        const updateVentas = await ventasModel.findByIdAndUpdate(req.params.id,update, {new:true})
+        .populate("idCarritoCompra");
+
+        if (!updateVentas) {
+            return res.status(404).json({message:"Venta no encontrada"})
+        }
+
+        res.status(200).json({message:"Venta actualizada con exito"});
+
+    } catch (error) {
+        res.status(400).json({message:"Error actualizando la venta", error:error.message});
+    }
+};
+
+ventasController.deleteVenta = async (req,res) => {
+        
+try {
+    
+    const deleteVenta = await ventasModel.findByIdAndDelete(req.paramas.id);
+    if (!deleteVenta) {
+        return res.status(404).json({message:"Ventan no encontrada"})
+    }
+    res.status(200).json({message:"venta eliminada con exito"});
+
+} catch (error) {
+
+    res.status(400).json({message:"Error al eliminar el carrito",error: error.message});
 }
+
+};
+
+
+export default ventasController;
