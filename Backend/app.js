@@ -16,6 +16,7 @@ import provedoresRoutes from "./src/routes/Provedores.js";
 import resenasGeneralRoutes from "./src/routes/resenasGeneral.js";
 import resenasProductoRoutes from "./src/routes/resenasProducto.js";
 import userRoutes from "./src/routes/User.js";
+import ventasRoutes from "./src/routes/venta.js";
 
 // Importar middleware de validación (cuando lo tengas)
 // import { validateAuthToken } from "./src/middleware/validateAuthToken.js";
@@ -59,6 +60,7 @@ app.use("/api/proveedores", provedoresRoutes);
 app.use("/api/resenasgeneral", resenasGeneralRoutes);
 app.use("/api/resenasproducto", resenasProductoRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/ventas",ventasRoutes);
 
 // Ruta para verificar autenticación (útil para el frontend)
 app.get("/api/auth/verify", (req, res) => {
