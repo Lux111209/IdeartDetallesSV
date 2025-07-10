@@ -47,5 +47,9 @@ const CarritoComprasSchema = new Schema({
     required: true,
     min: [0, "El total no puede ser negativo"]
   }
+},
+{
+  timestamps: true,
+  
 });
 export default model('CarritoCompra',CarritoComprasSchema);
