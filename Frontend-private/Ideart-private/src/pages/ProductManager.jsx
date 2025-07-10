@@ -1,4 +1,3 @@
-// src/pages/ProductManager.jsx
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import ProductCard from "../components/ProductCard.jsx";
@@ -122,7 +121,6 @@ const ProductManager = () => {
           product={selectedProduct}
           onClose={handleCloseModal}
           onSave={handleSave}
-          onDelete={handleDelete}
         />
       )}
 

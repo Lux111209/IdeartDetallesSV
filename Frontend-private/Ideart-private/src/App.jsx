@@ -4,6 +4,7 @@ import ProductManager from "./pages/ProductManager";
 import Providers from "./pages/Providers";
 import Offers from "./pages/Offers";
 import Sales from "./pages/Sales";
+import Review from "./pages/Review"; 
 
 
 function App() {
@@ -17,7 +18,7 @@ function App() {
         <Route path="/providers" element={<Providers />} />
         <Route path="/offers" element={<Offers />} />
         <Route path="/sales" element={<Sales />} />
-
+        <Route path="/review" element={<Review />} />
       </Routes>
     </Router>
   )

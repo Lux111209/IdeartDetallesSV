@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import "../css/AddProductModal.css"; // Reusa el mismo estilo bonito del modal
+import ModelViewer from "./TshirtModel";
+import "../css/AddProductModal.css";
 
 const AddProductModal = ({ onClose, onAdd }) => {
   const [formData, setFormData] = useState({
@@ -48,7 +49,6 @@ const AddProductModal = ({ onClose, onAdd }) => {
     e.preventDefault();
     if (!validate()) return;
 
-    // Crear nuevo producto simulado
     const newProduct = {
       _id: Date.now().toString(),
       name: formData.name.trim(),
@@ -114,7 +114,7 @@ const AddProductModal = ({ onClose, onAdd }) => {
         />
         {errors.size && <p className="error">{errors.size}</p>}
 
-        <label style={{ marginBottom: "10px", fontWeight: "600" }}>
+        <label>
           Seleccionar imagen:
           <input type="file" accept="image/*" onChange={handleImageChange} />
         </label>
@@ -122,6 +122,14 @@ const AddProductModal = ({ onClose, onAdd }) => {
         {formData.imagePreview && (
           <div className="image-preview">
             <img src={formData.imagePreview} alt="Preview" />
+          </div>
+        )}
+
+        {/* 👕 Modelo 3D solo si el tipo de producto es camisa */}
+        {formData.productType.toLowerCase().includes("camisa") && (
+          <div className="model-preview-container">
+            <h4>Vista previa 3D</h4>
+            <ModelViewer url="/models/tshirt.glb" />
           </div>
         )}
 
