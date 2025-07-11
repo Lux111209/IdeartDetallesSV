@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 
-const API_URL = 'http://localhost:5000/api/personalizedProducts';
+const API_URL = 'http://localhost:5000/api/productPersonalized';
 
 const useFetchPersonalizedProducts = () => {
   const [items, setItems] = useState([]);    // Lista de productos personalizados
