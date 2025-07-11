@@ -1,3 +1,4 @@
+// src/pages/Providers.jsx
 import { useState, useEffect, useRef } from "react";
 import EmpleadoCard from "../components/providersCart";
 import Sidebar from "../components/Sidebar"; 
@@ -26,7 +27,7 @@ const empleadosIniciales = [
   }
 ];
 
-export default function HomePage() {
+export default function Providers() {
   const [empleados, setEmpleados] = useState(empleadosIniciales);
   const [activo, setActivo] = useState(null);
   const [modoEdicion, setModoEdicion] = useState(false);
@@ -37,7 +38,8 @@ export default function HomePage() {
     titulo: "",
     descripcion: "",
     edad: "",
-    genero: ""
+    genero: "",
+    telefono: ""
   });
   const [errores, setErrores] = useState({});
 
@@ -79,7 +81,8 @@ export default function HomePage() {
       titulo: "",
       descripcion: "",
       edad: "",
-      genero: ""
+      genero: "",
+      telefono: ""
     });
     setErrores({});
   }
@@ -93,7 +96,8 @@ export default function HomePage() {
       titulo: activo.titulo,
       descripcion: activo.descripcion,
       edad: activo.edad,
-      genero: activo.genero
+      genero: activo.genero,
+      telefono: activo.telefono || ""
     });
     setModoEdicion(true);
     setErrores({});
@@ -107,9 +111,14 @@ export default function HomePage() {
       errs.email = "Email inválido";
     if (!formData.titulo.trim()) errs.titulo = "Título requerido";
     if (!formData.descripcion.trim()) errs.descripcion = "Descripción requerida";
-    if (!formData.edad || isNaN(formData.edad) || formData.edad <= 0)
-      errs.edad = "Edad válida requerida";
+    if (!formData.edad || isNaN(formData.edad) || formData.edad < 18)
+      errs.edad = "Edad debe ser mayor o igual a 18";
     if (!formData.genero.trim()) errs.genero = "Género requerido";
+    else if (!["Masculino", "Femenino"].includes(formData.genero))
+      errs.genero = "Género debe ser 'Masculino' o 'Femenino'";
+    if (!formData.telefono.trim()) errs.telefono = "Teléfono requerido";
+    else if (!/^\d{4}-\d{4}$/.test(formData.telefono))
+      errs.telefono = "Teléfono debe tener formato 0000-0000";
     return errs;
   }
 
@@ -159,6 +168,15 @@ export default function HomePage() {
     }
   }
 
+  // Manejo archivo de imagen para subir desde dispositivo
+  function manejarArchivoImagen(e) {
+    const archivo = e.target.files[0];
+    if (archivo) {
+      const urlLocal = URL.createObjectURL(archivo);
+      setFormData(prev => ({ ...prev, foto: urlLocal }));
+    }
+  }
+
   return (
     <div className="dashboard">
       <Sidebar />
@@ -188,6 +206,7 @@ export default function HomePage() {
                 <p>{activo.descripcion}</p>
                 <p><strong>Edad:</strong> {activo.edad}</p>
                 <p><strong>Género:</strong> {activo.genero}</p>
+                <p><strong>Teléfono:</strong> {activo.telefono}</p>
                 <p><strong>Email:</strong> {activo.email}</p>
 
                 <div className="botones-derecha">
@@ -220,14 +239,21 @@ export default function HomePage() {
                 </label>
 
                 <label>
-                  Foto URL:
+                  Foto:
                   <input
-                    type="text"
-                    placeholder="URL de la imagen"
-                    value={formData.foto}
-                    onChange={e => setFormData({ ...formData, foto: e.target.value })}
+                    type="file"
+                    accept="image/*"
+                    onChange={manejarArchivoImagen}
                   />
                 </label>
+
+                {formData.foto && (
+                  <img
+                    src={formData.foto}
+                    alt="Preview"
+                    style={{ width: "100px", height: "100px", objectFit: "cover", marginTop: "10px", borderRadius: "8px" }}
+                  />
+                )}
 
                 <label>
                   Título:
@@ -260,12 +286,27 @@ export default function HomePage() {
 
                 <label>
                   Género:
-                  <input
-                    type="text"
+                  <select
                     value={formData.genero}
                     onChange={e => setFormData({ ...formData, genero: e.target.value })}
-                  />
+                  >
+                    <option value="">-- Selecciona género --</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                  </select>
                   {errores.genero && <span className="error">{errores.genero}</span>}
+                </label>
+
+                <label>
+                  Teléfono:
+                  <input
+                    type="text"
+                    placeholder="0000-0000"
+                    value={formData.telefono}
+                    onChange={e => setFormData({ ...formData, telefono: e.target.value })}
+                    maxLength={9}
+                  />
+                  {errores.telefono && <span className="error">{errores.telefono}</span>}
                 </label>
 
                 <div className="botones-formulario">
