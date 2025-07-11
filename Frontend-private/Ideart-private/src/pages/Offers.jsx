@@ -3,7 +3,6 @@ import { ChevronLeft, ChevronRight, Search, Filter, X, Plus, Edit, Trash2, Tag, 
 import Sidebar from "../components/Sidebar";
 import '../css/OfferManager.css'; 
 
-
 const OfferManager = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
@@ -22,9 +21,8 @@ const OfferManager = () => {
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('all');
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [offers, setOffers] = useState([]);
-  const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Nuevo estado para paginación de productos en grupos de 3
+  // Estado para paginación de productos en grupos de 3
   const [productPage, setProductPage] = useState(0);
 
   // Calcula el número total de páginas (3 productos por página)
@@ -46,7 +44,7 @@ const OfferManager = () => {
     setProductPage((prev) => (prev === totalPages - 1 ? 0 : prev + 1));
   };
 
-  // Agregar más productos para testing
+  // Productos de ejemplo
   const mockProducts = [
     {
       id: 1,
@@ -215,19 +213,15 @@ const OfferManager = () => {
     fetchProducts();
   }, []);
 
-  // Auto-play del carrusel
+  // Filtrar productos cuando cambia la categoría seleccionada
   useEffect(() => {
-    if (filteredProducts.length <= 4) return; // No hacer auto-play si hay 4 o menos productos
-
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => {
-        const maxSlide = Math.max(0, filteredProducts.length - 4);
-        return prev >= maxSlide ? 0 : prev + 1;
-      });
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [filteredProducts.length]);
+    if (selectedCategoryFilter === 'all') {
+      setFilteredProducts(products);
+    } else {
+      setFilteredProducts(products.filter(product => product.category === selectedCategoryFilter));
+    }
+    setProductPage(0); // Reset a la primera página cuando cambia el filtro
+  }, [selectedCategoryFilter, products]);
 
   const categories = [
     { id: 'accesorios', name: 'Accesorios', icon: '🎧' },
@@ -365,14 +359,14 @@ const OfferManager = () => {
   return (
     <div className="app-container">
       <Sidebar />
-      {/* Main content abarca toda la sección después del nav */}
-      <main className="main-content full-width">
         <div className="content-wrapper">
-          
+          <div className="content-inner">
+            
+            {/* Header */}
             <div className="header">
               <div className="header-content">
                 <h1 className="header-title">Gestor de Ofertas</h1>
-                
+                <div className="notification-icon">🔔</div>
               </div>
             </div>
 
@@ -409,7 +403,6 @@ const OfferManager = () => {
                       {category.name}
                     </p>
                     <div className="category-actions">
-                     
                       <button
                         onClick={() => handleCategoryDiscount(category.id)}
                         className="category-button secondary"
@@ -459,132 +452,147 @@ const OfferManager = () => {
 
               {filteredProducts.length > 0 ? (
                 <div className="carousel-container">
-                  <button
-                    className="carousel-arrow carousel-arrow-left"
-                    onClick={handlePrevPage}
-                    aria-label="Anterior"
-                  >
-                    <ChevronLeft className="arrow-icon" />
-                  </button>
-                  <div className="carousel-track">
-                    {paginatedProducts.map((product) => (
-                      <div key={product.id} className="carousel-slide">
-                        <div className="product-card">
-                      
-                          <div className="product-image-container">
-                            <img
-                              src={product.image}
-                              alt={product.name}
-                              className="product-image"
-                            />
-                            {product.featured && (
-                              <div className="featured-badge">
-                                <Star className="star-icon" />
-                                Destacado
-                              </div>
-                            )}
-                            {product.discount > 0 && (
-                              <div className="discount-badge">
-                                -{product.discount}%
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="product-info">
-                            <h3 className="product-title">{product.name}</h3>
-                            <p className="product-description">{product.description}</p>
-                            
-                            {/* Price Section */}
-                            <div className="price-section">
-                              <div className="price-wrapper">
-                                <span className="current-price">${product.price.toFixed(2)}</span>
-                                {product.discount > 0 && (
-                                  <span className="original-price">${product.originalPrice.toFixed(2)}</span>
-                                )}
-                              </div>
-                              <div className="rating-wrapper">
-                                <Star className="rating-star" />
-                                <span className="rating-text">{product.rating} ({product.reviews})</span>
-                              </div>
+                  {totalPages > 1 && (
+                    <button
+                      className="carousel-arrow carousel-arrow-left"
+                      onClick={handlePrevPage}
+                      aria-label="Anterior"
+                    >
+                      <ChevronLeft className="arrow-icon" />
+                    </button>
+                  )}
+                  
+                  <div className="carousel-track-container">
+                    <div className="carousel-track">
+                      {paginatedProducts.map((product) => (
+                        <div key={product.id} className="carousel-slide">
+                          <div className="product-card">
+                            <div className="product-image-container">
+                              <img
+                                src={product.image}
+                                alt={product.name}
+                                className="product-image"
+                              />
+                              {product.featured && (
+                                <div className="featured-badge">
+                                  <Star className="star-icon" />
+                                  Destacado
+                                </div>
+                              )}
+                              {product.discount > 0 && (
+                                <div className="discount-badge">
+                                  -{product.discount}%
+                                </div>
+                              )}
                             </div>
 
-                            {/* Stats */}
-                            <div className="product-stats">
-                              <div className="stat">
-                                <p className="stat-value">{product.stock}</p>
-                                <p className="stat-label">Stock</p>
+                            <div className="product-info">
+                              <h3 className="product-title">{product.name}</h3>
+                              <p className="product-description">{product.description}</p>
+                              
+                              {/* Price Section */}
+                              <div className="price-section">
+                                <div className="price-wrapper">
+                                  <span className="current-price">${product.price.toFixed(2)}</span>
+                                  {product.discount > 0 && (
+                                    <span className="original-price">${product.originalPrice.toFixed(2)}</span>
+                                  )}
+                                </div>
+                                <div className="rating-wrapper">
+                                  <Star className="rating-star" />
+                                  <span className="rating-text">{product.rating} ({product.reviews})</span>
+                                </div>
                               </div>
-                              <div className="stat">
-                                <p className="stat-value">{product.orders}</p>
-                                <p className="stat-label">Órdenes</p>
-                              </div>
-                              <div className="stat">
-                                <p className="stat-value">{new Date(product.published).toLocaleDateString()}</p>
-                                <p className="stat-label">Publicado</p>
-                              </div>
-                            </div>
 
-                            {/* Tags */}
-                            <div className="product-tags">
-                              {product.tags.map((tag, tagIndex) => (
-                                <span key={tagIndex} className="tag">
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
+                              {/* Stats */}
+                              <div className="product-stats">
+                                <div className="stat">
+                                  <p className="stat-value">{product.stock}</p>
+                                  <p className="stat-label">Stock</p>
+                                </div>
+                                <div className="stat">
+                                  <p className="stat-value">{product.orders}</p>
+                                  <p className="stat-label">Órdenes</p>
+                                </div>
+                                <div className="stat">
+                                  <p className="stat-value">{new Date(product.published).toLocaleDateString()}</p>
+                                  <p className="stat-label">Publicado</p>
+                                </div>
+                              </div>
 
-                            {/* Action Buttons */}
-                            <div className="product-actions">
-                              <button
-                                onClick={() => handleProductAction(product, 'edit')}
-                                className="action-button edit"
-                              >
-                                <Edit className="action-icon" />
-                                Editar
-                              </button>
-                              <button
-                                onClick={() => handleProductAction(product, 'discount')}
-                                className="action-button discount"
-                              >
-                                <Percent className="action-icon" />
-                                Descuento
-                              </button>
-                              <button
-                                onClick={() => handleProductDelete(product.id)}
-                                className="action-button delete"
-                              >
-                                <Trash2 className="action-icon" />
-                              </button>
+                              {/* Tags */}
+                              <div className="product-tags">
+                                {product.tags.map((tag, tagIndex) => (
+                                  <span key={tagIndex} className="tag">
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+
+                              {/* Action Buttons */}
+                              <div className="product-actions">
+                                <button
+                                  onClick={() => handleProductAction(product, 'edit')}
+                                  className="action-button edit"
+                                >
+                                  <Edit className="action-icon" />
+                                  Editar
+                                </button>
+                                <button
+                                  onClick={() => handleProductAction(product, 'discount')}
+                                  className="action-button discount"
+                                >
+                                  <Percent className="action-icon" />
+                                  Descuento
+                                </button>
+                                <button
+                                  onClick={() => handleProductDelete(product.id)}
+                                  className="action-button delete"
+                                >
+                                  <Trash2 className="action-icon" />
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                  <button
-                    className="carousel-arrow carousel-arrow-right"
-                    onClick={handleNextPage}
-                    aria-label="Siguiente"
-                  >
-                    <ChevronRight className="arrow-icon" />
-                  </button>
+                  
+                  {totalPages > 1 && (
+                    <button
+                      className="carousel-arrow carousel-arrow-right"
+                      onClick={handleNextPage}
+                      aria-label="Siguiente"
+                    >
+                      <ChevronRight className="arrow-icon" />
+                    </button>
+                  )}
+                  
                   {/* Indicadores de página */}
-                  <div className="carousel-indicators">
-                    {Array.from({ length: totalPages }).map((_, idx) => (
-                      <button
-                        key={idx}
-                        className={`indicator${productPage === idx ? ' active' : ''}`}
-                        onClick={() => setProductPage(idx)}
-                        aria-label={`Ir a la página ${idx + 1}`}
-                      />
-                    ))}
-                  </div>
+                  {totalPages > 1 && (
+                    <div className="carousel-indicators">
+                      {Array.from({ length: totalPages }).map((_, idx) => (
+                        <button
+                          key={idx}
+                          className={`indicator${productPage === idx ? ' active' : ''}`}
+                          onClick={() => setProductPage(idx)}
+                          aria-label={`Ir a la página ${idx + 1}`}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="empty-products">
                   <div className="empty-icon">📦</div>
                   <h3 className="empty-title">No hay productos que mostrar</h3>
-                  <p className="empty-description">Selecciona una categoría para ver los productos disponibles.</p>
+                  <p className="empty-description">
+                    {selectedCategoryFilter !== 'all' 
+                      ? `No hay productos en la categoría "${categories.find(c => c.id === selectedCategoryFilter)?.name}".`
+                      : 'Selecciona una categoría para ver los productos disponibles.'
+                    }
+                  </p>
                 </div>
               )}
             </div>
@@ -629,10 +637,10 @@ const OfferManager = () => {
               </div>
             )}
           </div>
-        
-      </main>
-     
+        </div>
+    
 
+      {/* Modal para crear oferta */}
       {showAddModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -795,6 +803,7 @@ const OfferManager = () => {
         </div>
       )}
 
+      {/* Modal para acciones de producto */}
       {showProductModal && selectedProduct && (
         <div className="modal-overlay">
           <div className="modal-content modal-small">

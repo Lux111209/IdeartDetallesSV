@@ -12,7 +12,7 @@ const Sidebar = ({ children }) => {
         setIsMobile(true);
         setOpen(false);
       } else {
-        setIsMobile(false);
+        setIsMobile(false);   
         setOpen(true);
       }
     };
