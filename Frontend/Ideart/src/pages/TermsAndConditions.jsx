@@ -1,5 +1,8 @@
-import TerminosSection from '../components/TermsSection'
-import TerminosList from '../components/TermsList'
+import TerminosSection from '../components/TermsSection';
+import TerminosList from '../components/TermsList';
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import TopBar from "../components/TopBar";
 
 import {
   PackageCheck,
@@ -10,33 +13,41 @@ import {
   AlertTriangle,
   FileEdit,
   Mail
-} from 'lucide-react'
+} from 'lucide-react';
+
+import '../css/TermsAndConditions.css';
 
 export default function TermsAndConditions() {
   return (
-    <main className="bg-gray-50 py-10 px-4 min-h-screen">
-      <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl p-8 space-y-8 text-gray-800">
-        <h1 className="text-3xl font-bold text-green-800 mb-4 flex items-center gap-2">
-          <FileEdit className="w-8 h-8 text-green-600" />
+
+    <>
+    <TopBar />
+    <Navbar />
+    <main className="terms-main">
+      <div className="terms-container">
+        <h1 className="terms-title">
+          <FileEdit className="icon" />
           Términos y Condiciones
         </h1>
 
-        <p>
-          Bienvenido/a a <strong>Ideart Detalles</strong>. Al acceder y utilizar nuestro sitio web y servicios, aceptas los siguientes términos y condiciones. Te recomendamos leerlos cuidadosamente.
+        <p className="terms-text">
+          Bienvenido/a a <strong>Ideart Detalles</strong>. Al acceder y utilizar nuestro sitio web y servicios,
+          aceptas los siguientes términos y condiciones. Te recomendamos leerlos cuidadosamente.
         </p>
 
         <TerminosSection icon={PackageCheck} title="Sobre Nuestros Servicios">
-          <p>
-            Nos especializamos en artículos personalizados mediante sublimación y estampado. Incluye camisetas, tazas, cojines, llaveros, y otros regalos personalizados.
+          <p className="terms-text">
+            Nos especializamos en artículos personalizados mediante sublimación y estampado. Incluye camisetas,
+            tazas, cojines, llaveros, y otros regalos personalizados.
           </p>
         </TerminosSection>
 
         <TerminosSection icon={Brush} title="Proceso de Pedido y Personalización">
           <TerminosList
             items={[
-              <><strong>Diseño:</strong> El cliente debe proporcionar imágenes o ideas claras y en alta calidad.</>,
-              <><strong>Aprobación:</strong> Se puede enviar una previsualización para revisión antes de la producción final.</>,
-              <><strong>Derechos de autor:</strong> El cliente debe tener los derechos sobre los diseños proporcionados.</>,
+              <span><strong>Diseño:</strong> El cliente debe proporcionar imágenes o ideas claras y en alta calidad.</span>,
+              <span><strong>Aprobación:</strong> Se puede enviar una previsualización para revisión antes de la producción final.</span>,
+              <span><strong>Derechos de autor:</strong> El cliente debe tener los derechos sobre los diseños proporcionados.</span>
             ]}
           />
         </TerminosSection>
@@ -44,9 +55,9 @@ export default function TermsAndConditions() {
         <TerminosSection icon={DollarSign} title="Precios y Pagos">
           <TerminosList
             items={[
-              <><strong>Precios:</strong> Varían según el tipo de artículo, diseño y cantidad.</>,
-              <><strong>Métodos de pago:</strong> Según los indicados en el sitio web, en USD.</>,
-              <><strong>Confirmación:</strong> El pedido inicia tras el pago confirmado.</>,
+              <span><strong>Precios:</strong> Varían según el tipo de artículo, diseño y cantidad.</span>,
+              <span><strong>Métodos de pago:</strong> Según los indicados en el sitio web, en USD.</span>,
+              <span><strong>Confirmación:</strong> El pedido inicia tras el pago confirmado.</span>
             ]}
           />
         </TerminosSection>
@@ -54,10 +65,10 @@ export default function TermsAndConditions() {
         <TerminosSection icon={Truck} title="Envíos y Entregas">
           <TerminosList
             items={[
-              <><strong>Producción:</strong> El tiempo puede variar, se informará al hacer el pedido.</>,
-              <><strong>Opciones de envío:</strong> Se muestran al finalizar la compra, calculado según destino y peso.</>,
-              <><strong>Responsabilidad:</strong> Una vez entregado al transporte, ellos asumen responsabilidad.</>,
-              <><strong>Dirección:</strong> Verifica que sea correcta; no nos responsabilizamos por errores del cliente.</>,
+              <span><strong>Producción:</strong> El tiempo puede variar, se informará al hacer el pedido.</span>,
+              <span><strong>Opciones de envío:</strong> Se muestran al finalizar la compra, calculado según destino y peso.</span>,
+              <span><strong>Responsabilidad:</strong> Una vez entregado al transporte, ellos asumen responsabilidad.</span>,
+              <span><strong>Dirección:</strong> Verifica que sea correcta; no nos responsabilizamos por errores del cliente.</span>
             ]}
           />
         </TerminosSection>
@@ -65,32 +76,29 @@ export default function TermsAndConditions() {
         <TerminosSection icon={Undo2} title="Política de Devoluciones y Reembolsos">
           <TerminosList
             items={[
-              <><strong>Artículos personalizados:</strong> No se aceptan devoluciones salvo error de nuestra parte.</>,
-              <><strong>Error nuestro:</strong> Notificar en 3 días hábiles con fotos para evaluación y solución.</>,
-              <><strong>Error del cliente:</strong> No aplica reembolso si se aprobó un diseño con error del cliente.</>,
+              <span><strong>Artículos personalizados:</strong> No se aceptan devoluciones salvo error de nuestra parte.</span>,
+              <span><strong>Error nuestro:</strong> Notificar en 3 días hábiles con fotos para evaluación y solución.</span>,
+              <span><strong>Error del cliente:</strong> No aplica reembolso si se aprobó un diseño con error del cliente.</span>
             ]}
           />
         </TerminosSection>
 
         <TerminosSection icon={AlertTriangle} title="Limitación de Responsabilidad">
-          <p>
+          <p className="terms-text">
             Ideart Detalles no se responsabiliza por daños indirectos, especiales o incidentales derivados del uso de nuestros productos o servicios.
           </p>
         </TerminosSection>
 
         <TerminosSection icon={FileEdit} title="Modificaciones de los Términos">
-          <p>
+          <p className="terms-text">
             Nos reservamos el derecho de modificar estos términos en cualquier momento. Los cambios serán efectivos tras su publicación en el sitio web.
           </p>
         </TerminosSection>
 
         <TerminosSection icon={Mail} title="Contacto">
-          <p>
+          <p className="terms-text">
             Si tienes preguntas, contáctanos vía{' '}
-            <a
-              href="mailto:idea.artesv@gmail.com"
-              className="text-blue-600 underline hover:text-blue-800 focus:outline-none"
-            >
+            <a href="mailto:idea.artesv@gmail.com" className="terms-link">
               idea.artesv@gmail.com
             </a>{' '}
             o al <strong>6025-2769</strong>.
@@ -98,5 +106,7 @@ export default function TermsAndConditions() {
         </TerminosSection>
       </div>
     </main>
-  )
+    <Footer />
+    </>
+  );
 }

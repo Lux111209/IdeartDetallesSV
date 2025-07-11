@@ -1,22 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-// Crear el contexto
 const CartContext = createContext();
 
-// Proveedor del carrito
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
-    // Leer desde localStorage al iniciar
     const storedCart = localStorage.getItem("cart");
     return storedCart ? JSON.parse(storedCart) : [];
   });
 
-  // Guardar en localStorage cada vez que cambie el carrito
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // Agregar un producto
   const addToCart = (item) => {
     const existingIndex = cartItems.findIndex(
       (i) =>
@@ -34,26 +29,22 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Eliminar un producto por índice
   const removeFromCart = (index) => {
     const updatedCart = [...cartItems];
     updatedCart.splice(index, 1);
     setCartItems(updatedCart);
   };
 
-  // Limpiar todo el carrito
   const clearCart = () => {
     setCartItems([]);
   };
 
-  // Aumentar cantidad
   const increaseQuantity = (index) => {
     const updatedCart = [...cartItems];
     updatedCart[index].quantity += 1;
     setCartItems(updatedCart);
   };
 
-  // Disminuir cantidad (mínimo 1)
   const decreaseQuantity = (index) => {
     const updatedCart = [...cartItems];
     if (updatedCart[index].quantity > 1) {
@@ -62,12 +53,10 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Total de ítems
   const getTotalItems = () => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
-  // Total a pagar
   const getTotalPrice = () => {
     return cartItems.reduce(
       (total, item) => total + item.price * item.quantity,

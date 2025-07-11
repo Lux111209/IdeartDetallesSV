@@ -64,12 +64,8 @@ const ReviewForm = ({ onSubmit, onCancel }) => {
             onChange={e => setName(e.target.value)}
           />
           {errors.name && (
-            <div className="custom-alert">
-              <div className="alert-icon">
-                <AlertTriangle size={16} color="white" />
-              </div>
-              <span>{errors.name}</span>
-              <div className="alert-pointer" />
+            <div className="toast-inline">
+              <AlertTriangle size={16} /> {errors.name}
             </div>
           )}
         </div>
@@ -81,12 +77,8 @@ const ReviewForm = ({ onSubmit, onCancel }) => {
             onChange={e => setText(e.target.value)}
           />
           {errors.text && (
-            <div className="custom-alert">
-              <div className="alert-icon">
-                <AlertTriangle size={16} color="white" />
-              </div>
-              <span>{errors.text}</span>
-              <div className="alert-pointer" />
+            <div className="toast-inline">
+              <AlertTriangle size={16} /> {errors.text}
             </div>
           )}
         </div>
@@ -94,12 +86,8 @@ const ReviewForm = ({ onSubmit, onCancel }) => {
         <div className="input-group">
           <StarRating rating={rating} onChange={setRating} />
           {errors.rating && (
-            <div className="custom-alert">
-              <div className="alert-icon">
-                <AlertTriangle size={16} color="white" />
-              </div>
-              <span>{errors.rating}</span>
-              <div className="alert-pointer" />
+            <div className="toast-inline">
+              <AlertTriangle size={16} /> {errors.rating}
             </div>
           )}
         </div>

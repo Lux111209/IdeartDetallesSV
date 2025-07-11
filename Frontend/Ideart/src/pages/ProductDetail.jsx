@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -6,10 +6,11 @@ import TopBar from "../components/TopBar";
 import { useCart } from "../hooks/useCart";
 import { useProductLocation } from "../hooks/useProductLocation";
 import { useImageUpload } from "../hooks/useImageUpload";
+import Toast from "../components/Toast";
 import "../css/ProductDetail.css";
 
 const ProductDetail = () => {
-  const { nombre } = useParams(); // opcional, se mantiene por si se usa luego
+  const { nombre } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const product = useProductLocation();
@@ -18,13 +19,31 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
 
+  const [toast, setToast] = useState({
+    show: false,
+    type: "info",
+    message: "",
+  });
+
+  // Ocultar el toast automáticamente
+  useEffect(() => {
+    if (toast.show) {
+      const id = setTimeout(() => setToast({ ...toast, show: false }), 3000);
+      return () => clearTimeout(id);
+    }
+  }, [toast]);
+
   if (!product) return <p>Cargando producto...</p>;
 
   const { image, title, price } = product;
 
   const handleAddToCart = () => {
     if (!selectedSize || !selectedColor) {
-      alert("Selecciona una talla y un color antes de continuar.");
+      setToast({
+        show: true,
+        type: "warning",
+        message: "Selecciona una talla y un color antes de continuar.",
+      });
       return;
     }
 
@@ -38,17 +57,36 @@ const ProductDetail = () => {
       customImage: uploadedImage,
     });
 
-    alert("Se añadió un producto nuevo al carrito");
-    navigate("/products");
+    setToast({
+      show: true,
+      type: "success",
+      message: "¡Producto añadido al carrito!",
+    });
+
+    setTimeout(() => {
+      navigate("/products");
+    }, 2500); // Espera antes de redirigir
   };
 
   return (
     <>
       <TopBar />
       <Navbar />
+
+      {/* Alerta Toast */}
+      {toast.show && (
+        <div className="toast-wrapper">
+          <Toast type={toast.type} message={toast.message} />
+        </div>
+      )}
+
       <div className="product-detail-container">
-        <button onClick={() => navigate(-1)} className="back-button">← Regresar</button>
+        <button onClick={() => navigate(-1)} className="back-button">
+          ← Regresar
+        </button>
+
         <div className="product-detail-card">
+          {/* Lado izquierdo */}
           <div className="left-section">
             <img src={image} alt={title} className="main-image" />
             <div className="thumbnail-row">
@@ -58,10 +96,13 @@ const ProductDetail = () => {
             </div>
             <h2>{title}</h2>
             <p className="description">
-              Confeccionada en algodón suave de alta calidad, esta prenda es ideal para looks casuales, urbanos o para personalizar con tus propios diseños gracias a su superficie lisa y uniforme.
+              Confeccionada en algodón suave de alta calidad, esta prenda es
+              ideal para looks casuales, urbanos o para personalizar con tus
+              propios diseños gracias a su superficie lisa y uniforme.
             </p>
           </div>
 
+          {/* Lado derecho */}
           <div className="right-section">
             <h4>Tallas</h4>
             <div className="sizes">
@@ -101,7 +142,10 @@ const ProductDetail = () => {
                     className={`dot ${selectedColor === color.name ? "selected" : ""}`}
                     style={{
                       backgroundColor: color.code,
-                      border: selectedColor === color.name ? "3px solid #333" : "1px solid #ccc",
+                      border:
+                        selectedColor === color.name
+                          ? "3px solid #333"
+                          : "1px solid #ccc",
                       width: 24,
                       height: 24,
                       borderRadius: "50%",
@@ -117,11 +161,17 @@ const ProductDetail = () => {
 
             <div className="custom-image-upload">
               <h4>Imagen de estampado o referencia</h4>
-              <input type="file" accept="image/*" onChange={handleImageUpload} />
+              <label className="upload-box">
+                <span className="upload-label">
+                  {uploadedImage ? "Cambiar imagen" : "Seleccionar archivo"}
+                </span>
+                <input type="file" accept="image/*" onChange={handleImageUpload} />
+              </label>
+
               {uploadedImage && (
                 <div className="preview">
                   <p>Vista previa:</p>
-                  <img src={uploadedImage} alt="Referencia" style={{ width: "100px", marginTop: "10px" }} />
+                  <img src={uploadedImage} alt="Referencia" />
                 </div>
               )}
             </div>
@@ -132,6 +182,7 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
+
       <Footer />
     </>
   );

@@ -18,9 +18,9 @@ const ShoppingCart = () => {
   } = useCart();
 
   const [promoCode, setPromoCode] = useState("");
-  const navigate = useNavigate(); // ✅ para redirigir
+  const navigate = useNavigate(); 
 
-  const discountRate = 0.1; // 10% de descuento
+  const discountRate = 0.1; 
   const subtotal = getTotalPrice();
   const discount = subtotal * discountRate;
   const total = subtotal - discount;
@@ -108,7 +108,6 @@ const ShoppingCart = () => {
               ))}
             </div>
 
-            {/* NUEVO: Resumen del Pedido */}
             <div className="order-summary">
               <h3>Resumen del Pedido</h3>
 
@@ -137,7 +136,7 @@ const ShoppingCart = () => {
 
               <button
                 className="buy-now"
-                onClick={() => navigate("/checkout")} // ✅ redirige al checkout
+                onClick={() => navigate("/checkout")} 
               >
                 Comprar Ahora
               </button>

@@ -16,7 +16,6 @@ const Home = () => {
       </div>
 
       <div className="home">
-        {/* Galería de imágenes estilo collage */}
         <section className="collage-grid">
           <div className="grid-item img5">
             <img src="/H2.jpg" alt="Decoración 1" />
@@ -35,7 +34,6 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Sección de promociones */}
         <section className="promotions">
           <h2>Promociones</h2>
           <div className="promotion-cards">
@@ -51,7 +49,6 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Sección de confianza */}
         <section className="trust">
           <div className="trust-text">
             <h2>¿Por qué confiar en Ideart?</h2>
