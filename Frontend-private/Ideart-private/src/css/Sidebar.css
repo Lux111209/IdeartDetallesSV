@@ -1,4 +1,3 @@
-/* Sidebar base - diseño original */
 .sidebar {
   width: 240px;
   background-color: #9C0D38;
@@ -7,13 +6,7 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  position: fixed;
-  top: 0;
-  left: 0;
-  box-sizing: border-box;
-  transition: transform 0.3s ease, width 0.3s ease;
-  z-index: 1000;
-  overflow-y: auto;
+  justify-content: space-between;
 }
 
 .profile {
@@ -42,10 +35,9 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  flex-grow: 1;
-  overflow-y: auto;
 }
 
+/* Estilo para los links del menú */
 .menu a {
   display: block;
   color: white;
@@ -60,104 +52,24 @@
 }
 
 .menu a:hover {
-  background-color: #CF5375;
-  color: #1c2e2c;
-  border-radius: 20px;
+  background-color: #294843; /* Hover suave */
 }
 
+/* Link activo con estilo botón blanco redondeado */
 .menu a.active {
-  background-color: #ffffff;
-  color: #9C0D38;
+  background-color: white;       /* Fondo blanco */
+  color: #1c2e2c;                /* Texto oscuro */
   font-weight: 700;
-  border-radius: 20px;
+  border-radius: 20px;           /* Más redondeado */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .logout {
-  background: #9C0D38;
+  background: none;
   border: none;
-  color: white;
+  color: #cccccc;
   font-size: 15px;
   text-align: left;
   padding: 10px 12px;
   cursor: pointer;
-  border-radius: 6px;
-  width: 100%;
-  position: sticky;
-  bottom: 0;
-  margin-top: 1rem;
-  transition: background-color 0.3s ease;
-}
-
-.logout:hover {
-  background-color: #ffffff;
-  color: #9C0D38;
-}
-
-/* Sidebar oculto en móvil */
-.sidebar.closed {
-  transform: translateX(-100%);
-}
-
-/* Botón hamburguesa */
-.toggle-btn {
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  background-color: #9C0D38;
-  border: none;
-  color: white;
-  font-size: 24px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  z-index: 1100;
-  display: none;
-}
-
-/* Responsive */
-
-/* Tablets: sidebar un poco más estrecho */
-@media screen and (max-width: 991px) and (min-width: 600px) {
-  .sidebar {
-    width: 200px;
-  }
-}
-
-/* Contenido principal ajustado en tablets */
-@media screen and (max-width: 991px) and (min-width: 600px) {
-  .main-content {
-    margin-left: 200px;
-  }
-}
-
-/* Móviles */
-@media screen and (max-width: 599px) {
-  .sidebar {
-    width: 220px;
-    height: 100%;
-    transform: translateX(-100%);
-    box-shadow: 2px 0 5px rgba(0,0,0,0.3);
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .toggle-btn {
-    display: block;
-  }
-
-  /* Contenido principal ocupa todo el ancho */
-  .main-content {
-    margin-left: 0;
-  }
-}
-
-/* Contenido principal desktop */
-.main-content {
-  margin-left: 210px;
-  padding: 1rem;
-  transition: margin-left 0.3s ease;
-  position: static;
 }

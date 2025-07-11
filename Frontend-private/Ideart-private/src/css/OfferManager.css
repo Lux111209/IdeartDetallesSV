@@ -75,12 +75,7 @@ body {
 }
 
 /* Main Content */
-.main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+
 
 .content-wrapper {
   flex: 1;
@@ -1686,9 +1681,7 @@ body {
 }
 
 @media (max-width: 480px) {
-  .app-container {
-    flex-direction: column;
-  }
+  
   
   .sidebar {
     width: 100%;
