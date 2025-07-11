@@ -1,8 +1,8 @@
 import express from "express";
-cont router = express.Router();
-import personalizedProductsController  from "../controllers/PersonalizedProducts";
+const router = express.Router();
+import personalizedProductsController  from "../controllers/PersonalizedProducts.js";
 import multer from "multer";
-import router from "./carrito";
+
 
 const upload = multer({dest: "public/"});
 
@@ -10,11 +10,11 @@ const upload = multer({dest: "public/"});
 
 router.route("/")
 .get(personalizedProductsController.getAllPersonalizedProducts)
-.post(upload.array("images"), personalizedProductsController.insertPersonalizedProduct);    
+.post(upload.array("imgPersonalized"), personalizedProductsController.insertPersonalizedProduct);    
 
 router.route("/:id")
 .get(personalizedProductsController.getPersonalzizedProdcutById)
-.put(upload.array("images"), personalizedProductsController.updatePersonalizedProduct)
+.put(upload.array("imgPersonalized"), personalizedProductsController.updatePersonalizedProduct)
 .delete(personalizedProductsController.deletePersonalizedProduct);
 
 
