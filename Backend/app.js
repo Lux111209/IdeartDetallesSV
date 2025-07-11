@@ -11,7 +11,7 @@ import loginRoutes from "./src/routes/login.js";
 import logoutRoutes from "./src/routes/logout.js";
 import carritoRoutes from "./src/routes/carrito.js";
 import registerUserRoutes from "./src/routes/registerUser.js";
-import ofertasRoutes from "./src/routes/ofertas.js";
+import ofertasRoutes from "./src/routes/Ofertas.js";
 import provedoresRoutes from "./src/routes/Provedores.js";
 import resenasGeneralRoutes from "./src/routes/resenasGeneral.js";
 import resenasProductoRoutes from "./src/routes/resenasProducto.js";
