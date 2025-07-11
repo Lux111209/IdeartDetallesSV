@@ -1,12 +1,14 @@
 import React from 'react';
+import useFetchProducts from '../hooks/useFetchProducts';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import TopBar from '../components/TopBar';
-import CategoryCard from '../components/CategoryCard';
 import ProductCard from '../components/ProductCard';
 import '../css/Products.css';
 
 const Product = () => {
+  const { products, loadingProducts } = useFetchProducts();
+
   return (
     <>
       <div className="top-bar">
@@ -20,40 +22,20 @@ const Product = () => {
       <div className="product-page">
         <section className="products">
           <h3>Productos</h3>
-          <div className="product-cards">
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" price="12" />
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" price="12"/>
-            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12"/>
-            <ProductCard image="/P4.jpg" title="Termo Personalizado"price="12" />
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" price="12"/>
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC"price="12" />
-            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12"/>
-            <ProductCard image="/P4.jpg" title="Termo Personalizado" price="12" />
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" price="12"/>
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" price="12"/>
-            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12"/>
-            <ProductCard image="/P4.jpg" title="Termo Personalizado" price="12" />
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" price="12" />
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" price="12" />
-            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12" />
-            <ProductCard image="/P4.jpg" title="Termo Personalizado" price="12" />
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" price="12" />
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" price="12" />
-            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12" />
-            <ProductCard image="/P4.jpg" title="Termo Personalizado" price="12" />
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" price="12" />
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" price="12" />
-            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12" />
-            <ProductCard image="/P4.jpg" title="Termo Personalizado" price="12" />
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy" price="12" />
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" price="12" />
-            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12" />
-            <ProductCard image="/P4.jpg" title="Termo Personalizado" price="12" />
-            <ProductCard image="/P1.jpg" title="Mousepad Snoopy"price="12" />
-            <ProductCard image="/P2.jpg" title="3 Pack mousepad DC" price="12" />
-            <ProductCard image="/P3.jpg" title="Llavero para papá" price="12" />
-            <ProductCard image="/P4.jpg" title="Termo Personalizado" price="12" />
-          </div>
+          {loadingProducts ? (
+            <p className="loading-text">Cargando productos...</p>
+          ) : (
+            <div className="product-cards">
+              {products.map((product) => (
+                <ProductCard
+                  key={product._id}
+                  image={product.images?.[0] || '/default.jpg'}
+                  title={product.name}
+                  price={product.price}
+                />
+              ))}
+            </div>
+          )}
         </section>
       </div>
 
