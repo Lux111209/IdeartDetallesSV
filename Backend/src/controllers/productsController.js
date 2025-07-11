@@ -94,7 +94,7 @@ productsController.insertProduct = async (req, res) => {
 
     await newProduct.save();
 
-    res.json({ message: "Product created", product: newProduct });
+    res.status(201).json({ message: "Product created", product: newProduct });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
