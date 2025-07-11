@@ -1,4 +1,3 @@
-// src/components/ReviewCard.jsx
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Star, ThumbsUp, ThumbsDown } from 'lucide-react';
@@ -6,10 +5,10 @@ import { Star, ThumbsUp, ThumbsDown } from 'lucide-react';
 const ReviewCard = ({ avatar, name, date, rating, text, likes, dislikes }) => {
   const [likeCount, setLikeCount] = useState(likes);
   const [dislikeCount, setDislikeCount] = useState(dislikes);
-  const [selected, setSelected] = useState(null); // 'like' | 'dislike' | null
+  const [selected, setSelected] = useState(null); 
 
   const handleLike = () => {
-    if (selected === 'like') return; // ya seleccionado
+    if (selected === 'like') return;
     if (selected === 'dislike') {
       setDislikeCount(dislikeCount - 1);
     }
