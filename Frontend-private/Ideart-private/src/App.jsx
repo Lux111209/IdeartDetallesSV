@@ -7,10 +7,12 @@ import Sales from "./pages/Sales";
 import Review from "./pages/Review"; 
 
 
+
 function App() {
   
   return (
     <Router>
+ 
       <Routes>
         <Route path="/" element={<Dashboard />} /> {/* Ruta agregada */}
         <Route path="/dashboard" element={<Dashboard />} />

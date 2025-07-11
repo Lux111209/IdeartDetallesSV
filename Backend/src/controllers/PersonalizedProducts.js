@@ -1,7 +1,7 @@
 import personalizedModel from "../models/PersonalizedProducts.js";
 import {v2 as cloudinary} from "cloudinary";
 import { config } from "../../config.js";
-import productsController from "./productsController";
+import productsController from "./productsController.js";
 
 //Configuramos Cloudinary
 
@@ -101,66 +101,64 @@ personalizedProductsController.insertPersonalizedProduct = async (req, res) => {
     }
 };
 
-//Update Personalized Product 
-
-personalizedProductsController.updatePersonalizedProduct = async (req,res) => {
-    const{
+personalizedProductsController.updatePersonalizedProduct = async (req, res) => {
+    const {
         productType,
-            subType,
-            imgPersonalized,
-            textPersonalized,
-            ubicationPersonalized,
-            usageCategory,
-            color,
-            size,
-            price,
-            material
-       } = req.body;
+        subType,
+        imgPersonalized,
+        textPersonalized,
+        ubicationPersonalized,
+        usageCategory,
+        color,
+        size,
+        price,
+        material
+    } = req.body;
 
-       let imagesURL = [];
+    let imagesURL = [];
 
-       ///sUBIR NUEVA IMAGENES A CLOUDINARY 
-
-       //Subir todas las img a cloudinary
-        if (req.files && req.files.length > 0) {
-            const uploadPromises = req.files.map(file =>
-                cloudinary.uploader.upload(file.path,
-                    {
-                        folder: "personalizedProducts",
-                         allowed_formats: ["jpg", "png", "jpeg", "pdf", "tiff"],
-                    })
-            );
-              const results = await Promise.all(uploadPromises);
-              imagesUrl = results.map(results => results.secure_url);           
-        }
-
-        //Construimos el objeto actualizado 
-
-        const updateData = 
-        {
-            productType,
-            subType,
-            imgPersonalized,
-            textPersonalized,
-            ubicationPersonalized,
-            usageCategory,
-            color,
-            size,
-            price,
-            material
-        };
-
-        //Solo acutalizamos img si se envio nuevas 
-        if (imagesURL.length > 0) {
-              updateData.images = imagesURL;
-           }
-
-        const updatePersonalizedProduct = await personalizedModel.findByIdAndUpdate(
-            req.params.id,
-            updateData,
-            {new: true}
+    // Subir nuevas imágenes a Cloudinary si se enviaron
+    if (req.files && req.files.length > 0) {
+        const uploadPromises = req.files.map(file =>
+            cloudinary.uploader.upload(file.path, {
+                folder: "personalizedProducts",
+                allowed_formats: ["jpg", "png", "jpeg", "pdf", "tiff"],
+            })
         );
-        res.status(200).json({message: "Personalized product updated ", personalizedProduct: updatePersonalizedProduct});
+        const results = await Promise.all(uploadPromises);
+        imagesURL = results.map(result => result.secure_url);
+    }
+
+    // Construir objeto de actualización
+    const updateData = {
+        productType,
+        subType,
+        imgPersonalized, // Este campo se actualizará solo si no llegan nuevas imágenes
+        textPersonalized,
+        ubicationPersonalized,
+        usageCategory,
+        color,
+        size,
+        price,
+        material
+    };
+
+    // Si se subieron nuevas imágenes, las agregamos
+    if (imagesURL.length > 0) {
+        updateData.imgPersonalized = imagesURL;
+    }
+
+    // Actualizar el producto en la base de datos
+    const updatePersonalizedProduct = await personalizedModel.findByIdAndUpdate(
+        req.params.id,
+        updateData,
+        { new: true }
+    );
+
+    res.status(200).json({
+        message: "Personalized product updated",
+        personalizedProduct: updatePersonalizedProduct
+    });
 };
 
 //delete Personalized Products
