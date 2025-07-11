@@ -1,0 +1,104 @@
+/* Reset y control global para evitar scroll horizontal */
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Evita scroll horizontal */
+  box-sizing: border-box;
+  width: 100vw;
+}
+
+.dashboard {
+  display: flex;
+  height: 100vh;
+  max-width: 100vw; /* Evita que el dashboard se salga del viewport */
+  overflow-x: hidden;
+}
+
+.main {
+  flex: 1;
+  padding: 32px;
+  background-color: #f1f9ff;
+  overflow-y: auto;
+  max-width: 100vw; /* Limitar ancho máximo */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h2 {
+  font-size: 28px;
+  color: #1c2e2c;
+}
+
+.bell {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.overview {
+  display: flex;
+  gap: 16px;
+  margin-top: 32px;
+  flex-wrap: wrap; /* Permite que las tarjetas bajen de línea si no caben */
+}
+
+.card {
+  background: #dfeffd;
+  border-radius: 10px;
+  padding: 20px;
+  flex: 1;
+  text-align: center;
+  box-shadow: 0 2px 6px #00000010;
+  min-width: 150px; /* Para que no se achiquen demasiado */
+}
+
+.card p {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #333333;
+}
+
+.card strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 18px;
+  color: #000000;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.box {
+  background: white;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 6px #00000010;
+}
+
+.box h4 {
+  font-size: 16px;
+  color: #1c2e2c;
+  margin-bottom: 6px;
+}
+
+.box p {
+  font-size: 14px;
+  color: #444444;
+}
+
+.box img {
+  width: 100%;
+  margin-top: 12px;
+  border-radius: 6px;
+}
+
+.box.wide {
+  grid-column: span 2;
+}

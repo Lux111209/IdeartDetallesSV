@@ -1,18 +1,18 @@
-import productsModel from "../models/products.js";
+import productsModel from "../models/Products.js";
 import { v2 as cloudinary } from "cloudinary";
-import { config } from "../config.js";
+import { config } from "../../config.js";
 
 // Configurar Cloudinary
 
 console.log("Cloudinary Config Values:");
-console.log("cloud_name:", config.cloudinary.cloud_name);
-console.log("api_key:", config.cloudinary.api_key);
-console.log("api_secret:", config.cloudinary.api_secret);
+console.log("cloud_name:", config.CLOUDINARY.CLOUD_NAME);
+console.log("api_key:", config.CLOUDINARY.API_KEY);
+console.log("api_secret:", config.CLOUDINARY.API_SECRET);
 
 cloudinary.config({
-  cloud_name: config.cloudinary.cloud_name,
-  api_key: config.cloudinary.api_key,
-  api_secret: config.cloudinary.api_secret,
+  cloud_name: config.CLOUDINARY.CLOUD_NAME,
+  api_key: config.CLOUDINARY.API_KEY,
+  api_secret: config.CLOUDINARY.API_SECRET,
   secure: true
 });
 
