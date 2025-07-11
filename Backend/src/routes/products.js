@@ -7,7 +7,7 @@ const upload = multer({dest:"public/"})
 
 
 //Nos aseguramos que exista la carpeta de subida 
-router.route("/")
+
 router.route("/")
   .get(productsController.getAllProducts)
   .post(upload.array("images"), productsController.insertProduct);
