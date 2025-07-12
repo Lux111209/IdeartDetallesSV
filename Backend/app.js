@@ -21,15 +21,14 @@ import personalizedProducts from "./src/routes/personalizedProducts.js";
 
 // Importar middleware de validación (cuando lo tengas)
 import { validateAuthToken } from "./src/middlewares/validateAuthToken.js";
-const allowedOrigins = ["http://localhost:5174", "http://localhost:5173"]
 // Crear una instancia de Express
 const app = express();
 
 // Configuración de CORS
 app.use(
   cors({
-    origin: config.FRONTEND_URL,
-    credentials: true, // Permitir envío de cookies y credenciales
+    origin: ["http://localhost:5174", "http://localhost:5173"],
+    credentials: true
   })
 );
 
