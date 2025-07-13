@@ -1,83 +1,47 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { Star, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Star, ThumbsUp } from 'lucide-react';
 
-const ReviewCard = ({ avatar, name, date, rating, text, likes, dislikes }) => {
-  const [likeCount, setLikeCount] = useState(likes);
-  const [dislikeCount, setDislikeCount] = useState(dislikes);
-  const [selected, setSelected] = useState(null); 
+const ReviewCard = ({ resena, onUpdate }) => {
+  const [util, setUtil] = useState(resena.util || 0);
+  const [clicked, setClicked] = useState(false);
 
-  const handleLike = () => {
-    if (selected === 'like') return;
-    if (selected === 'dislike') {
-      setDislikeCount(dislikeCount - 1);
+  const handleUtil = async () => {
+    if (clicked) return;
+    try {
+      await fetch(`http://localhost:5000/api/resenasgeneral/${resena._id}/util`, {
+        method: 'PATCH',
+      });
+      setUtil(prev => prev + 1);
+      setClicked(true);
+      if (onUpdate) onUpdate();
+    } catch (err) {
+      console.error('Error marcando útil:', err);
     }
-    setLikeCount(likeCount + 1);
-    setSelected('like');
-  };
-
-  const handleDislike = () => {
-    if (selected === 'dislike') return;
-    if (selected === 'like') {
-      setLikeCount(likeCount - 1);
-    }
-    setDislikeCount(dislikeCount + 1);
-    setSelected('dislike');
   };
 
   return (
     <div className="review-card">
       <div className="review-header">
-        <img src={avatar} alt={name} className="avatar" />
-        <div>
-          <strong>{name}</strong>
-          <p className="review-date">{date}</p>
-        </div>
+        <strong>{resena.titulo}</strong>
+        <p className="review-date">{new Date(resena.fechaResena).toLocaleDateString()}</p>
       </div>
 
       <div className="review-rating">
         {[...Array(5)].map((_, i) => (
-          <Star
-            key={i}
-            size={16}
-            fill={i < rating ? '#ffc107' : 'none'}
-            color="#ffc107"
-          />
+          <Star key={i} size={16} fill={i < resena.ranking ? '#ffc107' : 'none'} color="#ffc107" />
         ))}
       </div>
 
-      <p className="review-text">{text}</p>
+      <p className="review-text">{resena.detalle}</p>
 
       <div className="review-footer">
-        <span onClick={handleLike}>
-          <ThumbsUp
-            size={16}
-            fill={selected === 'like' ? '#ffd700' : 'none'}
-            color={selected === 'like' ? '#ffd700' : 'white'}
-          />
-          {likeCount}
-        </span>
-        <span onClick={handleDislike}>
-          <ThumbsDown
-            size={16}
-            fill={selected === 'dislike' ? '#ffd700' : 'none'}
-            color={selected === 'dislike' ? '#ffd700' : 'white'}
-          />
-          {dislikeCount}
+        <span onClick={handleUtil} style={{ cursor: 'pointer' }}>
+          <ThumbsUp size={16} fill={clicked ? '#ffd700' : 'none'} color={clicked ? '#ffd700' : 'white'} />
+          {util}
         </span>
       </div>
     </div>
   );
-};
-
-ReviewCard.propTypes = {
-  avatar: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  date: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired,
-  text: PropTypes.string.isRequired,
-  likes: PropTypes.number.isRequired,
-  dislikes: PropTypes.number.isRequired,
 };
 
 export default ReviewCard;

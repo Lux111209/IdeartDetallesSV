@@ -9,7 +9,7 @@ export const config = {
     NODE_ENV: process.env.NODE_ENV || 'development',
     
     // URL del frontend para CORS
-    FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:5174",
+    FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:5173",
     
     // Configuración de la base de datos
     DB: {
