@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import StarRating from './StarRating';
-import Toast from './Toast';  // Importa tu componente Toast
+import Toast from './Toast';
 import '../css/Reviews.css';
 
 const ReviewForm = ({ onCancel, id_user, id_producto, onSuccess }) => {
@@ -9,39 +9,54 @@ const ReviewForm = ({ onCancel, id_user, id_producto, onSuccess }) => {
   const [detalle, setDetalle] = useState('');
   const [rating, setRating] = useState(0);
   const [errors, setErrors] = useState({});
-  const [toast, setToast] = useState(null); // { type: 'error'|'success', message: '' }
+  const [toast, setToast] = useState(null);
 
   const validate = () => {
     const newErrors = {};
     if (!titulo.trim()) newErrors.titulo = 'El título es obligatorio';
+    else if (titulo.trim().length < 5) newErrors.titulo = 'El título debe tener al menos 5 caracteres';
     if (!detalle.trim()) newErrors.detalle = 'El detalle es obligatorio';
+    else if (detalle.trim().length < 10) newErrors.detalle = 'El detalle debe tener al menos 10 caracteres';
     if (rating <= 0) newErrors.rating = 'Selecciona una calificación';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) {
-      setToast({ type: 'error', message: 'Por favor corrige los errores en el formulario.' });
+      setToast({ type: 'error', message: 'Corrige los errores del formulario.' });
       return;
     }
 
+    if (!isValidObjectId(id_user) || !isValidObjectId(id_producto)) {
+      setToast({ type: 'error', message: 'ID de usuario o producto no válido.' });
+      return;
+    }
+
+    const payload = {
+      titulo,
+      detalle,
+      ranking: Number(rating),
+      tiposExperiencia: ['recomendado'],
+      id_user,
+      id_producto,
+    };
+
     try {
-      await axios.post('http://localhost:5000/api/resenasgeneral', {
-        titulo,
-        detalle,
-        ranking: rating,
-        tiposExperiencia: ['recomendado'],
-        id_user,
-        id_producto,
-      });
+      const res = await axios.post('http://localhost:5000/api/resenasgeneral', payload);
       setToast({ type: 'success', message: 'Reseña enviada correctamente!' });
       onSuccess();
       onCancel();
     } catch (err) {
       console.error('Error al enviar reseña:', err);
-      setToast({ type: 'error', message: 'Error al enviar la reseña. Intenta de nuevo.' });
+      if (err.response?.data?.errors) {
+        setToast({ type: 'error', message: err.response.data.errors.join(', ') });
+      } else {
+        setToast({ type: 'error', message: 'Error al enviar la reseña. Intenta de nuevo.' });
+      }
     }
   };
 
@@ -66,7 +81,7 @@ const ReviewForm = ({ onCancel, id_user, id_producto, onSuccess }) => {
         {errors.detalle && <Toast type="warning" message={errors.detalle} />}
 
         <div>
-          <StarRating rating={rating} onChange={setRating} />
+          <StarRating rating={rating} onChange={(val) => setRating(Number(val))} />
           {errors.rating && <Toast type="warning" message={errors.rating} />}
         </div>
 

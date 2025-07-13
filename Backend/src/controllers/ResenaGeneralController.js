@@ -83,18 +83,13 @@ resenaGeneralController.createResena = async (req, res) => {
       });
     }
 
-    // Validar que tiposExperiencia sea un array si se proporciona
     let experienciasArray = tiposExperiencia || [];
-    if (experienciasArray && !Array.isArray(experienciasArray)) {
+    if (!Array.isArray(experienciasArray)) {
       experienciasArray = [experienciasArray];
     }
 
-    // Verificar si ya existe una reseña del mismo usuario para el mismo producto
-    const resenaExistente = await ResenaGeneral.findOne({
-      id_user: id_user,
-      id_producto: id_producto
-    });
-
+    // Verificar si ya existe una reseña
+    const resenaExistente = await ResenaGeneral.findOne({ id_user, id_producto });
     if (resenaExistente) {
       return res.status(400).json({
         success: false,
@@ -112,8 +107,7 @@ resenaGeneralController.createResena = async (req, res) => {
     });
 
     const resenaGuardada = await nuevaResena.save();
-    
-    // Poblar la reseña guardada para la respuesta
+
     const resenaCompleta = await ResenaGeneral.findById(resenaGuardada._id)
       .populate('id_user', 'nombre correo')
       .populate('id_producto', 'name price productType');
@@ -124,13 +118,22 @@ resenaGeneralController.createResena = async (req, res) => {
       data: resenaCompleta
     });
   } catch (error) {
+    if (error.name === 'ValidationError') {
+      const errores = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
+        message: "Error de validación",
+        errors: errores
+      });
+    }
+
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
         message: "Ya existe una reseña de este usuario para este producto"
       });
     }
-    
+
     res.status(500).json({
       success: false,
       message: "Error al crear la reseña",
@@ -138,6 +141,7 @@ resenaGeneralController.createResena = async (req, res) => {
     });
   }
 };
+
 
 // PUT - Actualizar una reseña por ID
 resenaGeneralController.updateResena = async (req, res) => {

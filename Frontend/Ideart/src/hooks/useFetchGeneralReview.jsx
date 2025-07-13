@@ -9,39 +9,42 @@ export const useFetchGeneralReview = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Obtener todas las reseñas generales
   const fetchAllResenas = async () => {
     setLoading(true);
     setError(null);
     try {
       const res = await axios.get(API_URL);
-      console.log('Respuesta del backend:', res.data);
-
-      // Verificamos que la respuesta contenga el array esperado
-      const data = res.data?.data;
-      if (Array.isArray(data)) {
-        setResenas(data);
+      // Verificar que la respuesta tenga estructura esperada
+      if (res.data && Array.isArray(res.data.data)) {
+        setResenas(res.data.data);
       } else {
-        setError('Respuesta inesperada del servidor');
-        setResenas([]);
+        throw new Error('Respuesta inesperada del servidor');
       }
     } catch (err) {
-      console.error('Error al obtener reseñas:', err);
-      setError(err.response?.data?.message || 'Error al obtener reseñas');
+      // Manejo mejorado del error
+      if (err.response) {
+        setError(err.response.data.message || 'Error del servidor');
+      } else if (err.request) {
+        setError('No se pudo conectar con el servidor');
+      } else {
+        setError(err.message);
+      }
       setResenas([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Otros métodos pueden seguir igual...
+  // Ejemplo: cargar las reseñas al montar el componente
+  useEffect(() => {
+    fetchAllResenas();
+  }, []);
 
   return {
     resenas,
     resena,
     loading,
     error,
-    fetchAllResenas
-    // Puedes agregar aquí otros métodos como fetchResenaById, etc.
+    fetchAllResenas,
   };
 };
