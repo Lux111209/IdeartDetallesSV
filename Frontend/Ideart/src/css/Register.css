@@ -1,0 +1,130 @@
+/* Puedes importar una fuente como 'Poppins' para un look más moderno */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Contenedor principal - USA LA IMAGEN DE FONDO */
+.registro-container {
+  width: 100%;
+  height: 100vh;
+  /* Estas propiedades vienen de tu imagen de fondo */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  /* Se restaura la alineación original para que funcione con tu fondo */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; 
+  padding-right: 80px; 
+  box-sizing: border-box;
+}
+
+/* Contenedor del formulario */
+.form-wrapper {
+  width: 100%;
+  max-width: 380px;
+  background-color: transparent;
+  position: relative;
+  z-index: 1;
+}
+
+/* Título "Registrarse" */
+.form-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 40px;
+  color: #1a202c; 
+  text-align: left;
+}
+
+/* Contenedor de los campos del formulario */
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 22px; 
+}
+
+/* Estilo general para todos los inputs */
+.form-fields input {
+  width: 100%;
+  /* CAMBIO: Se aumentó el padding izquierdo de 25px a 35px para más espacio */
+  padding: 18px 25px 18px 35px; 
+  border-radius: 100px;
+  border: none;
+  font-size: 15px;
+  background-color: #ffffff;
+  color: #2d3748;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
+  box-sizing: border-box;
+  outline: none; 
+  transition: box-shadow 0.2s ease;
+}
+
+.form-fields input:focus {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo del texto del placeholder */
+.form-fields input::placeholder {
+  color: #718096;
+  font-size: 15px;
+  /* CAMBIO: Se añadió la negrita al placeholder */
+  font-weight: bold;
+}
+
+/* Contenedor del campo de fecha para posicionar el ícono */
+.date-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.date-input-wrapper .calendar-icon {
+  position: absolute;
+  right: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #718096;
+  pointer-events: none;
+}
+
+/* Oculta el ícono de calendario por defecto del navegador */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background: transparent;
+  bottom: 0;
+  color: transparent;
+  cursor: pointer;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+}
+
+/* Botón "Iniciar" */
+.form-fields button {
+  padding: 18px;
+  border-radius: 100px; 
+  background-color: #be5a7f;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  margin-top: 10px; 
+  box-shadow: 0 4px 14px rgba(190, 90, 127, 0.3);
+}
+
+.form-fields button:hover {
+  background-color: #a94f71; 
+}
+
+.form-fields button:active {
+  transform: scale(0.98); 
+}
