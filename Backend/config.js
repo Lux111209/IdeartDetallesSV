@@ -6,7 +6,7 @@ export const config = {
     PORT: process.env.PORT || 5000,
     
     // Entorno de desarrollo
-    NODE_ENV: process.env.NODE_ENV || 'development',
+    NODE_ENV: process.env.NODE_ENV ,
     
     // URL del frontend para CORS
     FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:5173",
@@ -18,8 +18,8 @@ export const config = {
     
     // Configuración JWT
     JWT: {
-        SECRET: process.env.JWT_SECRET || "default_secret_key",
-        EXPIRES: process.env.JWT_EXPIRES || "30d",
+        SECRET: process.env.JWT_SECRET ,
+        EXPIRES: process.env.JWT_EXPIRES,
     },
     
     // Configuración de email

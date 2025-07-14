@@ -1,4 +1,3 @@
-/* Puedes importar una fuente como 'Poppins' para un look más moderno */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
 
 body {
@@ -8,76 +7,124 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Contenedor principal - USA LA IMAGEN DE FONDO */
+/* Contenedor principal con fondo */
 .registro-container {
-  width: 100%;
+  width: 100vw;
   height: 100vh;
-  /* Estas propiedades vienen de tu imagen de fondo */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  /* Se restaura la alineación original para que funcione con tu fondo */
   display: flex;
   align-items: center;
-  justify-content: flex-end; 
-  padding-right: 80px; 
+  justify-content: center;
   box-sizing: border-box;
+  padding: 0;
 }
 
-/* Contenedor del formulario */
+/* Wrapper para el formulario y la sección izquierda */
 .form-wrapper {
-  width: 100%;
-  max-width: 380px;
+  display: flex;
+  flex-direction: row;
+  width: 1400px; /* Más ancho para mayor separación */
+  max-width: 98vw;
   background-color: transparent;
   position: relative;
   z-index: 1;
+  box-sizing: border-box;
+  min-height: 700px;
+  border-radius: 30px;
+  overflow: hidden;
+  column-gap: 250px; /* Mucho más espacio entre imágenes y formulario */
+  justify-content: flex-end;
 }
 
-/* Título "Registrarse" */
+/* Sección izquierda con logo e imagen */
+.left-section {
+  flex: 1;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 10px 100px 100px;
+  min-width: 500px;
+}
+
+.logo-img {
+  width: 700px;
+  max-width: 100%;
+  margin-bottom: 80px;
+}
+
+.relleno-img {
+  width: 800px;
+  max-width: 100%;
+  margin-top: 60px;
+}
+
+/* Sección derecha con el formulario */
+.right-section {
+  flex: 1;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Mueve el formulario y el título a la derecha */
+  justify-content: center;
+  padding: 100px 40px 100px 60px;
+  min-width: 400px;
+  border-radius: 0 30px 30px 0;
+  box-sizing: border-box;
+}
+
+/* Título "Registrarse" alineado a la izquierda del formulario y más grande */
 .form-title {
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 40px;
-  color: #1a202c; 
+  font-size: 48px;
+  font-weight: 800;
+  color: #1a202c;
   text-align: left;
+  margin-bottom: 10px;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
+  max-width: 400px; /* Igual que el formulario */
 }
 
-/* Contenedor de los campos del formulario */
 .form-fields {
   display: flex;
   flex-direction: column;
-  gap: 22px; 
+  gap: 40px;
+  width: 100%;
+  max-width: 400px;
+  margin-left: 0;
+  margin-top: 0;
 }
-
-/* Estilo general para todos los inputs */
+/* Inputs */
 .form-fields input {
   width: 100%;
-  /* CAMBIO: Se aumentó el padding izquierdo de 25px a 35px para más espacio */
-  padding: 18px 25px 18px 35px; 
+  padding: 22px 30px 22px 40px;
   border-radius: 100px;
   border: none;
-  font-size: 15px;
+  font-size: 17px;
   background-color: #ffffff;
   color: #2d3748;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
-  outline: none; 
+  outline: none;
   transition: box-shadow 0.2s ease;
 }
 
 .form-fields input:focus {
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
 }
 
-/* Estilo del texto del placeholder */
+/* Placeholder */
 .form-fields input::placeholder {
   color: #718096;
-  font-size: 15px;
-  /* CAMBIO: Se añadió la negrita al placeholder */
+  font-size: 17px;
   font-weight: bold;
 }
 
-/* Contenedor del campo de fecha para posicionar el ícono */
+/* Campo fecha con ícono */
 .date-input-wrapper {
   position: relative;
   width: 100%;
@@ -85,7 +132,7 @@ body {
 
 .date-input-wrapper .calendar-icon {
   position: absolute;
-  right: 25px;
+  right: 30px;
   top: 50%;
   transform: translateY(-50%);
   color: #718096;
@@ -108,23 +155,175 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* Botón "Iniciar" */
 .form-fields button {
-  padding: 18px;
-  border-radius: 100px; 
+  padding: 22px;
+  border-radius: 100px;
   background-color: #be5a7f;
   color: white;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 500;
   border: none;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.1s ease;
-  margin-top: 10px; 
+  margin-top: 20px;
   box-shadow: 0 4px 14px rgba(190, 90, 127, 0.3);
 }
 
 .form-fields button:hover {
-  background-color: #a94f71; 
+  background-color: #a94f71;
 }
 
 .form-fields button:active {
-  transform: scale(0.98); 
+  transform: scale(0.98);
+}
+
+/* Estilos para los mensajes de feedback y subtítulos */
+.form-subtitle {
+  color: #666; /* Un color gris para el texto de instrucción */
+  text-align: left;
+  margin-bottom: 20px; /* Espacio antes del campo de código */
+  font-size: 1rem;
+  padding: 0;
+  width: 100%;
+  max-width: 400px;
+}
+
+.error-message {
+  color: #D32F2F; /* Rojo para errores */
+  background-color: #FFCDD2; /* Fondo rojo claro */
+  border: 1px solid #D32F2F;
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-top: 15px;
+  width: 100%;
+  text-align: center;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.success-message {
+  color: #388E3C; /* Verde para éxito */
+  background-color: #C8E6C9; /* Fondo verde claro */
+  border: 1px solid #388E3C;
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-top: 15px;
+  width: 100%;
+  text-align: center;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+
+/* Responsive Design */
+@media (max-width: 1600px) {
+  .form-wrapper {
+    width: 98vw;
+    column-gap: 120px;
+  }
+  .logo-img {
+    width: 400px;
+  }
+  .relleno-img {
+    width: 500px;
+  }
+  .left-section {
+    padding: 40px 10px 40px 40px;
+    min-width: 220px;
+  }
+  .right-section {
+    padding: 40px 40px 40px 20px;
+    min-width: 220px;
+  }
+}
+
+@media (max-width: 900px) {
+  .form-wrapper {
+    flex-direction: column;
+    width: 98vw;
+    min-height: 0;
+    border-radius: 30px;
+    padding: 0;
+    column-gap: 0;
+    justify-content: center;
+  }
+  .left-section, .right-section {
+    min-width: 0;
+    width: 100%;
+    border-radius: 30px 30px 0 0;
+    padding: 20px 5px;
+    align-items: center;
+  }
+  .right-section {
+    border-radius: 0 0 30px 30px;
+    padding: 20px 5px;
+    align-items: center;
+  }
+  .logo-img {
+    width: 200px;
+    margin-bottom: 18px;
+  }
+  .relleno-img {
+    width: 220px;
+    margin-top: 8px;
+  }
+  .form-title {
+    font-size: 24px;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+  .form-subtitle {
+    text-align: center;
+  }
+  .form-fields {
+    gap: 18px;
+    max-width: 90%;
+  }
+  .form-fields input {
+    padding: 12px 18px 12px 25px;
+    font-size: 15px;
+  }
+  .form-fields button {
+    padding: 12px;
+    font-size: 15px;
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .form-wrapper {
+    width: 100vw;
+    min-height: 0;
+    border-radius: 0;
+    padding: 0;
+  }
+  .left-section, .right-section {
+    padding: 10px 2px;
+    border-radius: 0;
+    align-items: center;
+  }
+  .logo-img {
+    width: 120px;
+    margin-bottom: 10px;
+  }
+  .relleno-img {
+    width: 120px;
+    margin-top: 5px;
+  }
+  .form-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  .form-fields {
+    max-width: 95%;
+    gap: 10px;
+  }
+  .form-fields input {
+    padding: 10px 12px 10px 18px;
+    font-size: 13px;
+  }
+  .form-fields button {
+    padding: 10px;
+    font-size: 14px;
+    margin-top: 6px;
+  }
 }

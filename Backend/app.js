@@ -21,17 +21,29 @@ import personalizedProducts from "./src/routes/personalizedProducts.js";
 
 // Importar middleware de validación (cuando lo tengas)
 import { validateAuthToken } from "./src/middlewares/validateAuthToken.js";
+// CORS - permite que el frontend (en otro puerto) pueda hacer peticiones al backend con cookies
 const allowedOrigins = ["http://localhost:5174", "http://localhost:5173"]
 // Crear una instancia de Express
 const app = express();
 
 // Configuración de CORS
+
+
+
 app.use(
   cors({
-    origin: config.FRONTEND_URL,
-    credentials: true, // Permitir envío de cookies y credenciales
+    origin: function (origin, callback) {
+      // Permitir peticiones desde orígenes permitidos o sin origen (como Postman)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("No permitido por CORS"));
+      }
+    },
+    credentials: true, 
   })
 );
+
 
 
 // Middleware para analizar JSON y cookies
