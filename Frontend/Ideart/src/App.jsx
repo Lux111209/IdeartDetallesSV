@@ -1,5 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "./css/AuthForm.css";
+import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -12,22 +11,24 @@ import ProductDetail from "./pages/ProductDetail";
 import ShoppingCart from "./pages/ShoppingCart";
 import CheckoutInfo from "./pages/Checkout";
 import CreditForm from "./pages/CreditForm";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/products" element={<Product />} />
         <Route path="/products/:nombre" element={<ProductDetail />} />
         <Route path="/shoppingcart" element={<ShoppingCart />} />
         <Route path="/category" element={<Category />} />
         <Route path="/contactus" element={<ContactUs />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/terminos" element={<TermsAndConditions />} />
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/checkout" element={<CheckoutInfo />} />
         <Route path="/creditform" element={<CreditForm />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
   );
 }

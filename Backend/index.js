@@ -11,6 +11,7 @@ async function main() {
     app.listen(port, () => {
       console.log(`🚀 Servidor activo en puerto ${port}`);
       console.log(`🌐 URL: http://localhost:${port}`);
+      console.log(`Servidor corriendo en http://localhost:${port}`);
       console.log(`❤️ IdeArts check: http://localhost:${port}/idearts`);
       console.log(`📊 Entorno: ${config.NODE_ENV}`);
       console.log(`🔗 Frontend URL configurado: ${config.FRONTEND_URL}`);
