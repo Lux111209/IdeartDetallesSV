@@ -20,7 +20,7 @@ import userRoutes from "./src/routes/User.js";
 import ventasRoutes from "./src/routes/venta.js";
 import personalizedProducts from "./src/routes/personalizedProducts.js";
 
-<<<<<<< HEAD
+
 // Crear instancia de Express
 const app = express();
 
@@ -31,7 +31,7 @@ app.use(cors({
 }));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-=======
+
 // Importar middleware de validación (cuando lo tengas)
 import { validateAuthToken } from "./src/middlewares/validateAuthToken.js";
 // Crear una instancia de Express
@@ -48,7 +48,7 @@ app.use(
 // Middleware para analizar JSON y cookies
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
->>>>>>> 03e4952f1a61391812fa175330ff415d4bbfc0a2
+
 app.use(cookieParser());
 
 // Servir archivos estáticos (por ejemplo, imágenes subidas)
