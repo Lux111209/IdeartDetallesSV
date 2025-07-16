@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "../css/AddProductModal.css"; 
 import ModelViewer from "./TshirtModel";
 import "../css/AddProductModal.css";
 
@@ -49,6 +50,7 @@ const AddProductModal = ({ onClose, onAdd }) => {
     e.preventDefault();
     if (!validate()) return;
 
+    // Crear nuevo producto simulado
     const newProduct = {
       _id: Date.now().toString(),
       name: formData.name.trim(),
@@ -114,7 +116,7 @@ const AddProductModal = ({ onClose, onAdd }) => {
         />
         {errors.size && <p className="error">{errors.size}</p>}
 
-        <label>
+        <label style={{ marginBottom: "10px", fontWeight: "600" }}>
           Seleccionar imagen:
           <input type="file" accept="image/*" onChange={handleImageChange} />
         </label>
@@ -140,6 +142,7 @@ const AddProductModal = ({ onClose, onAdd }) => {
       </form>
     </div>
   );
+
 };
 
 export default AddProductModal;

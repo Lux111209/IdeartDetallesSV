@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
-import ModelViewer from "./TshirtModel";
-import "../css/AddProductModal.css"; // puedes usar el mismo CSS para estilo
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "../css/AddProductModal.css";
+
+const COLORS = [
+  "#fff", "#000", "#ff0", "#f00", "#0f0", "#00f", "#f0f", "#ff69b4", "#800080", "#999"
+];
 
 const ProductModal = ({ product, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -9,6 +14,7 @@ const ProductModal = ({ product, onClose, onSave }) => {
     stock: "",
     productType: "",
     size: "",
+    color: "",
     imageFile: null,
     imagePreview: null,
   });
@@ -23,6 +29,7 @@ const ProductModal = ({ product, onClose, onSave }) => {
         stock: product.stock || "",
         productType: product.productType || "",
         size: product.size || "",
+        color: product.color || "",
         imageFile: null,
         imagePreview: product.images?.[0] || null,
       });
@@ -32,14 +39,14 @@ const ProductModal = ({ product, onClose, onSave }) => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Nombre es requerido";
+    if (!formData.name.trim()) newErrors.name = "El nombre es obligatorio 🫢";
     if (!formData.price || isNaN(formData.price) || Number(formData.price) <= 0)
-      newErrors.price = "Precio debe ser un número positivo";
+      newErrors.price = "Precio inválido, no te pases 😒";
     if (!formData.stock || isNaN(formData.stock) || Number(formData.stock) < 0)
-      newErrors.stock = "Stock debe ser cero o más";
-    if (!formData.productType.trim()) newErrors.productType = "Tipo es requerido";
-    if (!formData.size.trim()) newErrors.size = "Tamaño es requerido";
-
+      newErrors.stock = "Stock no puede ser negativo 🤨";
+    if (!formData.productType.trim()) newErrors.productType = "Falta el tipo 😤";
+    if (!formData.size.trim()) newErrors.size = "¿Y la talla? 🤔";
+    if (!formData.color) newErrors.color = "Seleccioná un color, porfa 🎨";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -60,9 +67,16 @@ const ProductModal = ({ product, onClose, onSave }) => {
     }
   };
 
+  const handleColorSelect = (color) => {
+    setFormData((prev) => ({ ...prev, color }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate()) {
+      toast.error("Porfa completá bien todo antes de guardar 🙏");
+      return;
+    }
 
     const updatedProduct = {
       ...product,
@@ -71,10 +85,12 @@ const ProductModal = ({ product, onClose, onSave }) => {
       stock: Number(formData.stock),
       productType: formData.productType.trim(),
       size: formData.size.trim(),
+      color: formData.color,
       images: [formData.imagePreview || "/images/placeholder.png"],
     };
 
     onSave(updatedProduct);
+    toast.success("Producto actualizado con éxito ✨");
   };
 
   return (
@@ -139,21 +155,31 @@ const ProductModal = ({ product, onClose, onSave }) => {
           </div>
         )}
 
-        {/* Mostrar modelo 3D solo si es camisa */}
-        {formData.productType.toLowerCase().includes("camisa") && (
-          <div className="model-preview-container">
-            <h4>Vista previa 3D</h4>
-            <ModelViewer url="/models/tshirt.glb" />
+        <div className="color-section">
+          <label>Color</label>
+          <div className="color-options" style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            {COLORS.map((c) => (
+              <div
+                key={c}
+                onClick={() => handleColorSelect(c)}
+                className="color-circle"
+                style={{
+                  backgroundColor: c,
+                  width: "25px",
+                  height: "25px",
+                  borderRadius: "50%",
+                  cursor: "pointer",
+                  border: formData.color === c ? "3px solid #000" : "1px solid #333",
+                }}
+              />
+            ))}
           </div>
-        )}
+        </div>
+        {errors.color && <p className="error">{errors.color}</p>}
 
         <div className="modal-buttons">
-          <button type="submit" className="save">
-            Guardar Cambios
-          </button>
-          <button type="button" className="cancel" onClick={onClose}>
-            Cancelar
-          </button>
+          <button type="submit" className="save">Guardar Cambios</button>
+          <button type="button" className="cancel" onClick={onClose}>Cancelar</button>
         </div>
       </form>
     </div>

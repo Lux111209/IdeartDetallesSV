@@ -41,6 +41,7 @@ export default function Providers() {
     genero: "",
     telefono: ""
   });
+  
   const [errores, setErrores] = useState({});
 
   const panelDerechoRef = useRef(null);
