@@ -20,7 +20,6 @@ const RecoverForm = ({
     </p>
     <input
       type="email"
-      placeholder="Correo electrónico"
       className="email-input"
       value={email}
       onChange={(e) => setEmail(e.target.value)}

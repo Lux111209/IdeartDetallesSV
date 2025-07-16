@@ -1,3 +1,12 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 .recover-form {
   padding: 1rem;
   padding-inline: 3rem;
@@ -8,10 +17,11 @@
 
 .title {
   font-size: 2rem;
-  color: #14532d;
+  color: #A93A60;
   font-weight: bold;
   margin-bottom: 1rem;
-  text-align: center;
+  text-align: left;
+  align-items: start;
 }
 
 .subtitle {
@@ -32,12 +42,15 @@
 
 .email-input {
   padding: 0.75rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
+  border: none; /* o usa 1px solid #F4DDE6 si quieres un borde tenue */
+  border-radius: 0.5rem;
   width: 100%;
-  background: #f3f4f6;
+  max-width: 500px; /* ajusta según el diseño */
+  background: rgba(169, 58, 96, 0.1); /* tono más claro y suave */
   margin-bottom: 1rem;
+  height: 3rem; /* para igualar altura */
 }
+
 
 .message {
   min-height: 1.5rem;
@@ -54,14 +67,17 @@
 }
 
 .success {
-  color: #16a34a;
+  color: #ffffff;
 }
 
 .buttons {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 1.5rem;
   margin-bottom: 2rem;
+  flex-wrap: wrap;
 }
 
 .dots {
@@ -74,10 +90,85 @@
 .dot {
   width: 1rem;
   height: 0.375rem;
-  background: #bbf7d0;
+  background: #f7bbbb;
   border-radius: 9999px;
 }
 
 .dot.active {
-  background: #14532d;
+  background: #A93A60;
+}
+
+.boton-recu {
+  background-color: #A93A60;
+  color: white;
+  font-weight: bold;
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  min-width: 180px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.boton-recu:hover {
+  background-color: #922E53;
+}
+
+/* Botón de texto (Volver al inicio) */
+.boton-recu-w {
+  background: transparent;
+  color: #922E53;
+  font-weight: bold;
+  font-size: 0.875rem;
+  border: none;
+  padding: 0;
+  min-width: 160px;
+  text-align: center;
+  cursor: pointer;
+  transition: text-decoration 0.3s ease;
+}
+
+.boton-recu-w:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+  .recover-form {
+    padding: 1rem 1.5rem;
+    align-items: center;
+    text-align: center;
+  }
+
+  .title {
+    text-align: center;
+    font-size: 1.75rem;
+  }
+
+  .subtitle,
+  .instructions {
+    text-align: center;
+    font-size: 1rem;
+  }
+
+  .email-input {
+    max-width: 100%;
+    height: 2.75rem;
+  }
+
+  .buttons {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .boton-recu,
+  .boton-recu-w {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .dots {
+    margin-top: 1.5rem;
+  }
 }
