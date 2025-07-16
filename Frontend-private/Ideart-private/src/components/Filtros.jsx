@@ -1,5 +1,6 @@
 import React from "react";
 
+
 const Filtros = ({ category, setCategory, minPrice, setMinPrice, maxPrice, setMaxPrice, color, setColor }) => {
   return (
     <div className="filters-panel">
