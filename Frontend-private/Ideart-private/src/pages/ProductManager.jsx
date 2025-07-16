@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import ProductCard from "../components/ProductCard.jsx";
-import ProductModal from "../components/ProductModal.jsx";
+import ProductModal from "../components/ProductModal.jsx"; // modal sin 3D
 import AddProductModal from "../components/AddProductModal.jsx";
 import "../css/ProductManager.css";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProductManager = () => {
   const [products, setProducts] = useState([]);
@@ -20,6 +22,7 @@ const ProductManager = () => {
         stock: 20,
         productType: "Ropa",
         size: "M",
+        color: "#fff",
         images: ["/charli.jpg"],
       },
       {
@@ -29,6 +32,7 @@ const ProductManager = () => {
         stock: 10,
         productType: "Camisas",
         size: "42",
+        color: "#000",
         images: ["/maxi.jpg"],
       },
       {
@@ -38,6 +42,7 @@ const ProductManager = () => {
         stock: 5,
         productType: "Accesorios",
         size: "Único",
+        color: "#00f",
         images: ["/gorra.jpg"],
       },
     ];
@@ -57,16 +62,19 @@ const ProductManager = () => {
       prev.map((p) => (p._id === updatedProduct._id ? updatedProduct : p))
     );
     handleCloseModal();
+    toast.success("Producto actualizado exitosamente!");
   };
 
   const handleDelete = (id) => {
     setProducts((prev) => prev.filter((p) => p._id !== id));
     handleCloseModal();
+    toast.info("Producto eliminado");
   };
 
   const handleAdd = (newProduct) => {
     setProducts((prev) => [...prev, newProduct]);
     setShowAddModal(false);
+    toast.success("Producto agregado con éxito!");
   };
 
   const filteredProducts = products.filter((p) =>
@@ -74,7 +82,10 @@ const ProductManager = () => {
   );
 
   return (
-    <div className="product-manager-layout" style={{ display: "flex", minHeight: "100vh" }}>
+    <div
+      className="product-manager-layout"
+      style={{ display: "flex", minHeight: "100vh" }}
+    >
       <Sidebar />
 
       <div className="product-manager-content" style={{ flex: 1, padding: "20px" }}>
@@ -103,16 +114,19 @@ const ProductManager = () => {
             gap: "15px",
           }}
         >
-          {filteredProducts.map((product) => (
-            <div
-              key={product._id}
-              onClick={() => handleCardClick(product)}
-              style={{ cursor: "pointer" }}
-            >
-              <ProductCard product={product} />
-            </div>
-          ))}
-          {filteredProducts.length === 0 && <p>No se encontraron productos.</p>}
+          {filteredProducts.length ? (
+            filteredProducts.map((product) => (
+              <div
+                key={product._id}
+                onClick={() => handleCardClick(product)}
+                style={{ cursor: "pointer" }}
+              >
+                <ProductCard product={product} />
+              </div>
+            ))
+          ) : (
+            <p>No se encontraron productos.</p>
+          )}
         </div>
       </div>
 
@@ -121,10 +135,16 @@ const ProductManager = () => {
           product={selectedProduct}
           onClose={handleCloseModal}
           onSave={handleSave}
+          onDelete={handleDelete}
         />
       )}
 
-      {showAddModal && <AddProductModal onClose={() => setShowAddModal(false)} onAdd={handleAdd} />}
+      {showAddModal && (
+        <AddProductModal
+          onClose={() => setShowAddModal(false)}
+          onAdd={handleAdd}
+        />
+      )}
     </div>
   );
 };

@@ -47,7 +47,6 @@ const Sidebar = ({ children }) => {
             { to: "/Providers", label: "Proveedores" },
             { to: "/Offers", label: "Ofertas" },
             { to: "/Review", label: "Reseñas" },
-            { to: "/sales", label: "Ventas" },
             { to: "/Personalizaciones", label: "Personalizaciones" },
             { to: "/Pedidos", label: "Pedidos" },
           ].map(({ to, label }) => (
