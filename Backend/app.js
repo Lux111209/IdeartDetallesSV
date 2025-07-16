@@ -41,7 +41,7 @@ app.use(cookieParser());
 app.use('/uploads', express.static('uploads'));
 
 // ===== RUTAS PÚBLICAS (sin autenticación requerida) =====
-app.use("/api/login", loginRoutes);
+app.use("/api/login", loginRoutes); 
 app.use("/api/logout", logoutRoutes);
 app.use("/api/registerUser", registerUserRoutes);
 
@@ -60,8 +60,8 @@ app.use("/api/proveedores", provedoresRoutes);
 app.use("/api/resenasgeneral", resenasGeneralRoutes);
 app.use("/api/resenasproducto", resenasProductoRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/ventas",ventasRoutes);
-app.use("/api/productPersonalized",personalizedProducts);
+app.use("/api/ventas", ventasRoutes);
+app.use("/api/productPersonalized", personalizedProducts);
 
 // Ruta para verificar autenticación (útil para el frontend)
 app.get("/api/auth/verify", (req, res) => {
@@ -102,7 +102,11 @@ app.get("/health", (req, res) => {
   });
 });
 
+// Levantar el servidor
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+});
 
-
-// Exportar la instancia de la aplicación para poder usar Express en otros archivos
+// Exportar la instancia de la aplicación para poder usar Express en otros archivos (opcional)
 export default app;
