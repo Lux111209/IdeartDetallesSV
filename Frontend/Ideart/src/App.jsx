@@ -12,6 +12,8 @@ import ProductDetail from "./pages/ProductDetail";
 import ShoppingCart from "./pages/ShoppingCart";
 import CheckoutInfo from "./pages/Checkout";
 import CreditForm from "./pages/CreditForm";
+import RecuPassword from "./pages/RecoverPassword";
+
 
 function App() {
   return (
@@ -28,8 +30,8 @@ function App() {
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/checkout" element={<CheckoutInfo />} />
         <Route path="/creditform" element={<CreditForm />} />
+          <Route path="/recupassword" element={< RecuPassword/>} />
       </Routes>
   );
 }
-
 export default App;
