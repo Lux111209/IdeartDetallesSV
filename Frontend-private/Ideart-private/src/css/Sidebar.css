@@ -52,13 +52,14 @@
 }
 
 .menu a:hover {
-  background-color: #294843; /* Hover suave */
+  background-color: #CF5375; /* Hover suave */
+  color: #9C0D38;
 }
 
 /* Link activo con estilo botón blanco redondeado */
 .menu a.active {
   background-color: white;       /* Fondo blanco */
-  color: #1c2e2c;                /* Texto oscuro */
+  color: #CF5375;                /* Texto oscuro */
   font-weight: 700;
   border-radius: 20px;           /* Más redondeado */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);

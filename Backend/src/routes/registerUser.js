@@ -12,4 +12,7 @@ router.post("/register", registerUserController.register);
 // Ruta para verificar código enviado al email
 router.post("/verify", registerUserController.verifyCodeEmail);
 
+router.route("/verifyCodeEmail").post(registerUserController.verifyCodeEmail);
+
+
 export default router;

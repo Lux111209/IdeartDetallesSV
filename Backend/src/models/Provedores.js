@@ -1,33 +1,21 @@
-/*
-Proveedores:
-nombre(string)
-productosBrindados(array de strings)
-numero (number)
-correo (string)
-imgProvedor (string)
-direccion (string)
-activo (boolean)
-*/ 
-
 import mongoose, { model } from 'mongoose';
 
 const provedoresSchema = new mongoose.Schema({
     nombre: {
         type: String,
-        required: [true, "El nombre del proveedor es obligatorio"],
+        required: true,
         trim: true,
-        minlength: [2, "El nombre debe tener al menos 2 caracteres"],
-        maxlength: [100, "El nombre no puede exceder 100 caracteres"]
+        minlength: 2,
+        maxlength: 100
     },
     productosBrindados: [{
         type: String,
         required: true,
-        trim: true,
-        minlength: [2, "El nombre del producto debe tener al menos 2 caracteres"]
+        trim: true
     }],
     numero: {
         type: String,
-        required: [true, "El número de teléfono es obligatorio"],
+        required: true,
         trim: true,
         validate: {
             validator: function(v) {
@@ -38,7 +26,7 @@ const provedoresSchema = new mongoose.Schema({
     },
     correo: {
         type: String,
-        required: [true, "El correo electrónico es obligatorio"],
+        required: true,
         trim: true,
         lowercase: true,
         validate: {
@@ -50,14 +38,12 @@ const provedoresSchema = new mongoose.Schema({
     },
     imgProvedor: {
         type: String,
-        required: false,
-        trim: true,
+        trim: true
     },
     direccion: {
         type: String,
-        required: false,
         trim: true,
-        maxlength: [200, "La dirección no puede exceder 200 caracteres"]
+        maxlength: 200
     },
     activo: {
         type: Boolean,
@@ -69,17 +55,5 @@ const provedoresSchema = new mongoose.Schema({
 
 // Índice único para el correo
 provedoresSchema.index({ correo: 1 }, { unique: true });
-
-// Método para agregar un producto
-provedoresSchema.methods.agregarProducto = function(producto) {
-    if (!this.productosBrindados.includes(producto)) {
-        this.productosBrindados.push(producto);
-    }
-};
-
-// Método para remover un producto
-provedoresSchema.methods.removerProducto = function(producto) {
-    this.productosBrindados = this.productosBrindados.filter(p => p !== producto);
-};
 
 export default model('Provedores', provedoresSchema);
