@@ -1,33 +1,67 @@
-// Array de métodos (CRUD)
-const userController = {};
 import User from "../models/User.js";
 
-// SELECT - Obtener todos los usuarios
+// Objeto que agrupa los métodos del controlador
+const userController = {};
+
+// Obtener todos los usuarios
 userController.getUsers = async (req, res) => {
-  const users = await User.find();
-  res.json(users);
-};
-
-
-
-// DELETE - Eliminar un usuario por ID
-userController.deleteUser = async (req, res) => {
-  const deletedUser = await User.findByIdAndDelete(req.params.id);
-  if (!deletedUser) {
-    return res.status(404).json({ message: "Usuario no encontrado" });
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (err) {
+    console.error("Error al obtener usuarios:", err);
+    res.status(500).json({ message: "Error del servidor" });
   }
-  res.json({ message: "Usuario eliminado" });
 };
 
-// UPDATE - Actualizar un usuario por ID
+// Obtener un usuario por ID
+userController.getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    res.json({ user }); // Retorna el usuario dentro de un objeto
+  } catch (err) {
+    console.error("Error al buscar usuario:", err);
+    res.status(500).json({ message: "Error del servidor" });
+  }
+};
+
+// Actualizar un usuario por ID
 userController.updateUser = async (req, res) => {
-  const { correo,  nombre, fechaNacimiento, favoritos } = req.body;
-  await User.findByIdAndUpdate(
-    req.params.id,
-    { correo, nombre, fechaNacimiento, favoritos },
-    { new: true }
-  );
-  res.json({ message: "Usuario actualizado" });
+  const { correo, nombre, fechaNacimiento, favoritos } = req.body;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      { correo, nombre, fechaNacimiento, favoritos },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    res.json({ user: updatedUser }); // Devuelve el usuario actualizado
+  } catch (err) {
+    console.error("Error al actualizar usuario:", err);
+    res.status(500).json({ message: "Error del servidor" });
+  }
+};
+
+// Eliminar un usuario por ID
+userController.deleteUser = async (req, res) => {
+  try {
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    if (!deletedUser) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    res.json({ message: "Usuario eliminado" });
+  } catch (err) {
+    console.error("Error al eliminar usuario:", err);
+    res.status(500).json({ message: "Error del servidor" });
+  }
 };
 
 export default userController;

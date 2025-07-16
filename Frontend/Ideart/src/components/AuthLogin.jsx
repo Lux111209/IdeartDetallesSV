@@ -15,7 +15,7 @@ const AuthLogin = () => {
     const success = await login(email, password);
     if (success) {
       alert("Login exitoso!");
-      navigate("/home");  // Redirigir al /home después del login
+      navigate("/home"); 
     }
   };
 

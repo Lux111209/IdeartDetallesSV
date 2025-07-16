@@ -1,12 +1,13 @@
-// useFetchLogin.js
+// hooks/useFetchLogin.js
 import { useState, useCallback } from "react";
 
-const API_URL = "http://localhost:5000/api/login";
+// Usa solo `import.meta.env` con fallback
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/login";
 
 const useLogin = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState("");
-  const [user, setUser]       = useState(null);
+  const [error, setError] = useState("");
+  const [user, setUser] = useState(null);
 
   const login = useCallback(async (email, password) => {
     setLoading(true);
@@ -14,9 +15,11 @@ const useLogin = () => {
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",  // para cookies httpOnly
-        body: JSON.stringify({ email, password }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ correo: email, password }),
       });
 
       const data = await res.json();
@@ -25,7 +28,10 @@ const useLogin = () => {
         throw new Error(data.message || "Error en login");
       }
 
-      setUser({ id: data.userId, token: data.token, message: data.message });
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userId", data.userId);
+
+      setUser({ id: data.userId, token: data.token });
       setLoading(false);
       return true;
     } catch (err) {

@@ -3,8 +3,13 @@ import registerUserController from "../controllers/registerUserController.js";
 
 const router = express.Router();
 
-router.post("/", registerUserController.register);
+// Log para verificar que la ruta se ha cargado correctamente
+console.log("Ruta de registro cargada");
 
-router.post("/verifyCodeEmail", registerUserController.verifyCodeEmail);
+// Ruta para registrar nuevo usuario
+router.post("/register", registerUserController.register);
+
+// Ruta para verificar código enviado al email
+router.post("/verify", registerUserController.verifyCodeEmail);
 
 export default router;

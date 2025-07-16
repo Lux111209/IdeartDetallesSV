@@ -1,25 +1,14 @@
-import React from 'react';
-import '../css/Login.css';
-//import registerImg from '../assets/Images/Login.jpg';
- 
+import React from "react";
+import AuthRegister from "../components/AuthRegister";
+
 const Register = () => {
   return (
-    <div className={styles.container}>
-      <div className={styles.left}>
-        <img src={registerImg} alt="Register Illustration" className={styles.image} />
-      </div>
-      <div className={styles.right}>
-        <h1 className={styles.title}>Registrarse</h1>
-        <form className={styles.form}>
-          <input type="text" placeholder="Nombre" className={styles.input} />
-          <input type="email" placeholder="Correo electrónico" className={styles.input} />
-          <input type="password" placeholder="Contraseña" className={styles.input} />
-          <input type="date" placeholder="Fecha de nacimiento" className={styles.input} />
-          <button type="submit" className={styles.button}>Iniciar</button>
-        </form>
-      </div>
-    </div>
+    <>
+      <main style={{ minHeight: "80vh" }}>
+        <AuthRegister />
+      </main>
+    </>
   );
 };
- 
+
 export default Register;
