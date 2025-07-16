@@ -22,8 +22,154 @@ const OfferManager = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [offers, setOffers] = useState([]);
 
-  // Estado para paginación de productos en grupos de 3
   const [productPage, setProductPage] = useState(0);
+
+  // API Configuration
+  const API_URL = 'http://localhost:5000/api';
+
+  // Función simple de fetch
+  const fetchData = async (url) => {
+    try {
+      console.log('Fetching:', url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Response data:', data);
+      return data.success ? data.data : [];
+    } catch (error) {
+      console.error('Fetch error:', error);
+      return [];
+    }
+  };
+
+  // Función para crear oferta
+  const createOffer = async (offerData) => {
+    try {
+      console.log('Creating offer:', offerData);
+      const response = await fetch(`${API_URL}/ofertas`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(offerData)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Create response:', data);
+      return data;
+    } catch (error) {
+      console.error('Create error:', error);
+      throw error;
+    }
+  };
+
+  // Función para eliminar oferta
+  const deleteOfferAPI = async (id) => {
+    try {
+      console.log('Deleting offer:', id);
+      const response = await fetch(`${API_URL}/ofertas/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Delete response:', data);
+      return data.success;
+    } catch (error) {
+      console.error('Delete error:', error);
+      return false;
+    }
+  };
+
+  // Cargar productos y ofertas del backend
+  const loadData = async () => {
+    setLoading(true);
+    
+    try {
+      // Cargar productos
+      const productosData = await fetchData(`${API_URL}/products`);
+      console.log('Productos cargados:', productosData);
+      
+      // Transformar productos del backend al formato del frontend
+      const productosFormateados = productosData.map(product => ({
+        id: product._id,
+        name: product.name || 'Producto sin nombre',
+        description: product.description || 'Sin descripción',
+        price: product.price || 0,
+        originalPrice: product.price || 0, // Usar el mismo precio como original
+        category: product.productType || 'general',
+        stock: product.stock || 0,
+        orders: Math.floor(Math.random() * 50), // Simular órdenes ya que no tienes este campo
+        published: product.createdAt || new Date(),
+        image: product.images?.[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop',
+        rating: (Math.random() * 2 + 3).toFixed(1), // Rating aleatorio entre 3-5
+        reviews: Math.floor(Math.random() * 30) + 5, // Reviews aleatorias
+        discount: 0, // Sin descuento inicial
+        featured: Math.random() > 0.7, // 30% chance de ser destacado
+        tags: product.tags || [],
+        // Guardar datos originales para referencia
+        originalData: product
+      }));
+
+      setProducts(productosFormateados);
+      setFilteredProducts(productosFormateados);
+
+      // Cargar ofertas
+      const ofertasData = await fetchData(`${API_URL}/ofertas`);
+      console.log('Ofertas cargadas:', ofertasData);
+      
+      // Transformar ofertas del backend al formato del frontend
+      const ofertasFormateadas = ofertasData.map(offer => ({
+        id: offer._id,
+        name: offer.nombreOferta || 'Oferta sin nombre',
+        type: 'product', // Ajustar según tu lógica
+        target: offer.productos?.[0] || null,
+        targetName: offer.productos?.length > 0 ? `${offer.productos.length} producto(s)` : 'Sin productos',
+        discountFrom: offer.DescuentoRealizado || 0,
+        discountTo: offer.DescuentoRealizado || 0,
+        validFrom: offer.creada ? new Date(offer.creada).toLocaleDateString() : '',
+        validTo: offer.expirada ? new Date(offer.expirada).toLocaleDateString() : '',
+        active: offer.activa || false,
+        createdAt: offer.creada ? new Date(offer.creada).toLocaleDateString() : '',
+        originalData: offer
+      }));
+
+      setOffers(ofertasFormateadas);
+
+    } catch (error) {
+      console.error('Error cargando datos:', error);
+      alert('Error al cargar los datos del servidor');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // useEffect para cargar datos al inicio
+  useEffect(() => {
+    loadData();
+  }, []);
 
   // Calcula el número total de páginas (3 productos por página)
   const productsPerPage = 3;
@@ -44,175 +190,6 @@ const OfferManager = () => {
     setProductPage((prev) => (prev === totalPages - 1 ? 0 : prev + 1));
   };
 
-  // Productos de ejemplo
-  const mockProducts = [
-    {
-      id: 1,
-      name: 'Taza de Nubes Premium',
-      description: 'Taza de cerámica con diseño de nubes, perfecta para café matutino',
-      price: 25.99,
-      originalPrice: 29.99,
-      category: 'tazas',
-      stock: 12,
-      orders: 22,
-      published: '2024-11-24',
-      image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?w=300&h=300&fit=crop',
-      rating: 4.5,
-      reviews: 18,
-      discount: 15,
-      featured: true,
-      tags: ['premium', 'cerámica', 'diseño']
-    },
-    {
-      id: 2,
-      name: 'Camisa Casual Moderna',
-      description: 'Camisa de algodón con diseño contemporáneo, ideal para uso diario',
-      price: 35.00,
-      originalPrice: 42.00,
-      category: 'camisas',
-      stock: 8,
-      orders: 15,
-      published: '2024-11-20',
-      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop',
-      rating: 4.2,
-      reviews: 12,
-      discount: 17,
-      featured: false,
-      tags: ['algodón', 'casual', 'moderna']
-    },
-    {
-      id: 3,
-      name: 'Mousepad Gaming Pro',
-      description: 'Mousepad de alta precisión para gaming profesional',
-      price: 20.00,
-      originalPrice: 20.00,
-      category: 'accesorios',
-      stock: 25,
-      orders: 18,
-      published: '2024-11-22',
-      image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=300&h=300&fit=crop',
-      rating: 4.8,
-      reviews: 32,
-      discount: 0,
-      featured: true,
-      tags: ['gaming', 'precisión', 'profesional']
-    },
-    {
-      id: 4,
-      name: 'Juego de Mesa Estratégico',
-      description: 'Juego de mesa para 2-4 jugadores con mecánicas innovadoras',
-      price: 45.00,
-      originalPrice: 50.00,
-      category: 'juegos',
-      stock: 5,
-      orders: 8,
-      published: '2024-11-18',
-      image: 'https://images.unsplash.com/photo-1632501641765-e568d28b0015?w=300&h=300&fit=crop',
-      rating: 4.3,
-      reviews: 7,
-      discount: 10,
-      featured: false,
-      tags: ['estrategia', 'familia', 'innovador']
-    },
-    {
-      id: 5,
-      name: 'Auriculares Bluetooth',
-      description: 'Auriculares inalámbricos con cancelación de ruido',
-      price: 89.99,
-      originalPrice: 120.00,
-      category: 'accesorios',
-      stock: 15,
-      orders: 28,
-      published: '2024-11-25',
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop',
-      rating: 4.6,
-      reviews: 45,
-      discount: 25,
-      featured: true,
-      tags: ['bluetooth', 'inalámbrico', 'audio']
-    },
-    {
-      id: 6,
-      name: 'Chaqueta Deportiva',
-      description: 'Chaqueta ligera ideal para actividades deportivas',
-      price: 65.00,
-      originalPrice: 75.00,
-      category: 'camisas',
-      stock: 10,
-      orders: 11,
-      published: '2024-11-23',
-      image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=300&h=300&fit=crop',
-      rating: 4.4,
-      reviews: 23,
-      discount: 13,
-      featured: false,
-      tags: ['deportiva', 'ligera', 'actividad']
-    },
-    {
-      id: 7,
-      name: 'Reloj Inteligente',
-      description: 'Smartwatch con funciones de salud y fitness',
-      price: 159.99,
-      originalPrice: 199.99,
-      category: 'accesorios',
-      stock: 18,
-      orders: 35,
-      published: '2024-11-26',
-      image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop',
-      rating: 4.7,
-      reviews: 28,
-      discount: 20,
-      featured: true,
-      tags: ['smartwatch', 'fitness', 'tecnología']
-    },
-    {
-      id: 8,
-      name: 'Mochila Urbana',
-      description: 'Mochila resistente para uso diario y viajes',
-      price: 49.99,
-      originalPrice: 59.99,
-      category: 'accesorios',
-      stock: 12,
-      orders: 19,
-      published: '2024-11-27',
-      image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=300&fit=crop',
-      rating: 4.3,
-      reviews: 15,
-      discount: 17,
-      featured: false,
-      tags: ['mochila', 'viaje', 'urbana']
-    },
-    {
-      id: 9,
-      name: 'Lámpara LED Moderna',
-      description: 'Lámpara de escritorio con control táctil y regulador',
-      price: 75.00,
-      originalPrice: 85.00,
-      category: 'accesorios',
-      stock: 8,
-      orders: 12,
-      published: '2024-11-28',
-      image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=300&h=300&fit=crop',
-      rating: 4.5,
-      reviews: 22,
-      discount: 12,
-      featured: true,
-      tags: ['lámpara', 'LED', 'moderna']
-    }
-  ];
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setProducts(mockProducts);
-      setFilteredProducts(mockProducts);
-      setLoading(false);
-    };
-
-    fetchProducts();
-  }, []);
-
   // Filtrar productos cuando cambia la categoría seleccionada
   useEffect(() => {
     if (selectedCategoryFilter === 'all') {
@@ -224,10 +201,14 @@ const OfferManager = () => {
   }, [selectedCategoryFilter, products]);
 
   const categories = [
-    { id: 'accesorios', name: 'Accesorios', icon: '🎧' },
-    { id: 'juegos', name: 'Juegos', icon: '🎮' },
-    { id: 'tazas', name: 'Tazas', icon: '☕' },
-    { id: 'camisas', name: 'Camisas', icon: '👕' }
+    { id: 'electronics', name: 'Electrónicos', icon: '📱' },
+    { id: 'clothing', name: 'Ropa', icon: '👕' },
+    { id: 'home', name: 'Hogar', icon: '🏠' },
+    { id: 'books', name: 'Libros', icon: '📚' },
+    { id: 'sports', name: 'Deportes', icon: '⚽' },
+    { id: 'beauty', name: 'Belleza', icon: '💄' },
+    { id: 'toys', name: 'Juguetes', icon: '🧸' },
+    { id: 'food', name: 'Alimentos', icon: '🍎' }
   ];
 
   const handleCategoryFilter = (categoryId) => {
@@ -235,9 +216,23 @@ const OfferManager = () => {
   };
 
   const handleCategoryDiscount = (categoryId) => {
+    const categoryName = categories.find(c => c.id === categoryId)?.name;
+    const productosEnCategoria = products.filter(p => p.category === categoryId);
+    
+    if (productosEnCategoria.length === 0) {
+      alert(`No hay productos disponibles en la categoría "${categoryName}". No se puede crear una oferta.`);
+      return;
+    }
+    
     setSelectedCategory(categoryId);
     setOfferType('category');
-    setOfferName(`Descuento ${categories.find(c => c.id === categoryId)?.name}`);
+    setOfferName(`Descuento ${categoryName}`);
+    setDiscountFrom('15'); 
+    
+    // Mostrar confirmación
+    console.log(`Preparando oferta para categoría "${categoryName}" con ${productosEnCategoria.length} productos:`, 
+      productosEnCategoria.map(p => p.name));
+    
     setShowAddModal(true);
   };
 
@@ -309,37 +304,144 @@ const OfferManager = () => {
     setEditingProduct({});
   };
 
-  const handleCreateOffer = () => {
-    if (offerType === 'category' && !selectedCategory) {
-      alert('Por favor selecciona una categoría');
-      return;
-    }
-    if (!discountFrom || !discountTo) {
-      alert('Por favor ingresa el rango de descuento');
-      return;
-    }
+  const handleCreateOffer = async () => {
+    try {
+      // Validaciones
+      if (!offerName.trim()) {
+        alert('Por favor ingresa un nombre para la oferta');
+        return;
+      }
 
-    const newOffer = {
-      id: Date.now(),
-      name: offerName,
-      type: offerType,
-      target: offerType === 'category' ? selectedCategory : selectedProduct?.id,
-      targetName: offerType === 'category' ? categories.find(c => c.id === selectedCategory)?.name : selectedProduct?.name,
-      discountFrom: parseInt(discountFrom),
-      discountTo: parseInt(discountTo),
-      validFrom,
-      validTo,
-      active: true,
-      createdAt: new Date().toLocaleDateString()
-    };
+      if (offerType === 'category' && !selectedCategory) {
+        alert('Por favor selecciona una categoría');
+        return;
+      }
 
-    setOffers([...offers, newOffer]);
-    setShowAddModal(false);
-    resetForm();
+      if (offerType === 'product' && !selectedProduct) {
+        alert('Por favor selecciona un producto');
+        return;
+      }
+
+      if (!discountFrom || parseInt(discountFrom) <= 0 || parseInt(discountFrom) > 100) {
+        alert('Por favor ingresa un descuento válido (1-100%)');
+        return;
+      }
+
+      if (!validTo) {
+        alert('Por favor selecciona una fecha de expiración');
+        return;
+      }
+
+      // Obtener productos según el tipo de oferta
+      let productosOferta = [];
+      let targetName = '';
+      
+      if (offerType === 'category') {
+        // Filtrar productos por categoría
+        const productosCategoria = products.filter(p => p.category === selectedCategory);
+        productosOferta = productosCategoria.map(p => p.id);
+        targetName = `Categoría: ${categories.find(c => c.id === selectedCategory)?.name} (${productosCategoria.length} productos)`;
+        
+        if (productosCategoria.length === 0) {
+          alert(`No hay productos disponibles en la categoría "${categories.find(c => c.id === selectedCategory)?.name}"`);
+          return;
+        }
+        
+        console.log(`Aplicando oferta a categoría "${selectedCategory}":`, productosCategoria.map(p => p.name));
+      } else {
+        // Un solo producto
+        productosOferta = [selectedProduct.id];
+        targetName = `Producto: ${selectedProduct.name}`;
+        
+        console.log(`Aplicando oferta a producto:`, selectedProduct.name);
+      }
+
+      // Crear objeto de oferta para el backend
+      const ofertaData = {
+        nombreOferta: offerName.trim(),
+        DescuentoRealizado: parseInt(discountFrom),
+        productos: productosOferta,
+        expirada: validTo,
+        activa: true
+      };
+
+      console.log('Enviando oferta al backend:', ofertaData);
+
+      // Enviar al backend
+      const response = await createOffer(ofertaData);
+      
+      if (response.success) {
+        // Crear oferta local para mostrar inmediatamente
+        const newLocalOffer = {
+          id: response.data._id,
+          name: offerName.trim(),
+          type: offerType,
+          target: offerType === 'category' ? selectedCategory : selectedProduct.id,
+          targetName: targetName,
+          discountFrom: parseInt(discountFrom),
+          discountTo: parseInt(discountFrom),
+          validFrom: new Date().toLocaleDateString(),
+          validTo: new Date(validTo).toLocaleDateString(),
+          active: true,
+          createdAt: new Date().toLocaleDateString(),
+          originalData: response.data
+        };
+
+        // Agregar a la lista local
+        setOffers(prevOffers => [...prevOffers, newLocalOffer]);
+
+        // Aplicar descuento a productos localmente para vista previa
+        if (offerType === 'category') {
+          const updatedProducts = products.map(product => {
+            if (product.category === selectedCategory) {
+              return {
+                ...product,
+                discount: parseInt(discountFrom),
+                price: product.originalPrice * (1 - parseInt(discountFrom) / 100)
+              };
+            }
+            return product;
+          });
+          setProducts(updatedProducts);
+        } else {
+          const updatedProducts = products.map(product => {
+            if (product.id === selectedProduct.id) {
+              return {
+                ...product,
+                discount: parseInt(discountFrom),
+                price: product.originalPrice * (1 - parseInt(discountFrom) / 100)
+              };
+            }
+            return product;
+          });
+          setProducts(updatedProducts);
+        }
+
+        alert(` Oferta creada exitosamente!\n\n Nombre: ${offerName}\n Aplica a: ${targetName}\n Descuento: ${discountFrom}%\n Válida hasta: ${new Date(validTo).toLocaleDateString()}`);
+        
+        setShowAddModal(false);
+        resetForm();
+      } else {
+        alert('Error al crear la oferta: ' + (response.message || 'Error desconocido'));
+      }
+
+    } catch (error) {
+      console.error('Error creando oferta:', error);
+      alert('Error al crear la oferta: ' + error.message);
+    }
   };
 
-  const deleteOffer = (id) => {
-    setOffers(offers.filter(offer => offer.id !== id));
+  const deleteOffer = async (id) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta oferta?')) {
+      const success = await deleteOfferAPI(id);
+      
+      if (success) {
+        setOffers(offers.filter(offer => offer.id !== id));
+        alert('✅ Oferta eliminada exitosamente');
+      } else {
+        alert('Error al eliminar la oferta');
+      }
+    }
   };
 
   if (loading) {
@@ -349,7 +451,7 @@ const OfferManager = () => {
         <div className="loading-container">
           <div className="loading-content">
             <div className="spinner"></div>
-            <p className="loading-text">Cargando productos...</p>
+            <p className="loading-text">Cargando datos...</p>
           </div>
         </div>
       </div>
@@ -366,7 +468,6 @@ const OfferManager = () => {
             <div className="header">
               <div className="header-content">
                 <h1 className="header-title">Gestor de Ofertas</h1>
-                <div className="notification-icon">🔔</div>
               </div>
             </div>
 
@@ -374,7 +475,7 @@ const OfferManager = () => {
             <div className="action-section">
               <button onClick={() => setShowAddModal(true)} className="add-button">
                 <Plus className="button-icon" />
-                Agregar
+                Agregar Oferta
               </button>
             </div>
 
@@ -585,7 +686,6 @@ const OfferManager = () => {
                 </div>
               ) : (
                 <div className="empty-products">
-                  <div className="empty-icon">📦</div>
                   <h3 className="empty-title">No hay productos que mostrar</h3>
                   <p className="empty-description">
                     {selectedCategoryFilter !== 'all' 
@@ -600,14 +700,14 @@ const OfferManager = () => {
             {/* Current Offers */}
             {offers.length > 0 && (
               <div className="offers-section">
-                <h2 className="offers-title">Ofertas Activas</h2>
+                <h2 className="offers-title">Ofertas Activas ({offers.length})</h2>
                 <div className="offers-grid">
                   {offers.map((offer) => (
                     <div key={offer.id} className="offer-card">
                       <div className="offer-content">
                         <div className="offer-header">
                           <Tag className="offer-icon" />
-                          <span className="offer-name">{offer.name || 'Oferta sin nombre'}</span>
+                          <span className="offer-name">{offer.name}</span>
                           <span className="offer-type">
                             {offer.type === 'category' ? 'Categoría' : 'Producto'}
                           </span>
@@ -616,14 +716,18 @@ const OfferManager = () => {
                           <strong>Aplica a:</strong> {offer.targetName}
                         </p>
                         <p className="offer-detail">
-                          <strong>Descuento:</strong> {offer.discountFrom}% - {offer.discountTo}%
+                          <strong>Descuento:</strong> {offer.discountFrom}%
                         </p>
-                        {offer.validFrom && offer.validTo && (
-                          <p className="offer-detail">
-                            <strong>Válido:</strong> {offer.validFrom} - {offer.validTo}
-                          </p>
-                        )}
+                        <p className="offer-detail">
+                          <strong>Válido hasta:</strong> {offer.validTo}
+                        </p>
                         <p className="offer-date">Creado: {offer.createdAt}</p>
+                        <p className="offer-detail">
+                          <strong>Estado:</strong> 
+                          <span style={{color: offer.active ? '#16a34a' : '#ef4444'}}>
+                            {offer.active ? ' Activa' : ' Inactiva'}
+                          </span>
+                        </p>
                       </div>
                       <button
                         onClick={() => deleteOffer(offer.id)}
@@ -700,18 +804,55 @@ const OfferManager = () => {
                     className="form-select"
                   >
                     <option value="">Seleccionar categoría...</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
+                    {categories.map((category) => {
+                      const productosEnCategoria = products.filter(p => p.category === category.id);
+                      return (
+                        <option key={category.id} value={category.id}>
+                          {category.name} ({productosEnCategoria.length} productos)
+                        </option>
+                      );
+                    })}
                   </select>
+                  {selectedCategory && (
+                    <div className="category-preview" style={{
+                      marginTop: '1rem',
+                      padding: '1rem',
+                      backgroundColor: '#f0f9ff',
+                      borderRadius: '0.5rem',
+                      border: '1px solid #bae6fd'
+                    }}>
+                      <h4 style={{ marginBottom: '0.5rem', color: '#0369a1' }}>
+                        Vista previa de la categoría seleccionada:
+                      </h4>
+                      <p style={{ color: '#0c4a6e', marginBottom: '0.5rem' }}>
+                        <strong>{categories.find(c => c.id === selectedCategory)?.name}</strong>
+                      </p>
+                      <p style={{ color: '#0c4a6e', fontSize: '0.875rem' }}>
+                        Productos que recibirán el descuento: {products.filter(p => p.category === selectedCategory).length}
+                      </p>
+                      {products.filter(p => p.category === selectedCategory).length > 0 && (
+                        <div style={{ marginTop: '0.5rem' }}>
+                          <p style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.25rem' }}>
+                            Algunos productos incluidos:
+                          </p>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                            {products
+                              .filter(p => p.category === selectedCategory)
+                              .slice(0, 3)
+                              .map(p => p.name)
+                              .join(', ')}
+                            {products.filter(p => p.category === selectedCategory).length > 3 && '...'}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="form-group">
                   <label className="form-label">Seleccionar Producto</label>
                   <div className="product-selector">
-                    {products.map((product) => (
+                    {products.length > 0 ? products.map((product) => (
                       <div
                         key={product.id}
                         onClick={() => setSelectedProduct(product)}
@@ -722,72 +863,173 @@ const OfferManager = () => {
                           <div className="product-option-info">
                             <p className="product-option-name">{product.name}</p>
                             <p className="product-option-price">${product.price.toFixed(2)}</p>
+                            <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                              Categoría: {categories.find(c => c.id === product.category)?.name || product.category}
+                            </p>
+                            <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                              Stock: {product.stock} | Rating: {product.rating}⭐
+                            </p>
                           </div>
                         </div>
                         {selectedProduct?.id === product.id && (
                           <div className="selected-indicator"></div>
                         )}
                       </div>
-                    ))}
+                    )) : (
+                      <div style={{ 
+                        textAlign: 'center', 
+                        padding: '2rem', 
+                        color: '#6b7280',
+                        backgroundColor: '#f9fafb',
+                        borderRadius: '0.5rem'
+                      }}>
+                        <p>No hay productos disponibles</p>
+                        <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                          Asegúrate de que el backend esté conectado y tenga productos
+                        </p>
+                      </div>
+                    )}
                   </div>
+                  {selectedProduct && (
+                    <div className="product-preview" style={{
+                      marginTop: '1rem',
+                      padding: '1rem',
+                      backgroundColor: '#f0fdf4',
+                      borderRadius: '0.5rem',
+                      border: '1px solid #bbf7d0'
+                    }}>
+                      <h4 style={{ marginBottom: '0.5rem', color: '#166534' }}>
+                        Producto seleccionado:
+                      </h4>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <img 
+                          src={selectedProduct.image} 
+                          alt={selectedProduct.name}
+                          style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '0.5rem' }}
+                        />
+                        <div>
+                          <p style={{ fontWeight: '600', color: '#14532d' }}>{selectedProduct.name}</p>
+                          <p style={{ color: '#166534', fontSize: '0.875rem' }}>
+                            Precio actual: ${selectedProduct.price.toFixed(2)}
+                          </p>
+                          <p style={{ color: '#166534', fontSize: '0.875rem' }}>
+                            Stock disponible: {selectedProduct.stock}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
               <div className="form-group">
                 <label className="form-label">
                   <Percent className="label-icon" />
-                  Rango de Descuento
+                  Porcentaje de Descuento
                 </label>
-                <div className="discount-range">
-                  <div className="discount-input">
-                    <input
-                      type="number"
-                      value={discountFrom}
-                      onChange={(e) => setDiscountFrom(e.target.value)}
-                      placeholder="5"
-                      className="form-input"
-                    />
-                    <span className="input-label">Desde %</span>
+                <input
+                  type="number"
+                  value={discountFrom}
+                  onChange={(e) => setDiscountFrom(e.target.value)}
+                  placeholder="Ej: 15"
+                  min="1"
+                  max="100"
+                  className="form-input"
+                />
+                <span className="input-help">Ingresa el porcentaje de descuento (1-100%)</span>
+                
+                {/* Vista previa del descuento */}
+                {discountFrom && (offerType === 'category' ? selectedCategory : selectedProduct) && (
+                  <div className="discount-preview" style={{
+                    marginTop: '1rem',
+                    padding: '1rem',
+                    backgroundColor: '#fef3c7',
+                    borderRadius: '0.5rem',
+                    border: '1px solid #fbbf24'
+                  }}>
+                    <h4 style={{ marginBottom: '0.5rem', color: '#92400e' }}>
+                      📊 Vista previa del descuento:
+                    </h4>
+                    
+                    {offerType === 'category' ? (
+                      <div>
+                        <p style={{ color: '#92400e', marginBottom: '0.5rem' }}>
+                          <strong>Categoría:</strong> {categories.find(c => c.id === selectedCategory)?.name}
+                        </p>
+                        <p style={{ color: '#92400e', marginBottom: '0.5rem' }}>
+                          <strong>Productos afectados:</strong> {products.filter(p => p.category === selectedCategory).length}
+                        </p>
+                        <p style={{ color: '#92400e', fontSize: '0.875rem' }}>
+                          <strong>Descuento aplicado:</strong> {discountFrom}% en todos los productos de la categoría
+                        </p>
+                        {products.filter(p => p.category === selectedCategory).length > 0 && (
+                          <div style={{ marginTop: '0.5rem', fontSize: '0.75rem' }}>
+                            <p style={{ color: '#78350f', marginBottom: '0.25rem' }}>Ejemplo con algunos productos:</p>
+                            {products
+                              .filter(p => p.category === selectedCategory)
+                              .slice(0, 2)
+                              .map((product, index) => (
+                                <div key={index} style={{ 
+                                  display: 'flex', 
+                                  justifyContent: 'space-between',
+                                  color: '#78350f',
+                                  marginBottom: '0.25rem'
+                                }}>
+                                  <span>{product.name}</span>
+                                  <span>
+                                    ${product.originalPrice.toFixed(2)} → ${(product.originalPrice * (1 - parseInt(discountFrom) / 100)).toFixed(2)}
+                                  </span>
+                                </div>
+                              ))
+                            }
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div>
+                        <p style={{ color: '#92400e', marginBottom: '0.5rem' }}>
+                          <strong>Producto:</strong> {selectedProduct.name}
+                        </p>
+                        <div style={{ 
+                          display: 'flex', 
+                          justifyContent: 'space-between', 
+                          alignItems: 'center',
+                          backgroundColor: 'white',
+                          padding: '0.5rem',
+                          borderRadius: '0.25rem',
+                          marginTop: '0.5rem'
+                        }}>
+                          <div>
+                            <p style={{ margin: 0, color: '#374151' }}>
+                              <strong>Precio original:</strong> ${selectedProduct.originalPrice.toFixed(2)}
+                            </p>
+                            <p style={{ margin: 0, color: '#dc2626' }}>
+                              <strong>Descuento:</strong> -{discountFrom}%
+                            </p>
+                            <p style={{ margin: 0, color: '#16a34a', fontWeight: 'bold' }}>
+                              <strong>Precio final:</strong> ${(selectedProduct.originalPrice * (1 - parseInt(discountFrom) / 100)).toFixed(2)}
+                            </p>
+                          </div>
+                          <div style={{ fontSize: '1.5rem' }}>💰</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <span className="range-separator">-</span>
-                  <div className="discount-input">
-                    <input
-                      type="number"
-                      value={discountTo}
-                      onChange={(e) => setDiscountTo(e.target.value)}
-                      placeholder="50"
-                      className="form-input"
-                    />
-                    <span className="input-label">Hasta %</span>
-                  </div>
-                </div>
+                )}
               </div>
 
               <div className="form-group">
                 <label className="form-label">
                   <Calendar className="label-icon" />
-                  Período de Validez
+                  Fecha de Expiración
                 </label>
-                <div className="date-range">
-                  <div className="date-input">
-                    <input
-                      type="date"
-                      value={validFrom}
-                      onChange={(e) => setValidFrom(e.target.value)}
-                      className="form-input"
-                    />
-                    <span className="input-label">Desde</span>
-                  </div>
-                  <div className="date-input">
-                    <input
-                      type="date"
-                      value={validTo}
-                      onChange={(e) => setValidTo(e.target.value)}
-                      className="form-input"
-                    />
-                    <span className="input-label">Hasta</span>
-                  </div>
-                </div>
+                <input
+                  type="date"
+                  value={validTo}
+                  onChange={(e) => setValidTo(e.target.value)}
+                  className="form-input"
+                  min={new Date().toISOString().split('T')[0]}
+                />
               </div>
 
               <div className="modal-actions">

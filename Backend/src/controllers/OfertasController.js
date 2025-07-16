@@ -6,20 +6,21 @@ const OfertasController = {};
 // GET - Obtener todas las ofertas
 OfertasController.getOfertas = async (req, res) => {
   try {
+    // Buscar todas las ofertas con productos poblados
     const ofertas = await Ofertas.find()
       .populate('productos', 'name price productType')
       .sort({ creada: -1 });
     
-    res.status(200).json({
+    // Respuesta exitosa
+    res.json({
       success: true,
-      data: ofertas,
-      count: ofertas.length
+      data: ofertas
     });
   } catch (error) {
+    // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al obtener las ofertas",
-      error: error.message
+      message: "Error al obtener ofertas"
     });
   }
 };
@@ -29,17 +30,19 @@ OfertasController.getOfertaById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validar que el ID sea válido
+    // Validar ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
-        message: "ID de oferta no válido"
+        message: "ID no válido"
       });
     }
 
+    // Buscar oferta y poblar productos
     const oferta = await Ofertas.findById(id)
       .populate('productos', 'name price productType stock');
 
+    // Verificar si existe
     if (!oferta) {
       return res.status(404).json({
         success: false,
@@ -47,50 +50,42 @@ OfertasController.getOfertaById = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    // Respuesta exitosa
+    res.json({
       success: true,
       data: oferta
     });
   } catch (error) {
+    // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al obtener la oferta",
-      error: error.message
+      message: "Error al obtener oferta"
     });
   }
 };
 
-// POST - Crear una nueva oferta
+// POST - Crear nueva oferta
 OfertasController.createOferta = async (req, res) => {
   try {
     const { nombreOferta, DescuentoRealizado, productos, expirada, activa } = req.body;
 
-    // Validaciones básicas
+    // Validar campos obligatorios
     if (!nombreOferta || !DescuentoRealizado || !productos || !expirada) {
       return res.status(400).json({
         success: false,
-        message: "Todos los campos obligatorios deben ser proporcionados"
+        message: "Faltan campos obligatorios"
       });
     }
 
-    // Validar que productos sea un array
+    // Validar que productos sea un array con elementos
     if (!Array.isArray(productos) || productos.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "Debe incluir al menos un producto en la oferta"
+        message: "Debe incluir al menos un producto"
       });
     }
 
-    // Validar que todos los IDs de productos sean válidos
-    const productosValidos = productos.every(id => mongoose.Types.ObjectId.isValid(id));
-    if (!productosValidos) {
-      return res.status(400).json({
-        success: false,
-        message: "Uno o más IDs de productos no son válidos"
-      });
-    }
-
-    // Validar fecha de expiración
+    // Validar fecha de expiración futura
     const fechaExpiracion = new Date(expirada);
     if (fechaExpiracion <= new Date()) {
       return res.status(400).json({
@@ -99,6 +94,7 @@ OfertasController.createOferta = async (req, res) => {
       });
     }
 
+    // Crear nueva oferta
     const nuevaOferta = new Ofertas({
       nombreOferta,
       DescuentoRealizado,
@@ -107,43 +103,44 @@ OfertasController.createOferta = async (req, res) => {
       activa: activa !== undefined ? activa : true
     });
 
-    const ofertaGuardada = await nuevaOferta.save();
+    // Guardar en base de datos
+    const guardada = await nuevaOferta.save();
     
-    // Poblar la oferta guardada para la respuesta
-    const ofertaCompleta = await Ofertas.findById(ofertaGuardada._id)
+    // Poblar para respuesta
+    const completa = await Ofertas.findById(guardada._id)
       .populate('productos', 'name price productType');
 
+    // Respuesta exitosa
     res.status(201).json({
       success: true,
-      message: "Oferta creada exitosamente",
-      data: ofertaCompleta
+      data: completa
     });
   } catch (error) {
+    // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al crear la oferta",
-      error: error.message
+      message: "Error al crear oferta"
     });
   }
 };
 
-// PUT - Actualizar una oferta por ID
+// PUT - Actualizar oferta
 OfertasController.updateOferta = async (req, res) => {
   try {
     const { id } = req.params;
     const { nombreOferta, DescuentoRealizado, productos, expirada, activa } = req.body;
 
-    // Validar que el ID sea válido
+    // Validar ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
-        message: "ID de oferta no válido"
+        message: "ID no válido"
       });
     }
 
-    // Verificar si la oferta existe
-    const ofertaExistente = await Ofertas.findById(id);
-    if (!ofertaExistente) {
+    // Verificar que existe la oferta
+    const existe = await Ofertas.findById(id);
+    if (!existe) {
       return res.status(404).json({
         success: false,
         message: "Oferta no encontrada"
@@ -152,7 +149,6 @@ OfertasController.updateOferta = async (req, res) => {
 
     // Preparar datos de actualización
     const updateData = {};
-    
     if (nombreOferta) updateData.nombreOferta = nombreOferta;
     if (DescuentoRealizado !== undefined) updateData.DescuentoRealizado = DescuentoRealizado;
     if (activa !== undefined) updateData.activa = activa;
@@ -162,107 +158,186 @@ OfertasController.updateOferta = async (req, res) => {
       if (!Array.isArray(productos) || productos.length === 0) {
         return res.status(400).json({
           success: false,
-          message: "Debe incluir al menos un producto en la oferta"
-        });
-      }
-      
-      const productosValidos = productos.every(id => mongoose.Types.ObjectId.isValid(id));
-      if (!productosValidos) {
-        return res.status(400).json({
-          success: false,
-          message: "Uno o más IDs de productos no son válidos"
+          message: "Debe incluir al menos un producto"
         });
       }
       updateData.productos = productos;
     }
 
-    // Validar fecha de expiración si se proporciona
+    // Validar fecha de expiración si se actualiza
     if (expirada) {
       const fechaExpiracion = new Date(expirada);
       if (fechaExpiracion <= new Date()) {
         return res.status(400).json({
           success: false,
-          message: "La fecha de expiración debe ser futura"
+          message: "La fecha debe ser futura"
         });
       }
       updateData.expirada = fechaExpiracion;
     }
 
-    const ofertaActualizada = await Ofertas.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    ).populate('productos', 'name price productType');
+    // Actualizar en base de datos
+    const actualizada = await Ofertas.findByIdAndUpdate(id, updateData, { new: true })
+      .populate('productos', 'name price productType');
 
-    res.status(200).json({
+    // Respuesta exitosa
+    res.json({
       success: true,
-      message: "Oferta actualizada exitosamente",
-      data: ofertaActualizada
+      data: actualizada
     });
   } catch (error) {
+    // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al actualizar la oferta",
-      error: error.message
+      message: "Error al actualizar oferta"
     });
   }
 };
 
-// DELETE - Eliminar una oferta por ID
+// DELETE - Eliminar oferta
 OfertasController.deleteOferta = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validar que el ID sea válido
+    // Validar ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
-        message: "ID de oferta no válido"
+        message: "ID no válido"
       });
     }
 
-    const ofertaEliminada = await Ofertas.findByIdAndDelete(id);
+    // Eliminar de base de datos
+    const eliminada = await Ofertas.findByIdAndDelete(id);
     
-    if (!ofertaEliminada) {
+    // Verificar si existía
+    if (!eliminada) {
       return res.status(404).json({
         success: false,
         message: "Oferta no encontrada"
       });
     }
 
-    res.status(200).json({
+    // Respuesta exitosa
+    res.json({
       success: true,
-      message: "Oferta eliminada exitosamente",
-      data: ofertaEliminada
+      message: "Oferta eliminada"
     });
   } catch (error) {
+    // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al eliminar la oferta",
-      error: error.message
+      message: "Error al eliminar oferta"
     });
   }
 };
 
-// GET - Obtener ofertas activas
+// GET - Obtener solo ofertas activas y vigentes
 OfertasController.getOfertasActivas = async (req, res) => {
   try {
-    const now = new Date();
-    const ofertasActivas = await Ofertas.find({
+    const ahora = new Date();
+    
+    // Buscar ofertas activas que no han expirado
+    const activas = await Ofertas.find({
       activa: true,
-      expirada: { $gt: now }
+      expirada: { $gt: ahora }
     }).populate('productos', 'name price productType');
 
-    res.status(200).json({
+    // Respuesta exitosa
+    res.json({
       success: true,
-      data: ofertasActivas,
-      count: ofertasActivas.length
+      data: activas,
+      total: activas.length
     });
   } catch (error) {
+    // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al obtener ofertas activas",
-      error: error.message
+      message: "Error al obtener ofertas activas"
+    });
+  }
+};
+
+// GET - Verificar si oferta está vigente
+OfertasController.isOfertaVigente = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validar ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID no válido"
+      });
+    }
+
+    // Buscar oferta
+    const oferta = await Ofertas.findById(id);
+    if (!oferta) {
+      return res.status(404).json({
+        success: false,
+        message: "Oferta no encontrada"
+      });
+    }
+
+    // Verificar si está vigente
+    const ahora = new Date();
+    const vigente = oferta.activa && ahora <= oferta.expirada;
+
+    // Respuesta exitosa
+    res.json({
+      success: true,
+      vigente: vigente,
+      data: {
+        id: oferta._id,
+        nombre: oferta.nombreOferta,
+        descuento: oferta.DescuentoRealizado,
+        expira: oferta.expirada,
+        activa: oferta.activa
+      }
+    });
+  } catch (error) {
+    // Manejo de errores
+    res.status(500).json({
+      success: false,
+      message: "Error al verificar oferta"
+    });
+  }
+};
+
+// GET - Buscar ofertas por producto
+OfertasController.getOfertasByProducto = async (req, res) => {
+  try {
+    const { id_producto } = req.params;
+
+    // Validar ID de producto
+    if (!mongoose.Types.ObjectId.isValid(id_producto)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de producto no válido"
+      });
+    }
+
+    const ahora = new Date();
+
+    // Buscar ofertas vigentes que incluyan el producto
+    const ofertas = await Ofertas.find({
+      productos: id_producto,
+      activa: true,
+      expirada: { $gt: ahora }
+    }).populate('productos', 'name price productType');
+
+    // Respuesta exitosa
+    res.json({
+      success: true,
+      data: ofertas,
+      total: ofertas.length
+    });
+  } catch (error) {
+    // Manejo de errores
+    res.status(500).json({
+      success: false,
+      message: "Error al buscar ofertas del producto"
     });
   }
 };

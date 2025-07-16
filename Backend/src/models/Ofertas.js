@@ -1,26 +1,18 @@
-/*
-Ofertas:
-nombreOferta (string)
-DescuentoRealizado (number)
-productos (array de ObjectIds referenciando Products)
-creada (date)
-expirada (date)
-*/
 import mongoose, { model } from 'mongoose';
 
 const ofertasSchema = new mongoose.Schema({
     nombreOferta: {
         type: String,
-        required: [true, "El nombre de la oferta es obligatorio"],
+        required: true,
         trim: true,
-        minlength: [2, "El nombre debe tener al menos 2 caracteres"],
-        maxlength: [100, "El nombre no puede exceder 100 caracteres"]
+        minlength: 2,
+        maxlength: 100
     },
     DescuentoRealizado: {
         type: Number,
-        required: [true, "El descuento es obligatorio"],
-        min: [0, "El descuento no puede ser negativo"],
-        max: [100, "El descuento no puede ser mayor a 100%"]
+        required: true,
+        min: 0,
+        max: 100
     },
     productos: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -33,7 +25,7 @@ const ofertasSchema = new mongoose.Schema({
     },
     expirada: {
         type: Date,
-        required: [true, "La fecha de expiración es obligatoria"],
+        required: true,
         validate: {
             validator: function(value) {
                 return value > this.creada || value > new Date();
@@ -51,10 +43,5 @@ const ofertasSchema = new mongoose.Schema({
 
 // Índice para mejorar consultas por fecha de expiración
 ofertasSchema.index({ expirada: 1, activa: 1 });
-
-// Método para verificar si la oferta está vigente
-ofertasSchema.methods.isActive = function() {
-    return this.activa && new Date() <= this.expirada;
-};
 
 export default model('Ofertas', ofertasSchema);
