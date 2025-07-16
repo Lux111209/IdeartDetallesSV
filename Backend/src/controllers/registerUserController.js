@@ -32,6 +32,7 @@ registerUserController.register = async (req, res) => {
       nombre,
       fechaNacimiento,
       favoritos,
+      isVerified: false, // Asegúrate que tu modelo tenga este campo
     });
 
     await newUser.save();
@@ -125,9 +126,17 @@ registerUserController.verifyCodeEmail = async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, config.JWT.SECRET);
-    const { correo, verificationCode: storedCode } = decoded;
+    const { correo, verificationCode: storedCode, expiresAt } = decoded;
 
-    if (verificationCode !== storedCode) {
+    // Verifica expiración del código
+    if (Date.now() > expiresAt) {
+      return res.status(400).json({ message: "El código ha expirado, solicita uno nuevo." });
+    }
+
+    // Normaliza la comparación del código
+    if (
+      verificationCode.trim().toLowerCase() !== storedCode.trim().toLowerCase()
+    ) {
       return res.status(400).json({ message: "Código incorrecto" });
     }
 

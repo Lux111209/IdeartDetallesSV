@@ -1,43 +1,40 @@
-/*
-User:
-correo(string)
-password(string)
-nombre(string)
-fechaNacimiento(string)
-favoritos(array)
-*/
-import mongoose, { model } from 'mongoose';
+// models/User.js
+
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
   correo: {
     type: String,
-    required: true,
+    required: [true, "El correo es obligatorio"],
     unique: true,
-    trim: true
+    trim: true,
+    lowercase: true,
   },
   password: {
     type: String,
-    required: true,
-    trim: true
+    required: [true, "La contraseña es obligatoria"],
+    trim: true,
   },
   nombre: {
     type: String,
-    required: true,
-    trim: true
+    required: [true, "El nombre es obligatorio"],
+    trim: true,
   },
   fechaNacimiento: {
     type: String,
-    required: true,
-    trim: true
+    required: [true, "La fecha de nacimiento es obligatoria"],
+    trim: true,
   },
   favoritos: {
     type: [String],
-    default: []
+    default: [],
   },
   isVerified: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
+}, {
+  timestamps: true, // Agrega createdAt y updatedAt automáticamente
 });
 
-export default model('User', userSchema);
+export default mongoose.model("User", userSchema);

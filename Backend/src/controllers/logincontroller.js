@@ -6,21 +6,20 @@ import config from "../../config.js";
 const loginController = {};
 
 loginController.login = async (req, res) => {
-  const { email, password } = req.body;
+  const { correo, password } = req.body;
 
-  if (!email || !password)
+  if (!correo || !password)
     return res.status(400).json({ message: "Todos los campos son requeridos" });
 
   try {
     let userType = "user";
     let user;
 
-    // Comprobar si es admin
-    if (email === config.ADMIN.EMAIL && password === config.ADMIN.PASSWORD) {
+    if (correo === config.ADMIN.EMAIL && password === config.ADMIN.PASSWORD) {
       userType = "admin";
       user = { _id: "admin" };
     } else {
-      user = await User.findOne({ email });
+      user = await User.findOne({ correo });
       if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
       const isValid = await bcrypt.compare(password, user.password);
@@ -37,7 +36,7 @@ loginController.login = async (req, res) => {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
       sameSite: "Lax",
-      secure: config.NODE_ENV === "production"
+      secure: config.NODE_ENV === "production",
     });
 
     res.status(200).json({

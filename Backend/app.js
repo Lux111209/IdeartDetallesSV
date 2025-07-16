@@ -1,11 +1,12 @@
-// Importar todo lo de la librería "express"
+// server.js o app.js
+
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import jsonwebtoken from "jsonwebtoken";
 import { config } from "./config.js";
 
-// Importar rutas existentes
+// Importar rutas
 import productRoutes from "./src/routes/products.js";
 import loginRoutes from "./src/routes/login.js";
 import logoutRoutes from "./src/routes/logout.js";
@@ -18,6 +19,18 @@ import resenasProductoRoutes from "./src/routes/resenasProducto.js";
 import userRoutes from "./src/routes/User.js";
 import ventasRoutes from "./src/routes/venta.js";
 import personalizedProducts from "./src/routes/personalizedProducts.js";
+
+
+// Crear instancia de Express
+const app = express();
+
+// Middlewares globales
+app.use(cors({
+  origin: config.FRONTEND_URL || "http://localhost:5173",
+  credentials: true,
+}));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Importar middleware de validación (cuando lo tengas)
 import { validateAuthToken } from "./src/middlewares/validateAuthToken.js";
@@ -35,26 +48,22 @@ app.use(
 // Middleware para analizar JSON y cookies
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
 app.use(cookieParser());
 
-// Servir archivos estáticos (imágenes de productos, etc.)
-app.use('/uploads', express.static('uploads'));
+// Servir archivos estáticos (por ejemplo, imágenes subidas)
+app.use("/uploads", express.static("uploads"));
 
-// ===== RUTAS PÚBLICAS (sin autenticación requerida) =====
-app.use("/api/login", loginRoutes); 
+// ------------------ RUTAS ------------------ //
+
+// Rutas públicas
+app.use("/api/login", loginRoutes);
 app.use("/api/logout", logoutRoutes);
 app.use("/api/registerUser", registerUserRoutes);
-
-// Rutas de productos - PÚBLICAS para visualización
 app.use("/api/products", productRoutes);
-
-// Rutas de ofertas - PÚBLICAS para visualización
 app.use("/api/ofertas", ofertasRoutes);
 
-// ===== RUTAS PROTEGIDAS POR AUTENTICACIÓN =====
-// (Aquí puedes agregar middleware de autenticación más tarde)
-
-// Rutas para usuarios autenticados
+// Rutas protegidas
 app.use("/api/carrito", carritoRoutes);
 app.use("/api/proveedores", provedoresRoutes);
 app.use("/api/resenasgeneral", resenasGeneralRoutes);
@@ -63,50 +72,53 @@ app.use("/api/users", userRoutes);
 app.use("/api/ventas", ventasRoutes);
 app.use("/api/productPersonalized", personalizedProducts);
 
-// Ruta para verificar autenticación (útil para el frontend)
+// Ruta para verificar autenticación
 app.get("/api/auth/verify", (req, res) => {
   try {
     const { authToken } = req.cookies;
-    
     if (!authToken) {
-      return res.status(401).json({ 
-        success: false, 
-        message: "No token found" 
+      return res.status(401).json({
+        success: false,
+        message: "No token found",
       });
     }
 
     const decoded = jsonwebtoken.verify(authToken, config.JWT.SECRET);
-    
+
     res.json({
       success: true,
       user: {
         id: decoded.id,
-        userType: decoded.userType
-      }
+        userType: decoded.userType,
+      },
     });
   } catch (error) {
-    res.status(401).json({ 
-      success: false, 
-      message: "Invalid token" 
+    res.status(401).json({
+      success: false,
+      message: "Invalid token",
     });
   }
 });
 
-// Ruta de salud del servidor
+// Ruta de prueba para saber que la API está viva
+app.get("/", (req, res) => {
+  res.send("API funcionando");
+});
+
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "OK",
     message: "Servidor funcionando correctamente",
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
   });
 });
 
-// Levantar el servidor
+// ------------------ INICIO DEL SERVIDOR ------------------ //
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
 
-// Exportar la instancia de la aplicación para poder usar Express en otros archivos (opcional)
 export default app;

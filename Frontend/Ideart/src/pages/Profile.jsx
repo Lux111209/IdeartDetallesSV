@@ -1,17 +1,20 @@
-import React from 'react';
-import Navbar from '../components/Navbar';
-import TopBar from '../components/TopBar';
-import Footer from '../components/Footer';
-import ProfileCard from '../components/ProfileCard';
-import useUser from '../hooks/useFetchUser';
-import '../css/Profile.css'; 
+// pages/Profile.jsx
+import React from "react";
+import TopBar from "../components/TopBar";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import ProfileCard from "../components/ProfileCard";
+import useUser from "../hooks/useFetchUser";
+import "../css/Profile.css";
 
 const Profile = () => {
-  const userId = localStorage.getItem("userId"); // Obtener ID dinámicamente
+  const userId = localStorage.getItem("userId");
 
-  const { user, setUser, updateUser, deleteUser } = useUser(userId);
+  const { user, setUser, loading, error, updateUser } = useUser(userId);
 
-  if (!user) return <p className="loading-text">Cargando...</p>;
+  if (loading) return <p>Cargando...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (!user) return <p>No se encontró usuario</p>;
 
   return (
     <>
@@ -19,7 +22,7 @@ const Profile = () => {
       <Navbar />
       <div className="profile-page">
         <div className="profile-container">
-          <h2 className="profile-title">Mi Perfil</h2>
+          <h2>Mi Perfil</h2>
           <ProfileCard user={user} setUser={setUser} updateUser={updateUser} />
         </div>
       </div>
