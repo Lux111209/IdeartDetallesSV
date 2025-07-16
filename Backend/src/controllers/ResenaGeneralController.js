@@ -21,7 +21,8 @@ resenaGeneralController.getResenas = async (req, res) => {
     // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al obtener reseñas"
+      message: "Error al obtener reseñas",
+      error: error.message
     });
   }
 };
@@ -61,7 +62,8 @@ resenaGeneralController.getResenaById = async (req, res) => {
     // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al obtener reseña"
+      message: "Error al obtener reseña",
+      error: error.message
     });
   }
 };
@@ -75,25 +77,72 @@ resenaGeneralController.createResena = async (req, res) => {
     if (!ranking || !titulo || !detalle || !id_user || !id_producto) {
       return res.status(400).json({
         success: false,
-        message: "Faltan campos obligatorios"
+        message: "Faltan campos obligatorios: ranking, titulo, detalle, id_user, id_producto"
+      });
+    }
+
+    // Validar que titulo no esté vacío
+    if (titulo.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "El título no puede estar vacío"
+      });
+    }
+
+    // Validar que detalle no esté vacío
+    if (detalle.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "El detalle no puede estar vacío"
+      });
+    }
+
+    // Validar ranking (debe ser número entre 1 y 5)
+    if (typeof ranking !== 'number' || ranking < 1 || ranking > 5) {
+      return res.status(400).json({
+        success: false,
+        message: "El ranking debe ser un número entre 1 y 5"
+      });
+    }
+
+    // Validar IDs de usuario y producto
+    if (!mongoose.Types.ObjectId.isValid(id_user)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de usuario inválido"
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id_producto)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de producto inválido"
+      });
+    }
+
+    // Validar tiposExperiencia si se proporciona
+    if (tiposExperiencia && !Array.isArray(tiposExperiencia)) {
+      return res.status(400).json({
+        success: false,
+        message: "Los tipos de experiencia deben ser un array"
       });
     }
 
     // Verificar reseña duplicada
     const existe = await ResenaGeneral.findOne({ id_user, id_producto });
     if (existe) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
-        message: "Ya existe una reseña de este usuario"
+        message: "Ya existe una reseña de este usuario para este producto"
       });
     }
 
     // Crear nueva reseña
     const nuevaResena = new ResenaGeneral({
       ranking,
-      titulo,
+      titulo: titulo.trim(),
       tiposExperiencia: tiposExperiencia || [],
-      detalle,
+      detalle: detalle.trim(),
       id_user,
       id_producto
     });
@@ -115,7 +164,8 @@ resenaGeneralController.createResena = async (req, res) => {
     // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al crear reseña"
+      message: "Error al crear reseña",
+      error: error.message
     });
   }
 };
@@ -136,10 +186,51 @@ resenaGeneralController.updateResena = async (req, res) => {
 
     // Preparar datos de actualización
     const updateData = {};
-    if (ranking) updateData.ranking = ranking;
-    if (titulo) updateData.titulo = titulo;
-    if (detalle) updateData.detalle = detalle;
-    if (tiposExperiencia) updateData.tiposExperiencia = tiposExperiencia;
+    
+    // Validar y agregar ranking si se proporciona
+    if (ranking !== undefined) {
+      if (typeof ranking !== 'number' || ranking < 1 || ranking > 5) {
+        return res.status(400).json({
+          success: false,
+          message: "El ranking debe ser un número entre 1 y 5"
+        });
+      }
+      updateData.ranking = ranking;
+    }
+
+    // Validar y agregar titulo si se proporciona
+    if (titulo) {
+      if (titulo.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "El título no puede estar vacío"
+        });
+      }
+      updateData.titulo = titulo.trim();
+    }
+
+    // Validar y agregar detalle si se proporciona
+    if (detalle) {
+      if (detalle.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "El detalle no puede estar vacío"
+        });
+      }
+      updateData.detalle = detalle.trim();
+    }
+
+    // Validar tiposExperiencia si se proporciona
+    if (tiposExperiencia) {
+      if (!Array.isArray(tiposExperiencia)) {
+        return res.status(400).json({
+          success: false,
+          message: "Los tipos de experiencia deben ser un array"
+        });
+      }
+      updateData.tiposExperiencia = tiposExperiencia;
+    }
+
     if (activa !== undefined) updateData.activa = activa;
 
     // Actualizar en base de datos
@@ -164,7 +255,8 @@ resenaGeneralController.updateResena = async (req, res) => {
     // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al actualizar reseña"
+      message: "Error al actualizar reseña",
+      error: error.message
     });
   }
 };
@@ -202,7 +294,8 @@ resenaGeneralController.deleteResena = async (req, res) => {
     // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al eliminar reseña"
+      message: "Error al eliminar reseña",
+      error: error.message
     });
   }
 };
@@ -211,6 +304,14 @@ resenaGeneralController.deleteResena = async (req, res) => {
 resenaGeneralController.getResenasByProducto = async (req, res) => {
   try {
     const { id_producto } = req.params;
+
+    // Validar ID de producto
+    if (!mongoose.Types.ObjectId.isValid(id_producto)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de producto inválido"
+      });
+    }
 
     // Buscar reseñas del producto
     const resenas = await ResenaGeneral.find({ id_producto, activa: true })
@@ -233,7 +334,8 @@ resenaGeneralController.getResenasByProducto = async (req, res) => {
     // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al obtener reseñas del producto"
+      message: "Error al obtener reseñas del producto",
+      error: error.message
     });
   }
 };
@@ -242,6 +344,14 @@ resenaGeneralController.getResenasByProducto = async (req, res) => {
 resenaGeneralController.getResenasByUsuario = async (req, res) => {
   try {
     const { id_user } = req.params;
+
+    // Validar ID de usuario
+    if (!mongoose.Types.ObjectId.isValid(id_user)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de usuario inválido"
+      });
+    }
 
     // Buscar reseñas del usuario
     const resenas = await ResenaGeneral.find({ id_user, activa: true })
@@ -258,7 +368,8 @@ resenaGeneralController.getResenasByUsuario = async (req, res) => {
     // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al obtener reseñas del usuario"
+      message: "Error al obtener reseñas del usuario",
+      error: error.message
     });
   }
 };
@@ -267,6 +378,14 @@ resenaGeneralController.getResenasByUsuario = async (req, res) => {
 resenaGeneralController.marcarUtil = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Validar ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID no válido"
+      });
+    }
 
     // Buscar reseña
     const resena = await ResenaGeneral.findById(id);
@@ -290,7 +409,8 @@ resenaGeneralController.marcarUtil = async (req, res) => {
     // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al marcar como útil"
+      message: "Error al marcar como útil",
+      error: error.message
     });
   }
 };

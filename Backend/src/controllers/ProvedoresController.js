@@ -18,7 +18,8 @@ provedoresController.getProvedores = async (req, res) => {
     // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al obtener proveedores"
+      message: "Error al obtener proveedores",
+      error: error.message
     });
   }
 };
@@ -56,7 +57,8 @@ provedoresController.getProvedorById = async (req, res) => {
     // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al obtener proveedor"
+      message: "Error al obtener proveedor",
+      error: error.message
     });
   }
 };
@@ -70,14 +72,47 @@ provedoresController.createProvedor = async (req, res) => {
     if (!nombre || !numero || !correo) {
       return res.status(400).json({
         success: false,
-        message: "Faltan campos obligatorios"
+        message: "Faltan campos obligatorios: nombre, numero, correo"
+      });
+    }
+
+    // Validar que nombre no esté vacío
+    if (nombre.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "El nombre no puede estar vacío"
+      });
+    }
+
+    // Validar que numero no esté vacío
+    if (numero.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "El número no puede estar vacío"
+      });
+    }
+
+    // Validar formato básico de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(correo.trim())) {
+      return res.status(400).json({
+        success: false,
+        message: "Formato de correo inválido"
+      });
+    }
+
+    // Validar que productosBrindados sea array si se proporciona
+    if (productosBrindados && !Array.isArray(productosBrindados)) {
+      return res.status(400).json({
+        success: false,
+        message: "Los productos brindados deben ser un array"
       });
     }
 
     // Verificar email duplicado
     const existe = await Provedores.findOne({ correo: correo.toLowerCase() });
     if (existe) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
         message: "Ya existe un proveedor con este correo"
       });
@@ -85,12 +120,12 @@ provedoresController.createProvedor = async (req, res) => {
 
     // Crear nuevo proveedor
     const nuevoProvedor = new Provedores({
-      nombre,
+      nombre: nombre.trim(),
       productosBrindados: productosBrindados || [],
-      numero,
-      correo,
-      imgProvedor,
-      direccion,
+      numero: numero.trim(),
+      correo: correo.trim().toLowerCase(),
+      imgProvedor: imgProvedor ? imgProvedor.trim() : '',
+      direccion: direccion ? direccion.trim() : '',
       activo: activo !== undefined ? activo : true
     });
 
@@ -106,7 +141,8 @@ provedoresController.createProvedor = async (req, res) => {
     // Manejo de errores (incluyendo duplicados por índice único)
     res.status(500).json({
       success: false,
-      message: "Error al crear proveedor"
+      message: "Error al crear proveedor",
+      error: error.message
     });
   }
 };
@@ -136,13 +172,55 @@ provedoresController.updateProvedor = async (req, res) => {
 
     // Preparar datos de actualización
     const updateData = {};
-    if (nombre) updateData.nombre = nombre;
-    if (numero) updateData.numero = numero;
-    if (correo) updateData.correo = correo;
+    
+    // Validar y agregar nombre si se proporciona
+    if (nombre) {
+      if (nombre.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "El nombre no puede estar vacío"
+        });
+      }
+      updateData.nombre = nombre.trim();
+    }
+
+    // Validar y agregar numero si se proporciona
+    if (numero) {
+      if (numero.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "El número no puede estar vacío"
+        });
+      }
+      updateData.numero = numero.trim();
+    }
+
+    // Validar y agregar correo si se proporciona
+    if (correo) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(correo.trim())) {
+        return res.status(400).json({
+          success: false,
+          message: "Formato de correo inválido"
+        });
+      }
+      updateData.correo = correo.trim().toLowerCase();
+    }
+
+    // Validar productosBrindados si se proporciona
+    if (productosBrindados) {
+      if (!Array.isArray(productosBrindados)) {
+        return res.status(400).json({
+          success: false,
+          message: "Los productos brindados deben ser un array"
+        });
+      }
+      updateData.productosBrindados = productosBrindados;
+    }
+
     if (imgProvedor !== undefined) updateData.imgProvedor = imgProvedor;
     if (direccion !== undefined) updateData.direccion = direccion;
     if (activo !== undefined) updateData.activo = activo;
-    if (productosBrindados) updateData.productosBrindados = productosBrindados;
 
     // Verificar email duplicado si se está actualizando
     if (correo && correo.toLowerCase() !== existe.correo) {
@@ -151,7 +229,7 @@ provedoresController.updateProvedor = async (req, res) => {
         _id: { $ne: id }
       });
       if (emailExiste) {
-        return res.status(400).json({
+        return res.status(409).json({
           success: false,
           message: "Ya existe otro proveedor con este correo"
         });
@@ -170,7 +248,8 @@ provedoresController.updateProvedor = async (req, res) => {
     // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al actualizar proveedor"
+      message: "Error al actualizar proveedor",
+      error: error.message
     });
   }
 };
@@ -208,7 +287,8 @@ provedoresController.deleteProvedor = async (req, res) => {
     // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al eliminar proveedor"
+      message: "Error al eliminar proveedor",
+      error: error.message
     });
   }
 };
@@ -228,7 +308,8 @@ provedoresController.getProvedoresActivos = async (req, res) => {
     // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al obtener proveedores activos"
+      message: "Error al obtener proveedores activos",
+      error: error.message
     });
   }
 };
@@ -239,11 +320,27 @@ provedoresController.agregarProducto = async (req, res) => {
     const { id } = req.params;
     const { producto } = req.body;
 
+    // Validar ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID no válido"
+      });
+    }
+
     // Validar producto
     if (!producto) {
       return res.status(400).json({
         success: false,
         message: "El producto es obligatorio"
+      });
+    }
+
+    // Validar que producto no esté vacío
+    if (producto.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "El producto no puede estar vacío"
       });
     }
 
@@ -253,54 +350,21 @@ provedoresController.agregarProducto = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Proveedor no encontrado"
+      });
+    }
+
+    const productoLimpio = producto.trim();
+
+    // Verificar si el producto ya existe
+    if (provedor.productosBrindados.includes(productoLimpio)) {
+      return res.status(409).json({
+        success: false,
+        message: "El producto ya está en la lista del proveedor"
       });
     }
 
     // Agregar producto si no existe ya
-    if (!provedor.productosBrindados.includes(producto)) {
-      provedor.productosBrindados.push(producto);
-      await provedor.save();
-    }
-
-    // Respuesta exitosa
-    res.json({
-      success: true,
-      data: provedor
-    });
-  } catch (error) {
-    // Manejo de errores
-    res.status(500).json({
-      success: false,
-      message: "Error al agregar producto"
-    });
-  }
-};
-
-// PUT - Remover producto de la lista del proveedor
-provedoresController.removerProducto = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { producto } = req.body;
-
-    // Validar producto
-    if (!producto) {
-      return res.status(400).json({
-        success: false,
-        message: "El producto es obligatorio"
-      });
-    }
-
-    // Buscar proveedor
-    const provedor = await Provedores.findById(id);
-    if (!provedor) {
-      return res.status(404).json({
-        success: false,
-        message: "Proveedor no encontrado"
-      });
-    }
-
-    // Remover producto de la lista
-    provedor.productosBrindados = provedor.productosBrindados.filter(p => p !== producto);
+    provedor.productosBrindados.push(productoLimpio);
     await provedor.save();
 
     // Respuesta exitosa
@@ -312,7 +376,76 @@ provedoresController.removerProducto = async (req, res) => {
     // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al remover producto"
+      message: "Error al agregar producto",
+      error: error.message
+    });
+  }
+};
+
+// PUT - Remover producto de la lista del proveedor
+provedoresController.removerProducto = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { producto } = req.body;
+
+    // Validar ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID no válido"
+      });
+    }
+
+    // Validar producto
+    if (!producto) {
+      return res.status(400).json({
+        success: false,
+        message: "El producto es obligatorio"
+      });
+    }
+
+    // Validar que producto no esté vacío
+    if (producto.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "El producto no puede estar vacío"
+      });
+    }
+
+    // Buscar proveedor
+    const provedor = await Provedores.findById(id);
+    if (!provedor) {
+      return res.status(404).json({
+        success: false,
+        message: "Proveedor no encontrado"
+      });
+    }
+
+    const productoLimpio = producto.trim();
+
+    // Verificar si el producto existe en la lista
+    if (!provedor.productosBrindados.includes(productoLimpio)) {
+      return res.status(404).json({
+        success: false,
+        message: "El producto no está en la lista del proveedor"
+      });
+    }
+
+    // Remover producto de la lista
+    provedor.productosBrindados = provedor.productosBrindados.filter(p => p !== productoLimpio);
+    await provedor.save();
+
+    // Respuesta exitosa
+    res.json({
+      success: true,
+      data: provedor
+    });
+  } catch (error) {
+    // Manejo de errores
+    res.status(500).json({
+      success: false,
+      message: "Error al remover producto",
+      error: error.message
     });
   }
 };
@@ -322,9 +455,17 @@ provedoresController.getProvedoresByProducto = async (req, res) => {
   try {
     const { producto } = req.params;
 
+    // Validar que producto no esté vacío
+    if (!producto || producto.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "El producto es requerido"
+      });
+    }
+
     // Buscar proveedores que ofrecen el producto
     const proveedores = await Provedores.find({ 
-      productosBrindados: producto,
+      productosBrindados: producto.trim(),
       activo: true 
     }).sort({ nombre: 1 });
 
@@ -338,7 +479,8 @@ provedoresController.getProvedoresByProducto = async (req, res) => {
     // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al buscar proveedores por producto"
+      message: "Error al buscar proveedores por producto",
+      error: error.message
     });
   }
 };

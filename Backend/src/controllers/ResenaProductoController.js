@@ -115,22 +115,61 @@ resenaProductoController.createResenaProducto = async (req, res) => {
     if (!ranking || !titulo || !detalle || !id_user || !id_producto) {
       return res.status(400).json({
         success: false,
-        message: "Campos obligatorios faltantes"
+        message: "Faltan campos obligatorios: ranking, titulo, detalle, id_user, id_producto"
+      });
+    }
+
+    // Validar que titulo no esté vacío
+    if (titulo.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "El título no puede estar vacío"
+      });
+    }
+
+    // Validar que detalle no esté vacío
+    if (detalle.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "El detalle no puede estar vacío"
+      });
+    }
+
+    // Validar ranking (debe ser número entre 1 y 5)
+    if (typeof ranking !== 'number' || ranking < 1 || ranking > 5) {
+      return res.status(400).json({
+        success: false,
+        message: "El ranking debe ser un número entre 1 y 5"
       });
     }
 
     // Validar ObjectIds
-    if (!mongoose.Types.ObjectId.isValid(id_user) || !mongoose.Types.ObjectId.isValid(id_producto)) {
+    if (!mongoose.Types.ObjectId.isValid(id_user)) {
       return res.status(400).json({
         success: false,
-        message: "IDs no válidos"
+        message: "ID de usuario inválido"
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id_producto)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de producto inválido"
+      });
+    }
+
+    // Validar tags si se proporcionan
+    if (tags && !Array.isArray(tags)) {
+      return res.status(400).json({
+        success: false,
+        message: "Los tags deben ser un array"
       });
     }
 
     // Verificar si ya existe reseña del usuario para este producto
     const resenaExistente = await ResenaProducto.findOne({ id_user, id_producto });
     if (resenaExistente) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
         message: "Ya existe una reseña de este usuario para este producto"
       });
@@ -145,7 +184,18 @@ resenaProductoController.createResenaProducto = async (req, res) => {
     }
 
     // Subir imágenes a Cloudinary
-    const imgUrls = await uploadImages(files);
+    let imgUrls = [];
+    if (files.length > 0) {
+      try {
+        imgUrls = await uploadImages(files);
+      } catch (uploadError) {
+        return res.status(400).json({
+          success: false,
+          message: "Error al subir imágenes",
+          error: uploadError.message
+        });
+      }
+    }
 
     // Procesar tags
     const tagsArray = tags ? (Array.isArray(tags) ? tags : [tags]) : [];
@@ -153,8 +203,8 @@ resenaProductoController.createResenaProducto = async (req, res) => {
     // Crear nueva reseña
     const nuevaResena = new ResenaProducto({
       ranking,
-      titulo,
-      detalle,
+      titulo: titulo.trim(),
+      detalle: detalle.trim(),
       id_user,
       id_producto,
       compraVerificada: compraVerificada || false,
@@ -177,7 +227,7 @@ resenaProductoController.createResenaProducto = async (req, res) => {
   } catch (error) {
     // Manejar error de duplicado (índice único)
     if (error.code === 11000) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
         message: "Ya existe una reseña de este usuario para este producto"
       });
@@ -215,15 +265,52 @@ resenaProductoController.updateResenaProducto = async (req, res) => {
 
     // Preparar datos de actualización
     const updateData = {};
-    if (ranking !== undefined) updateData.ranking = ranking;
-    if (titulo) updateData.titulo = titulo;
-    if (detalle) updateData.detalle = detalle;
+    
+    // Validar y agregar ranking si se proporciona
+    if (ranking !== undefined) {
+      if (typeof ranking !== 'number' || ranking < 1 || ranking > 5) {
+        return res.status(400).json({
+          success: false,
+          message: "El ranking debe ser un número entre 1 y 5"
+        });
+      }
+      updateData.ranking = ranking;
+    }
+
+    // Validar y agregar titulo si se proporciona
+    if (titulo) {
+      if (titulo.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "El título no puede estar vacío"
+        });
+      }
+      updateData.titulo = titulo.trim();
+    }
+
+    // Validar y agregar detalle si se proporciona
+    if (detalle) {
+      if (detalle.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "El detalle no puede estar vacío"
+        });
+      }
+      updateData.detalle = detalle.trim();
+    }
+
     if (compraVerificada !== undefined) updateData.compraVerificada = compraVerificada;
     if (activa !== undefined) updateData.activa = activa;
 
     // Manejar respuesta del vendedor
     if (respuestaVendedor !== undefined) {
-      updateData.respuestaVendedor = respuestaVendedor;
+      if (respuestaVendedor && respuestaVendedor.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "La respuesta del vendedor no puede estar vacía"
+        });
+      }
+      updateData.respuestaVendedor = respuestaVendedor.trim();
       if (respuestaVendedor.trim()) {
         updateData.fechaRespuestaVendedor = new Date();
       }
@@ -231,7 +318,13 @@ resenaProductoController.updateResenaProducto = async (req, res) => {
 
     // Procesar tags
     if (tags !== undefined) {
-      updateData.tags = Array.isArray(tags) ? tags : [tags];
+      if (!Array.isArray(tags)) {
+        return res.status(400).json({
+          success: false,
+          message: "Los tags deben ser un array"
+        });
+      }
+      updateData.tags = tags;
     }
 
     // Manejar nuevas imágenes
@@ -244,10 +337,18 @@ resenaProductoController.updateResenaProducto = async (req, res) => {
 
     // Si hay nuevas imágenes, reemplazar las anteriores
     if (files.length > 0) {
-      // Eliminar imágenes anteriores
-      await deleteImages(resena.img);
-      // Subir nuevas imágenes
-      updateData.img = await uploadImages(files);
+      try {
+        // Eliminar imágenes anteriores
+        await deleteImages(resena.img);
+        // Subir nuevas imágenes
+        updateData.img = await uploadImages(files);
+      } catch (uploadError) {
+        return res.status(400).json({
+          success: false,
+          message: "Error al procesar imágenes",
+          error: uploadError.message
+        });
+      }
     }
 
     // Actualizar reseña en base de datos
@@ -295,7 +396,12 @@ resenaProductoController.deleteResenaProducto = async (req, res) => {
     }
 
     // Eliminar imágenes de Cloudinary
-    await deleteImages(resena.img);
+    try {
+      await deleteImages(resena.img);
+    } catch (deleteError) {
+      console.error("Error eliminando imágenes:", deleteError);
+      // Continuar con la eliminación de la reseña aunque falle la eliminación de imágenes
+    }
 
     // Eliminar reseña de base de datos
     await ResenaProducto.findByIdAndDelete(id);
@@ -445,18 +551,26 @@ resenaProductoController.agregarRespuestaVendedor = async (req, res) => {
     const { id } = req.params;
     const { respuesta } = req.body;
 
+    // Validar ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID no válido"
+      });
+    }
+
     // Validar datos de entrada
-    if (!respuesta || !respuesta.trim()) {
+    if (!respuesta) {
       return res.status(400).json({
         success: false,
         message: "La respuesta es obligatoria"
       });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (respuesta.trim().length === 0) {
       return res.status(400).json({
         success: false,
-        message: "ID no válido"
+        message: "La respuesta no puede estar vacía"
       });
     }
 
@@ -469,7 +583,7 @@ resenaProductoController.agregarRespuestaVendedor = async (req, res) => {
     }
 
     // Agregar respuesta usando método del modelo
-    await resena.agregarRespuestaVendedor(respuesta);
+    await resena.agregarRespuestaVendedor(respuesta.trim());
 
     res.status(200).json({
       success: true,
