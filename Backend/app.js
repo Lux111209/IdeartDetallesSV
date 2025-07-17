@@ -19,7 +19,6 @@ import resenasProductoRoutes from "./src/routes/resenasProducto.js";
 import userRoutes from "./src/routes/User.js";
 import ventasRoutes from "./src/routes/venta.js";
 import personalizedProducts from "./src/routes/personalizedProducts.js";
-import passwordRecoveryRoutes from "./src/routes/passswordRecovery.js";
 
 
 // Crear instancia de Express
@@ -35,42 +34,17 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Importar middleware de validación (cuando lo tengas)
 import { validateAuthToken } from "./src/middlewares/validateAuthToken.js";
-<<<<<<< HEAD
-// CORS - permite que el frontend (en otro puerto) pueda hacer peticiones al backend con cookies
-const allowedOrigins = ["http://localhost:5174", "http://localhost:5173"]
-=======
->>>>>>> master
 // Crear una instancia de Express
 
 
 // Configuración de CORS
-
-
-
 app.use(
   cors({
-<<<<<<< HEAD
-    origin: function (origin, callback) {
-      // Permitir peticiones desde orígenes permitidos o sin origen (como Postman)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("No permitido por CORS"));
-      }
-    },
-    credentials: true, 
-  })
-);
-
-
-
-=======
     origin: ["http://localhost:5174", "http://localhost:5173"],
     credentials: true
   })
 );
 
->>>>>>> master
 // Middleware para analizar JSON y cookies
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -86,12 +60,6 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/login", loginRoutes);
 app.use("/api/logout", logoutRoutes);
 app.use("/api/registerUser", registerUserRoutes);
-<<<<<<< HEAD
-app.use("/api/passwordRecovery", passwordRecoveryRoutes);
-
-// Rutas de productos - PÚBLICAS para visualización
-=======
->>>>>>> master
 app.use("/api/products", productRoutes);
 app.use("/api/ofertas", ofertasRoutes);
 
@@ -104,12 +72,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/ventas", ventasRoutes);
 app.use("/api/productPersonalized", personalizedProducts);
 
-<<<<<<< HEAD
-
-// Ruta para verificar autenticación (útil para el frontend)
-=======
 // Ruta para verificar autenticación
->>>>>>> master
 app.get("/api/auth/verify", (req, res) => {
   try {
     const { authToken } = req.cookies;

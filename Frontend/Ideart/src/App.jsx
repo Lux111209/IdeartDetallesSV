@@ -14,13 +14,8 @@ import ProductDetail from "./pages/ProductDetail";
 import ShoppingCart from "./pages/ShoppingCart";
 import CheckoutInfo from "./pages/Checkout";
 import CreditForm from "./pages/CreditForm";
-<<<<<<< HEAD
-import RecuPassword from "./pages/RecoverPassword";
-
-=======
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
->>>>>>> master
 
 function App() {
   return (
@@ -43,10 +38,6 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/checkout" element={<CheckoutInfo />} />
         <Route path="/creditform" element={<CreditForm />} />
-<<<<<<< HEAD
-          <Route path="/recupassword" element={< RecuPassword/>} />
-      </Routes>
-=======
         <Route path="/settings" element={<Settings />} />
         <Route path="/reviews" element={<Reviews />} />
       </Route>
@@ -56,7 +47,7 @@ function App() {
       <Route path="/terminos" element={<TermsAndConditions />} />
     </Routes>
 
->>>>>>> master
   );
 }
+
 export default App;
