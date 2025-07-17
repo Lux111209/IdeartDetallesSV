@@ -1,111 +1,182 @@
-.popup-fullscreen {
+/* Fondo semitransparente para el modal */
+.modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #788c8a;
+  inset: 0;
+  background-color: rgba(120, 140, 138, 0.85);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
   padding: 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.modal-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
-  background-color: #9C0D38;
-}
-
-.popup-container {
+/* Caja blanca del modal con bordes redondeados y sombra */
+.modal-content {
   background: #fff;
-  padding: 2rem;
-  width: 90%;
-  max-width: 600px;
+  width: 450px;
+  max-height: 90vh;
   border-radius: 20px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
-  font-family: 'Segoe UI', sans-serif;
-  position: relative;
-}
+  padding: 2rem 2.5rem 2.5rem 2.5rem;
 
-.popup-close {
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
-  border: none;
-  background: none;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.popup-container h2 {
-  margin-bottom: 1rem;
-  font-weight: 700;
-  font-size: 1.8rem;
-  color: #222;
-  text-align: center;
-}
-
-.popup-container form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  overflow: hidden; /* para que el scroll no se escape */
 }
 
-.popup-container input[type="text"],
-.popup-container input[type="number"] {
-  padding: 10px;
-  border: 1.8px solid #ccc;
-  border-radius: 8px;
+/* Título centrado */
+.modal-content h2 {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.8rem;
+  color: #204c3c;
+  margin-bottom: 1.5rem;
+}
+
+/* Contenedor scrollable para los inputs */
+.modal-form-content {
+  overflow-y: auto;
+  max-height: calc(90vh - 150px); /* espacio para título y botones */
+  padding-right: 10px; /* evita cortar contenido al hacer scroll */
+
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Inputs estilo general */
+.modal-form-content input[type="text"],
+.modal-form-content input[type="number"],
+.modal-form-content input[type="color"],
+.modal-form-content input[type="file"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid #ccc;
+  border-radius: 12px;
   font-size: 1rem;
   transition: border-color 0.3s ease;
+  outline-offset: 2px;
+  box-sizing: border-box;
+  cursor: text;
 }
 
-.img-label {
+/* Focus en inputs */
+.modal-form-content input[type="text"]:focus,
+.modal-form-content input[type="number"]:focus,
+.modal-form-content input[type="color"]:focus,
+.modal-form-content input[type="file"]:focus {
+  border-color: #9C0D38;
+  outline: none;
+}
+
+/* Label para input file con margen arriba */
+.modal-form-content label {
   font-weight: 600;
-  margin-top: 1rem;
+  color: #204c3c;
+  cursor: pointer;
+  display: block;
+  margin-top: 0.8rem;
 }
 
-.img-preview {
+/* Preview imagen centrada */
+.image-preview {
   margin-top: 10px;
   text-align: center;
 }
 
-.img-preview img {
-  max-width: 100%;
+/* Imagen preview con tamaño fijo, borde redondeado y sombra */
+.image-preview img {
+  width: 140px;
   height: auto;
-  border-radius: 12px;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(32, 76, 60, 0.3);
+  object-fit: contain;
 }
 
-.popup-actions {
+/* Botones con espacio y diseño */
+.modal-buttons {
   display: flex;
   justify-content: space-between;
   margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+  gap: 1rem;
 }
 
-.save, .cancel {
-  padding: 10px 20px;
-  font-weight: bold;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-.save {
+/* Botón guardar principal */
+.modal-buttons .save {
   background-color: #9C0D38;
   color: white;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  border: none;
+  border-radius: 20px;
+  padding: 12px 30px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  flex: 1;
+  transition: background-color 0.3s ease;
 }
 
-.cancel {
+/* Hover guardar */
+.modal-buttons .save:hover {
+  background-color: #700927;
+}
+
+/* Botones cancelar y eliminar */
+.modal-buttons .cancel {
   background-color: #ccc;
   color: #333;
+  border: none;
+  border-radius: 20px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  flex: 1;
+  transition: background-color 0.3s ease;
 }
 
+/* Hover cancelar */
+.modal-buttons .cancel:hover {
+  background-color: #b3b3b3;
+}
+
+/* Estilo para mensajes de error */
 .error {
-  font-size: 0.9rem;
-  color: red;
+  color: #d93025;
+  font-size: 0.85rem;
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 90%;
+    padding: 1.5rem 1.8rem 2rem 1.8rem;
+  }
+
+  .modal-form-content {
+    max-height: calc(90vh - 130px);
+    padding: 1rem 1.2rem;
+  }
+
+  .image-preview img {
+    width: 110px;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .modal-buttons button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+  }
 }

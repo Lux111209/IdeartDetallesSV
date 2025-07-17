@@ -1,4 +1,3 @@
-// src/components/providersCart.jsx
 import React from "react";
 
 export default function EmpleadoCard({ empleado, onSelect }) {

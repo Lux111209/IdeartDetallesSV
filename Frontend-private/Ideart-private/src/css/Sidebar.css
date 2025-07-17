@@ -1,3 +1,4 @@
+/* Sidebar container básico */
 .sidebar {
   width: 240px;
   background-color: #9C0D38;
@@ -7,8 +8,24 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: fixed; /* fijo para que no se mueva */
+  top: 0;
+  left: 0;
+  transition: transform 0.3s ease; /* animación apertura/cierre */
+  z-index: 1000; /* por encima del contenido */
 }
 
+/* Cuando sidebar está cerrado en móvil se mueve fuera de pantalla */
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+/* Cuando está abierto se muestra normalmente */
+.sidebar.open {
+  transform: translateX(0);
+}
+
+/* Perfil usuario */
 .profile {
   text-align: center;
   margin-bottom: 2rem;
@@ -31,13 +48,14 @@
   color: #cccccc;
 }
 
+/* Menú navegación */
 .menu {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-/* Estilo para los links del menú */
+/* Estilos links */
 .menu a {
   display: block;
   color: white;
@@ -52,19 +70,19 @@
 }
 
 .menu a:hover {
-  background-color: #CF5375; /* Hover suave */
+  background-color: #CF5375; /* color hover */
   color: #9C0D38;
 }
 
-/* Link activo con estilo botón blanco redondeado */
 .menu a.active {
-  background-color: white;       /* Fondo blanco */
-  color: #CF5375;                /* Texto oscuro */
+  background-color: white; /* fondo blanco */
+  color: #CF5375;           /* texto rosa */
   font-weight: 700;
-  border-radius: 20px;           /* Más redondeado */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;      /* borde redondeado */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* sombra suave */
 }
 
+/* Botón logout */
 .logout {
   background: none;
   border: none;
@@ -73,4 +91,43 @@
   text-align: left;
   padding: 10px 12px;
   cursor: pointer;
+}
+
+/* Botón toggle menú (hamburguesa) visible solo en móvil */
+.toggle-btn {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1100; /* encima del sidebar */
+  background-color: #9C0D38;
+  color: white;
+  border: none;
+  font-size: 24px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Contenido principal con margen cuando sidebar abierto */
+.main-content {
+  margin-left: 240px;
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+/* Cuando sidebar cerrado el contenido ocupa todo */
+.main-content.sidebar-closed {
+  margin-left: 0;
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 600px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  /* En móvil siempre sin margen, porque sidebar se superpone */
+  .main-content {
+    margin-left: 0;
+  }
 }
