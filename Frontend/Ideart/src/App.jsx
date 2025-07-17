@@ -16,6 +16,8 @@ import CheckoutInfo from "./pages/Checkout";
 import CreditForm from "./pages/CreditForm";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import RecoverPassword from "./pages/RecoverPassword";
+
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
       {/* Solo si no hay sesión (públicas) */}
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/recupassword" element={<RecoverPassword />} />
       </Route>
 
       {/* Rutas protegidas */}
