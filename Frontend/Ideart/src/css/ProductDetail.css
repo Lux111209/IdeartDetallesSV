@@ -152,11 +152,10 @@ body {
 
 .toast-wrapper {
   position: fixed;
-  top: 90px;          
+  top: 90px;
   right: 20px;
   z-index: 9999;
 }
-
 
 .inline-toast {
   display: flex;
@@ -217,4 +216,53 @@ body {
   height: auto;
   object-fit: cover;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ Responsive Styles */
+@media (max-width: 768px) {
+  .product-detail-card {
+    flex-direction: column;
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+
+  .left-section,
+  .right-section {
+    width: 100%;
+    padding: 0;
+    align-items: center;
+  }
+
+  .left-section h2,
+  .right-section h2 {
+    font-size: 1.3rem;
+    text-align: center;
+  }
+
+  .main-image {
+    max-width: 90%;
+  }
+
+  .description {
+    max-width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .sizes {
+    justify-content: center;
+  }
+
+  .color-dots {
+    justify-content: center;
+  }
+
+  .custom-image-upload {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .add-to-cart {
+    width: 100%;
+    max-width: 300px;
+  }
 }

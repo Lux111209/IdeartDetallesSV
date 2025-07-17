@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/users";
 
+// Hook para manejar el usuario
 const useUser = (userId) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,7 +15,7 @@ const useUser = (userId) => {
       setError("No hay ID de usuario");
       return;
     }
-
+    // Función para obtener el usuario por ID
     const fetchUser = async () => {
       setLoading(true);
       try {
@@ -29,6 +30,7 @@ const useUser = (userId) => {
       }
     };
 
+    // Llamar a la función para obtener el usuario
     fetchUser();
   }, [userId]);
 

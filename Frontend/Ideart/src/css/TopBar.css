@@ -16,6 +16,7 @@
   height: 160px;
   object-fit: contain;
   display: block;
+  max-width: 100%;
 }
 
 .search-section {
@@ -24,10 +25,10 @@
   align-items: center;
   border: 2px solid #2e5647;
   border-radius: 999px;
-  padding: 8px 16px;   
+  padding: 8px 16px;
   margin: 0 2rem;
   max-width: 700px;
-  height: 48px; 
+  height: 48px;
   box-sizing: border-box;
 }
 
@@ -38,19 +39,6 @@
   font-size: 16px;
   padding: 6px 10px;
   border-radius: 999px;
-}
-
-.search-icon {
-  width: 28px; 
-  height: 28px;
-  background-color: #2e5647;
-  border-radius: 50%;
-  padding: 2px; 
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .search-icon {
@@ -67,8 +55,8 @@
 }
 
 .search-icon img {
-  width: 50px;
-  height: 50px;
+  width: 20px; /* Ajustado para no romper layout */
+  height: 20px;
   object-fit: contain;
 }
 
@@ -76,7 +64,6 @@
   background-color: #3b7359;
   transform: scale(1.1);
 }
-
 
 .icon-container {
   display: flex;
@@ -97,4 +84,92 @@
 .img:hover {
   transform: scale(1.05);
   filter: brightness(1.2);
+}
+
+/* MEDIA QUERIES RESPONSIVE */
+
+@media (max-width: 1024px) {
+  .top-bar {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 0.8rem 1rem;
+    gap: 0.5rem;
+  }
+
+  .top-bar .logo {
+    height: 100px;
+    margin-bottom: 0.5rem;
+  }
+
+  .search-section {
+    margin: 0 1rem;
+    max-width: 100%;
+    height: 40px;
+    padding: 4px 12px;
+  }
+
+  .lupa {
+    font-size: 14px;
+    padding: 4px 8px;
+  }
+
+  .search-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .search-icon img {
+    width: 16px;
+    height: 16px;
+  }
+
+  .icon-container {
+    gap: 16px;
+  }
+
+  .img {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-bar {
+    padding: 0.5rem 0.8rem;
+  }
+
+  .top-bar .logo {
+    height: 80px;
+    margin-bottom: 0.3rem;
+  }
+
+  .search-section {
+    margin: 0 0.5rem;
+    height: 36px;
+    padding: 2px 8px;
+  }
+
+  .lupa {
+    font-size: 12px;
+    padding: 2px 6px;
+  }
+
+  .search-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .search-icon img {
+    width: 14px;
+    height: 14px;
+  }
+
+  .icon-container {
+    gap: 12px;
+  }
+
+  .img {
+    width: 36px;
+    height: 36px;
+  }
 }

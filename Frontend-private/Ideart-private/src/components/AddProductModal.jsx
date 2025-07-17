@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import "../css/AddProductModal.css"; 
-import ModelViewer from "./TshirtModel";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Importa estilos de toast
 import "../css/AddProductModal.css";
+// import ModelViewer from "./TshirtModel"; // Lo comentamos según tu petición
 
 const AddProductModal = ({ onClose, onAdd }) => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const AddProductModal = ({ onClose, onAdd }) => {
     stock: "",
     productType: "",
     size: "",
+    color: "",
     imageFile: null,
     imagePreview: null,
   });
@@ -25,20 +27,21 @@ const AddProductModal = ({ onClose, onAdd }) => {
       newErrors.stock = "Stock debe ser cero o más";
     if (!formData.productType.trim()) newErrors.productType = "Tipo es requerido";
     if (!formData.size.trim()) newErrors.size = "Tamaño es requerido";
+    if (!formData.color.trim()) newErrors.color = "Color es requerido";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = e => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = e => {
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         imageFile: file,
         imagePreview: URL.createObjectURL(file),
@@ -46,11 +49,14 @@ const AddProductModal = ({ onClose, onAdd }) => {
     }
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!validate()) return;
 
-    // Crear nuevo producto simulado
+    if (!validate()) {
+      toast.error("Corrige los errores antes de guardar", { autoClose: 2500 });
+      return;
+    }
+
     const newProduct = {
       _id: Date.now().toString(),
       name: formData.name.trim(),
@@ -58,91 +64,104 @@ const AddProductModal = ({ onClose, onAdd }) => {
       stock: Number(formData.stock),
       productType: formData.productType.trim(),
       size: formData.size.trim(),
+      color: formData.color.trim(),
       images: [formData.imagePreview || "/images/placeholder.png"],
     };
 
     onAdd(newProduct);
+    toast.success("Producto agregado con éxito", { autoClose: 2500 });
     onClose();
   };
 
   return (
     <div className="modal-overlay">
       <form className="modal-content" onSubmit={handleSubmit} noValidate>
-        <h2>Agregar Nuevo Producto</h2>
+        <div className="modal-inner-box">
+          <h2>Agregar Nuevo Producto</h2>
 
-        <input
-          type="text"
-          name="name"
-          placeholder="Nombre"
-          value={formData.name}
-          onChange={handleInputChange}
-        />
-        {errors.name && <p className="error">{errors.name}</p>}
+          <div className="modal-form-content">
+            <input
+              type="text"
+              name="name"
+              placeholder="Nombre"
+              value={formData.name}
+              onChange={handleInputChange}
+            />
+            {errors.name && <p className="error">{errors.name}</p>}
 
-        <input
-          type="number"
-          step="0.01"
-          name="price"
-          placeholder="Precio"
-          value={formData.price}
-          onChange={handleInputChange}
-        />
-        {errors.price && <p className="error">{errors.price}</p>}
+            <input
+              type="number"
+              step="0.01"
+              name="price"
+              placeholder="Precio"
+              value={formData.price}
+              onChange={handleInputChange}
+            />
+            {errors.price && <p className="error">{errors.price}</p>}
 
-        <input
-          type="number"
-          name="stock"
-          placeholder="Stock"
-          value={formData.stock}
-          onChange={handleInputChange}
-        />
-        {errors.stock && <p className="error">{errors.stock}</p>}
+            <input
+              type="number"
+              name="stock"
+              placeholder="Stock"
+              value={formData.stock}
+              onChange={handleInputChange}
+            />
+            {errors.stock && <p className="error">{errors.stock}</p>}
 
-        <input
-          type="text"
-          name="productType"
-          placeholder="Tipo de producto"
-          value={formData.productType}
-          onChange={handleInputChange}
-        />
-        {errors.productType && <p className="error">{errors.productType}</p>}
+            <input
+              type="text"
+              name="productType"
+              placeholder="Tipo de producto"
+              value={formData.productType}
+              onChange={handleInputChange}
+            />
+            {errors.productType && <p className="error">{errors.productType}</p>}
 
-        <input
-          type="text"
-          name="size"
-          placeholder="Tamaño"
-          value={formData.size}
-          onChange={handleInputChange}
-        />
-        {errors.size && <p className="error">{errors.size}</p>}
+            <input
+              type="text"
+              name="size"
+              placeholder="Tamaño"
+              value={formData.size}
+              onChange={handleInputChange}
+            />
+            {errors.size && <p className="error">{errors.size}</p>}
 
-        <label style={{ marginBottom: "10px", fontWeight: "600" }}>
-          Seleccionar imagen:
-          <input type="file" accept="image/*" onChange={handleImageChange} />
-        </label>
+            <label>
+              Color:
+              <input
+                type="color"
+                name="color"
+                value={formData.color}
+                onChange={handleInputChange}
+                style={{ marginLeft: "8px", cursor: "pointer", width: "50px", height: "30px" }}
+              />
+            </label>
+            {errors.color && <p className="error">{errors.color}</p>}
 
-        {formData.imagePreview && (
-          <div className="image-preview">
-            <img src={formData.imagePreview} alt="Preview" />
+            <label>
+              Seleccionar imagen:
+              <input type="file" accept="image/*" onChange={handleImageChange} />
+            </label>
+
+            {formData.imagePreview && (
+              <div className="image-preview">
+                <img src={formData.imagePreview} alt="Preview" />
+              </div>
+            )}
           </div>
-        )}
-
-        {/* 👕 Modelo 3D solo si el tipo de producto es camisa */}
-        {formData.productType.toLowerCase().includes("camisa") && (
-          <div className="model-preview-container">
-            <h4>Vista previa 3D</h4>
-            <ModelViewer url="/models/tshirt.glb" />
-          </div>
-        )}
+        </div>
 
         <div className="modal-buttons">
-          <button type="submit" className="save">Guardar</button>
-          <button type="button" className="cancel" onClick={onClose}>Cancelar</button>
+          <button type="submit" className="save">
+            Guardar
+          </button>
+          <button type="button" className="cancel" onClick={onClose}>
+            Cancelar
+          </button>
         </div>
       </form>
     </div>
   );
-
 };
 
 export default AddProductModal;

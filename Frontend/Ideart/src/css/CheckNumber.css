@@ -1,0 +1,265 @@
+/* CheckNumber.css - Clean Design */
+.check-number-container {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.check-number-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .check-number-wrapper {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.check-number-content {
+  padding: 2rem;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .check-number-content {
+    margin: 0;
+    padding: 3rem;
+  }
+}
+
+.check-number-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #A93A60;
+  margin-bottom: 1rem;
+  text-align: left;
+  letter-spacing: -0.02em;
+}
+
+.check-number-subtitle {
+  font-size: 1.1rem;
+  color: #6b7280;
+  font-weight: 500;
+  margin-bottom: 2rem;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.check-number-description {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.check-number-description strong {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.verification-code-container {
+  margin-bottom: 2rem;
+}
+
+.verification-code-inputs {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.verification-code-input {
+  width: 50px;
+  height: 50px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.verification-code-input:focus {
+  outline: none;
+  border-color: #A93A60;
+  box-shadow: 0 0 0 3px rgba(169, 58, 96, 0.1);
+}
+
+.verification-code-input.filled {
+  border-color: #A93A60;
+  background: #fef2f2;
+}
+
+.verification-code-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.check-number-messages {
+  margin-bottom: 1.5rem;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check-number-message {
+  font-size: 0.875rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.check-number-message.loading {
+  color: #6b7280;
+}
+
+.check-number-message.error {
+  color: #dc2626;
+}
+
+.check-number-message.success {
+  color: #16a34a;
+}
+
+/* Botones con mayor separación y sin hover verde */
+.check-number-buttons-container {
+  display: flex;
+  gap: 2rem; /* Mayor separación entre botones */
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+.check-number-button {
+  flex: 1;
+  padding: 1rem 2rem;
+  background: #A93A60;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.check-number-button:hover:not(:disabled) {
+  background: #A93A60; /* Mantiene el mismo color en hover */
+  transform: none; /* Elimina el efecto de elevación */
+  box-shadow: none; /* Elimina la sombra en hover */
+}
+
+.check-number-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.check-number-button.secondary {
+  background: transparent;
+  color: #6b7280;
+  border: 2px solid #e5e7eb;
+}
+
+.check-number-button.secondary:hover:not(:disabled) {
+  background: transparent; /* Elimina el fondo en hover */
+  border-color: #e5e7eb; /* Mantiene el mismo borde */
+  color: #6b7280; /* Mantiene el mismo color de texto */
+}
+
+.check-number-progress {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.check-number-progress-bar {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.check-number-progress-bar.inactive {
+  background-color: #e5e7eb;
+}
+
+.check-number-progress-bar.active {
+  background-color: #A93A60;
+}
+
+/* Estilo para la imagen redonda sin marco */
+.check-number-image-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check-number-image-wrapper {
+  width: 100%;
+  max-width: 500px;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check-number-image {
+  width: 80%;
+  height: 80%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1023px) {
+  .check-number-container {
+    padding: 1rem;
+  }
+  
+  .check-number-wrapper {
+    gap: 2rem;
+  }
+  
+  .check-number-content {
+    padding: 1.5rem;
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .check-number-title {
+    font-size: 2rem;
+    text-align: center;
+  }
+  
+  .check-number-subtitle,
+  .check-number-description {
+    text-align: center;
+  }
+  
+  .check-number-buttons-container {
+    flex-direction: column;
+    gap: 1rem; /* Mayor separación en móvil */
+  }
+  
+  .check-number-image-wrapper {
+    max-width: 350px;
+    height: 350px;
+  }
+}

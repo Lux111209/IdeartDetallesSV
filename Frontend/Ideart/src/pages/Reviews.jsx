@@ -5,6 +5,7 @@ import TopBar from '../components/TopBar';
 import ReviewSection from '../components/Section';
 import '../css/Reviews.css';
 
+// Componente para mostrar las reseñas
 const Reviews = () => {
   return (
     <>
