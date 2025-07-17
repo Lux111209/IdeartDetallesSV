@@ -1,25 +1,30 @@
-/* src/css/Pedidos.css */
-
+/* === Layout principal === */
 .layout {
   display: flex;
   min-height: 100vh;
 }
 
+/* === Contenedor principal === */
 .contenedor-pedidos {
   display: flex;
   flex: 1;
+  transition: all 0.3s ease;
 }
 
+/* === Lista de pedidos === */
 .lista-pedidos {
-  width: 50%;
+  flex: 1;
   padding: 30px;
   background-color: #dff0ff;
+  overflow-y: auto;
+  transition: all 0.3s ease;
 }
 
+/* === Cards de pedidos === */
 .cards-contenedor {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .card-pedido {
@@ -29,8 +34,13 @@
   display: flex;
   gap: 15px;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 16px;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.card-pedido:hover {
+  transform: scale(1.02);
 }
 
 .card-pedido.activa {
@@ -46,10 +56,36 @@
   font-weight: bold;
 }
 
-.detalle-pedido {
-  width: 50%;
+/* === Panel de detalles del pedido === */
+.detalle-wrapper {
+  flex: 1;
   background-color: #e9d8ff;
   padding: 30px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.detalle-pedido {
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* === Lista de productos === */
+.productos-lista {
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -57,28 +93,36 @@
 
 .producto-detalle {
   display: flex;
-  gap: 20px;
   align-items: center;
+  gap: 15px;
+  padding: 10px;
+  background: #f7f1ff;
+  border-radius: 12px;
 }
 
 .imagen-producto {
-  width: 80px;
-  height: 80px;
-  border-radius: 10px;
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
   object-fit: cover;
+  border: 1px solid #ccc;
 }
 
 .info-producto .titulo {
+  font-size: 16px;
   font-weight: bold;
-  font-size: 18px;
+  margin: 0;
 }
 
 .extra-info {
   font-size: 14px;
+  color: #555;
 }
 
+/* === Botones === */
 .botones {
   display: flex;
+  justify-content: flex-end;
   gap: 10px;
   margin-top: auto;
 }
@@ -89,6 +133,7 @@
   border-radius: 20px;
   font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .btn.completado {
@@ -104,6 +149,7 @@
   background-color: #9c0d38;
   color: white;
 }
+
 .btn.rechazar {
   background-color: #a70029;
   color: white;

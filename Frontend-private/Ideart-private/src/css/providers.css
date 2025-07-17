@@ -58,8 +58,7 @@ body {
   transition: width 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
 }
 
-/* Aquí empieza el cambio solicitado */
-
+/* Cuando no hay selección ni edición oculto el panel derecho y ancho izquierdo es 100% */
 .contenedor.sin-seleccion .panel-derecho {
   width: 0;
   padding: 0;
@@ -71,8 +70,6 @@ body {
 .contenedor.sin-seleccion .panel-izquierdo {
   width: 100%;
 }
-
-/* Resto del CSS igual */
 
 .avatar-grande {
   width: 120px;
@@ -231,4 +228,27 @@ body {
 
 .btn-cancelar:hover {
   background-color: #777;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .contenedor {
+    flex-direction: column;
+    height: auto;
+  }
+  .panel-izquierdo {
+    width: 100%;
+    height: auto;
+  }
+  .panel-derecho {
+    width: 100%;
+    padding: 15px;
+    margin-top: 20px;
+  }
+  .contenedor.sin-seleccion .panel-derecho {
+    width: 100%;
+    opacity: 1;
+    padding: 15px;
+    pointer-events: auto;
+  }
 }

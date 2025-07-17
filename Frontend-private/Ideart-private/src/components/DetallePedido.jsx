@@ -1,33 +1,48 @@
-// src/components/DetallePedido.jsx
 import React from "react";
 
+// Este componente muestra el detalle del pedido seleccionado
 export default function DetallePedido({ pedido, onCompletar, onCancelar, onDescargar }) {
-  if (!pedido) return null;
+  if (!pedido) return null; // si no hay pedido, no renderiza nada
 
   return (
     <div className="detalle-pedido">
-      <h3>Detalle Pedido #{pedido.id}</h3>
-      <p><strong>Cliente:</strong> {pedido.cliente}</p>
-      <p><strong>Fecha:</strong> {pedido.fecha}</p>
-      <p><strong>Estado:</strong> {pedido.estado}</p>
-      <p><strong>Productos:</strong></p>
-      <ul>
-        {pedido.productos && pedido.productos.map((producto, index) => (
-          <li key={index}>
-            {producto.nombre} - Cantidad: {producto.cantidad}
-          </li>
-        ))}
-      </ul>
+      <h2>Pedido #{pedido.numero}</h2>
+      <p><strong>Cliente:</strong> {pedido.nombre}</p>
+      <p><strong>Email:</strong> {pedido.email}</p>
+      <p><strong>Fecha:</strong> {pedido.fecha || "12/07/2025"}</p>
+      <p><strong>Estado:</strong> {pedido.estado || "Pendiente"}</p>
 
-      <div className="botones-accion" style={{ marginTop: "1rem", display: "flex", gap: "10px" }}>
-        <button className="btn completar" onClick={onCompletar}>
-          Completar Pedido
+      <h3>Productos</h3>
+      <div className="productos-lista">
+        {pedido.productos?.length > 0 ? (
+          pedido.productos.map((producto, index) => (
+            <div className="producto-detalle" key={index}>
+              <img
+                src={producto.imagen || "https://via.placeholder.com/80"}
+                alt={producto.nombre}
+                className="imagen-producto"
+              />
+              <div className="info-producto">
+                <p className="titulo">{producto.nombre}</p>
+                <p className="extra-info">Cantidad: {producto.cantidad}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>No hay productos en este pedido.</p>
+        )}
+      </div>
+
+      {/* Botones de acciones */}
+      <div className="botones">
+        <button className="btn completado" onClick={onCompletar}>
+          ✅ Completar Pedido
         </button>
         <button className="btn cancelar" onClick={onCancelar}>
-          Cancelar Pedido
+          ❌ Cancelar Pedido
         </button>
         <button className="btn descargar" onClick={onDescargar}>
-          Descargar
+          ⬇️ Descargar
         </button>
       </div>
     </div>
