@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Hook para obtener y manejar las reseñas generales
 const API_URL = 'http://localhost:5000/api/resenasgeneral';
 
 export const useFetchGeneralReview = () => {
@@ -9,6 +10,7 @@ export const useFetchGeneralReview = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Función para obtener una reseña específica por ID
   const fetchAllResenas = async () => {
     setLoading(true);
     setError(null);

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Star, ThumbsUp } from 'lucide-react';
 
+// Componente para mostrar una reseña
 const ReviewCard = ({ resena, onUpdate }) => {
   const [util, setUtil] = useState(resena.util || 0);
   const [clicked, setClicked] = useState(false);
 
+  // Maneja el clic en el botón "útil"
   const handleUtil = async () => {
     if (clicked) return;
     try {
@@ -19,6 +21,7 @@ const ReviewCard = ({ resena, onUpdate }) => {
     }
   };
 
+  // Renderiza la tarjeta de reseña
   return (
     <div className="review-card">
       <div className="review-header">

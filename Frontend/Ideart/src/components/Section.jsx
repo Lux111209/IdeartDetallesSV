@@ -4,6 +4,7 @@ import ReviewCard from './ReviewCard';
 import { useFetchGeneralReview } from '../hooks/useFetchGeneralReview';
 import '../css/Reviews.css';
 
+// Componente para la sección de reseñas
 const ReviewSection = () => {
   const [showForm, setShowForm] = useState(false);
   const { resenas, fetchAllResenas, loading, error } = useFetchGeneralReview();
@@ -17,6 +18,7 @@ const ReviewSection = () => {
     fetchAllResenas();
   };
 
+  // Renderiza la sección de reseñas
   return (
     <div className="review-section">
       <h2>Opiniones de Clientes</h2>
@@ -34,6 +36,7 @@ const ReviewSection = () => {
         />
       )}
 
+      {/* Muestra un mensaje de carga o error si es necesario */}
       {loading && <p>Cargando reseñas...</p>}
 
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
@@ -42,6 +45,7 @@ const ReviewSection = () => {
         <p>No hay reseñas aún.</p>
       )}
 
+      {/* Mapea las reseñas y las muestra */}
       <div className="review-list">
         {resenas.map(resena => (
           <ReviewCard key={resena._id} resena={resena} onUpdate={handleRefresh} />

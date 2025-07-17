@@ -7,15 +7,19 @@ import '../css/Home.css';
 const Home = () => {
   return (
     <>
+      {/* Barra superior con información adicional */}
       <div className="top-bar">
         <TopBar />
       </div>
 
+      {/* Navegación principal */}
       <div className="navbar-wrapper">
         <Navbar />
       </div>
 
+      {/* Contenido principal de la página */}
       <div className="home">
+        {/* Collage de imágenes decorativas */}
         <section className="collage-grid">
           <div className="grid-item img5">
             <img src="/H2.jpg" alt="Decoración 1" />
@@ -34,6 +38,7 @@ const Home = () => {
           </div>
         </section>
 
+        {/* Sección con promociones destacadas */}
         <section className="promotions">
           <h2>Promociones</h2>
           <div className="promotion-cards">
@@ -49,6 +54,7 @@ const Home = () => {
           </div>
         </section>
 
+        {/* Sección de confianza con texto e imagen */}
         <section className="trust">
           <div className="trust-text">
             <h2>¿Por qué confiar en Ideart?</h2>
@@ -62,6 +68,7 @@ const Home = () => {
         </section>
       </div>
 
+      {/* Pie de página común */}
       <Footer />
     </>
   );

@@ -13,8 +13,10 @@ import Footer from "../components/Footer";
 import "../css/Setting.css";
 
 const Settings = () => {
+  // Estado para controlar si las notificaciones están activadas o no
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
+  // Función para activar o desactivar las notificaciones
   const toggleNotifications = () => {
     setNotificationsEnabled(!notificationsEnabled);
   };
@@ -23,10 +25,13 @@ const Settings = () => {
     <>
       <TopBar />
       <Navbar />
+
+      {/* Contenedor principal de la página de configuración */}
       <div className="settings-page">
         <div className="settings-box">
           <h2 className="settings-header">Configuración</h2>
 
+          {/* Opción para activar/desactivar notificaciones */}
           <div className="settings-item">
             <div className="icon-label">
               <Bell size={24} />
@@ -38,16 +43,17 @@ const Settings = () => {
                 checked={notificationsEnabled}
                 onChange={toggleNotifications}
               />
-              <span className="slider"></span>
+              <span className="slider"></span> {/* Estilo del switch */}
             </label>
           </div>
 
+          {/* Opciones navegables (solo visuales aquí, sin funcionalidad) */}
           <div className="settings-item clickable">
             <div className="icon-label">
               <Globe size={24} />
               <span>Idioma</span>
             </div>
-            <ChevronRight size={20} />
+            <ChevronRight size={20} /> {/* Icono flecha para indicar navegación */}
           </div>
 
           <div className="settings-item clickable">
@@ -75,6 +81,7 @@ const Settings = () => {
           </div>
         </div>
       </div>
+
       <Footer />
     </>
   );

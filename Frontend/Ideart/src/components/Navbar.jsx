@@ -40,7 +40,7 @@ const Navbar = () => {
         </li>
       </ul>
 
-      {/* ✅ Íconos aparte y pegados a la derecha */}
+      {/*  Íconos aparte y pegados a la derecha */}
       <div className="nav-settings">
         <div
           className="logout-icon"

@@ -1,5 +1,5 @@
 import React from "react";
-
+//Se ocupa para mostrar una galería de imágenes de productos
 const ImageGallery = () => {
   return (
     <div className="image-gallery">

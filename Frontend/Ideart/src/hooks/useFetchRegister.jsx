@@ -2,16 +2,19 @@ import { useState, useCallback } from "react";
 
 const API_URL = "http://localhost:5000/api/registerUser";
 
+// Hook para manejar el registro de usuarios
 const useRegister = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState("");
   const [success, setSuccess] = useState(false);
 
+  // Función para manejar el registro
   const register = useCallback(async (userData) => {
     setLoading(true);
     setError("");
     setSuccess(false);
 
+    // Validación básica del formulario
     try {
       const res = await fetch(`${API_URL}/register`, {
         method: "POST",
@@ -20,6 +23,7 @@ const useRegister = () => {
         body: JSON.stringify(userData),
       });
 
+      // Verifica si la respuesta es exitosa
       const data = await res.json();
 
       if (!res.ok) {
