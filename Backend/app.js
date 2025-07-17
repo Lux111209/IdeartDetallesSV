@@ -19,6 +19,7 @@ import resenasProductoRoutes from "./src/routes/resenasProducto.js";
 import userRoutes from "./src/routes/User.js";
 import ventasRoutes from "./src/routes/venta.js";
 import personalizedProducts from "./src/routes/personalizedProducts.js";
+import passwordRecovery from "./src/routes/passswordRecovery.js";
 
 
 // Crear instancia de Express
@@ -62,6 +63,7 @@ app.use("/api/logout", logoutRoutes);
 app.use("/api/registerUser", registerUserRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/ofertas", ofertasRoutes);
+app.use("/api/passwordRecovery", passwordRecovery);
 
 // Rutas protegidas
 app.use("/api/carrito", carritoRoutes);
