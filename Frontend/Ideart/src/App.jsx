@@ -17,6 +17,7 @@ import CreditForm from "./pages/CreditForm";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import RecoverPassword from "./pages/RecoverPassword";
+import CheckNumber from "./pages/CheckNumber";
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/recupassword" element={<RecoverPassword />} />
+        <Route path="/CheckNumber" element={<CheckNumber />} />
       </Route>
 
       {/* Rutas protegidas */}
