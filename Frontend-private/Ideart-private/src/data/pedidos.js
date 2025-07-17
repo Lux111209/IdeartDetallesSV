@@ -1,52 +1,45 @@
+// Datos quemados para simular pedidos en el sistema
 const pedidos = [
   {
     id: 1,
-    nombre: "Jason Alberto",
-    numero: 1,
-    email: "jasonalberto@gmail.com",
-    cantidad: 35,
-    descripcion: "Desea tazas personalizadas con diseño anime. Entregar antes del viernes.",
-    producto: {
-      nombre: "Taza con diseño de Sylveon",
-      precio: 9.80,
-      imagen: "/taza.png", // esta imagen debe estar en tu carpeta public
-      talla: "Adulto",
-      color: "Azul",
-      stock: "En Stock"
-    }
+    numero: "A-001",
+    nombre: "María González",
+    email: "maria@example.com",
+    fecha: "2025-07-12",
+    estado: "Pendiente",
+    ubicacion: "Santa Tecla",
+    productos: [
+      {
+        nombre: "Taza personalizada",
+        cantidad: 2,
+        precio: 5.99,
+        imagen: "https://via.placeholder.com/80",
+      },
+      {
+        nombre: "Camiseta estampada",
+        cantidad: 1,
+        precio: 12.5,
+        imagen: "https://via.placeholder.com/80",
+      },
+    ],
   },
   {
     id: 2,
-    nombre: "Valeria Sánchez",
-    numero: 2,
-    email: "valeria.sanchez@example.com",
-    cantidad: 12,
-    descripcion: "Playeras rosas para grupo juvenil.",
-    producto: {
-      nombre: "Playera personalizada",
-      precio: 12.50,
-      imagen: "/playera.png",
-      talla: "M",
-      color: "Rosa pastel",
-      stock: "En Stock"
-    }
+    numero: "A-002",
+    nombre: "Luis Pérez",
+    email: "luis@example.com",
+    fecha: "2025-07-11",
+    estado: "Pendiente",
+    ubicacion: "San Salvador",
+    productos: [
+      {
+        nombre: "Libreta artística",
+        cantidad: 3,
+        precio: 3.5,
+        imagen: "https://via.placeholder.com/80",
+      },
+    ],
   },
-  {
-    id: 3,
-    nombre: "Carlos Méndez",
-    numero: 3,
-    email: "carlosmendez@email.com",
-    cantidad: 8,
-    descripcion: "Diseño corporativo para tazas de empresa.",
-    producto: {
-      nombre: "Taza corporativa con logo",
-      precio: 11.00,
-      imagen: "/taza-empresa.png",
-      talla: "Única",
-      color: "Blanco",
-      stock: "Bajo stock"
-    }
-  }
 ];
 
 export default pedidos;

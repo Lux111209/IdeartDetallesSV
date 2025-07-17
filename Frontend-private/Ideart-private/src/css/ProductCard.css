@@ -7,23 +7,34 @@
   align-items: center;
   background-color: white;
   border-radius: 15px;
+  box-sizing: border-box;
+  transition: transform 0.2s ease;
+}
+
+/* Efecto hover sutil para mejor UX */
+.product-card:hover {
+  transform: translateY(-4px);
 }
 
 .product-img img {
   width: 100px;
   height: 100px;
   object-fit: contain;
+  border-radius: 10px;
 }
 
 .product-info h3 {
   font-size: 16px;
   margin: 10px 0 5px;
+  color: #204c3c;
+  font-weight: 700;
 }
 
 .product-info p {
   margin: 0;
   font-size: 14px;
   text-align: center;
+  color: #333;
 }
 
 .product-details {
@@ -32,4 +43,55 @@
   margin-top: 8px;
   font-size: 12px;
   color: gray;
+  gap: 4px;
+}
+
+/* === Responsive para pantallas más chicas === */
+@media (max-width: 768px) {
+  .product-card {
+    width: 140px;
+    padding: 10px;
+  }
+
+  .product-img img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .product-info h3 {
+    font-size: 14px;
+  }
+
+  .product-info p {
+    font-size: 12px;
+  }
+
+  .product-details {
+    font-size: 11px;
+  }
+}
+
+/* Para móviles muy pequeños */
+@media (max-width: 480px) {
+  .product-card {
+    width: 120px;
+    padding: 8px;
+  }
+
+  .product-img img {
+    width: 70px;
+    height: 70px;
+  }
+
+  .product-info h3 {
+    font-size: 13px;
+  }
+
+  .product-info p {
+    font-size: 11px;
+  }
+
+  .product-details {
+    font-size: 10px;
+  }
 }

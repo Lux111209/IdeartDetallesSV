@@ -1,14 +1,26 @@
-.contenedor-personalizaciones {
+/* Layout general de la página con sidebar y contenido */
+.layout {
   display: flex;
   height: 100vh;
   background: #e0f2ff;
-  padding: 1rem;
   box-sizing: border-box;
 }
 
+/* Contenedor principal que sostiene la lista y el panel derecho */
+.contenedor-personalizaciones {
+  display: flex;
+  flex: 1;
+  padding: 1rem;
+  gap: 1rem;
+  box-sizing: border-box;
+}
+
+/* Lista de solicitudes a la izquierda */
 .lista-solicitudes {
   flex: 1;
   padding: 1rem;
+  overflow-y: auto;
+  max-height: 90vh;
 }
 
 .lista-solicitudes h2 {
@@ -16,12 +28,14 @@
   font-size: 1.5rem;
 }
 
+/* Contenedor de cards de solicitudes */
 .cards-contenedor {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
+/* Cada card de solicitud */
 .card-solicitud {
   display: flex;
   align-items: center;
@@ -31,6 +45,7 @@
   border-radius: 10px;
   cursor: pointer;
   transition: transform 0.2s ease;
+  user-select: none;
 }
 
 .card-solicitud:hover {
@@ -41,116 +56,114 @@
   border: 2px solid #ff4780;
 }
 
+/* Icono de cliente dentro de la card */
 .icono-cliente {
   font-size: 2rem;
+  flex-shrink: 0;
 }
 
+/* Información dentro de la card */
 .info .nombre {
   font-weight: bold;
   font-size: 1.1rem;
 }
 
+/* Panel detalle (lado derecho) */
 .panel-detalle {
-  width: 300px;
+  width: 400px;
+  max-height: 90vh; /* Para que no sobrepase la pantalla */
   background: #f3dcf8;
   padding: 1.5rem;
   border-radius: 10px;
-  margin-left: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  position: relative;
+  overflow-y: auto; /* scroll interno si contenido es grande */
 }
 
+/* Imagen producto dentro del panel */
 .panel-detalle img.imagen-producto {
   width: 100%;
+  height: auto;
+  max-height: 180px;
   border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
+/* Texto de rol */
 .panel-detalle .rol {
   color: gray;
   font-size: 0.9rem;
 }
 
+/* Mensajes de error */
+.mensaje-error {
+  color: #c20000;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  background: #ffe1e1;
+  padding: 0.5rem;
+  border-radius: 6px;
+}
+
+/* Botones dentro del panel (alineados en fila) */
 .botones {
   margin-top: auto;
   display: flex;
   gap: 0.5rem;
-  justify-content: space-between;
+  justify-content: center;
+  flex-wrap: nowrap;
 }
 
+/* Estilos comunes para botones */
 .btn {
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
   border: none;
+  min-width: 90px;
+  flex-shrink: 1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
 }
 
+/* Botón aceptar */
 .btn.aceptar {
   background: #e17c9e;
   color: white;
 }
 
+.btn.aceptar:hover {
+  background: #c8657f;
+}
+
+/* Botón cancelar */
 .btn.cancelar {
   background: #eacbf3;
   color: black;
 }
 
+.btn.cancelar:hover {
+  background: #d8b8de;
+}
+
+/* Botón rechazar */
 .btn.rechazar {
   background: #a70029;
   color: white;
 }
-.layout {
-  display: flex;
-  height: 100vh;
+
+.btn.rechazar:hover {
+  background: #7a001e;
 }
 
-.contenedor-personalizaciones {
-  display: flex;
-  flex: 1;
-  background: #e0f2ff;
-  padding: 1rem;
-  box-sizing: border-box;
-}
-
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-}
-
-.popup-contenido {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
-
-.popup-contenido textarea {
-  resize: none;
-  height: 100px;
-  padding: 0.5rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-family: inherit;
-  font-size: 1rem;
-}
-
-.popup-contenido h3 {
-  margin: 0;
-  font-size: 1.2rem;
-}
+/* Popup overlay para modales */
 .popup-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -161,6 +174,7 @@
   z-index: 999;
 }
 
+/* Contenido dentro de los popups */
 .popup-contenido {
   background: white;
   padding: 2rem;
@@ -172,6 +186,7 @@
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
 
+/* Textarea dentro de modales */
 .popup-contenido textarea {
   resize: none;
   height: 100px;
@@ -182,17 +197,42 @@
   font-size: 1rem;
 }
 
+/* Título dentro modales */
 .popup-contenido h3 {
   margin: 0;
   font-size: 1.2rem;
 }
 
-.mensaje-error {
-  color: #c20000;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  background: #ffe1e1;
-  padding: 0.5rem;
-  border-radius: 6px;
-}
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
 
+  .contenedor-personalizaciones {
+    flex-direction: column;
+    padding: 1rem 0.5rem;
+  }
+
+  .lista-solicitudes {
+    max-height: 40vh;
+    padding: 0.5rem;
+  }
+
+  .panel-detalle {
+    width: 100%;
+    max-height: 50vh;
+    margin-top: 1rem;
+    padding: 1rem;
+  }
+
+  .botones {
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+
+  .btn {
+    min-width: 45%;
+    margin-bottom: 0.5rem;
+  }
+}
