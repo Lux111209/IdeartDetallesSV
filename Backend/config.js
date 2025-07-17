@@ -3,7 +3,7 @@ dotenv.config();
 
 export const config = {
     // Puerto del servidor
-    PORT: process.env.PORT || 5000,
+    PORT: process.env.PORT,
     
     // Entorno de desarrollo
     NODE_ENV: process.env.NODE_ENV ,

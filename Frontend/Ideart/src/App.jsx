@@ -1,5 +1,7 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "./css/AuthForm.css";
+import { Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./routes/ProtectedRoutes";
+import PublicRoute from "./routes/PublicRoutes";
+
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -12,26 +14,49 @@ import ProductDetail from "./pages/ProductDetail";
 import ShoppingCart from "./pages/ShoppingCart";
 import CheckoutInfo from "./pages/Checkout";
 import CreditForm from "./pages/CreditForm";
+<<<<<<< HEAD
 import RecuPassword from "./pages/RecoverPassword";
 
+=======
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+>>>>>>> master
 
 function App() {
   return (
-      <Routes>
-        <Route path="/" element={<Home />} />
+    <Routes>
+      {/* Primera vez: Register como página de inicio */}
+      <Route path="/" element={<Register />} />
+
+      {/* Solo si no hay sesión (públicas) */}
+      <Route element={<PublicRoute />}>
+        <Route path="/login" element={<Login />} />
+      </Route>
+
+      {/* Rutas protegidas */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/home" element={<Home />} />
         <Route path="/products" element={<Product />} />
         <Route path="/products/:nombre" element={<ProductDetail />} />
         <Route path="/shoppingcart" element={<ShoppingCart />} />
         <Route path="/category" element={<Category />} />
-        <Route path="/contactus" element={<ContactUs />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/terminos" element={<TermsAndConditions />} />
-        <Route path="/reviews" element={<Reviews />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/checkout" element={<CheckoutInfo />} />
         <Route path="/creditform" element={<CreditForm />} />
+<<<<<<< HEAD
           <Route path="/recupassword" element={< RecuPassword/>} />
       </Routes>
+=======
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/reviews" element={<Reviews />} />
+      </Route>
+
+      {/* Rutas accesibles sin importar autenticación */}
+      <Route path="/contactus" element={<ContactUs />} />
+      <Route path="/terminos" element={<TermsAndConditions />} />
+    </Routes>
+
+>>>>>>> master
   );
 }
 export default App;

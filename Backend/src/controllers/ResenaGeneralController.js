@@ -3,23 +3,25 @@ import mongoose from "mongoose";
 
 const resenaGeneralController = {};
 
-// GET - Obtener todas las reseñas generales
+// GET - Obtener todas las reseñas
 resenaGeneralController.getResenas = async (req, res) => {
   try {
+    // Buscar reseñas activas y poblar referencias
     const resenas = await ResenaGeneral.find({ activa: true })
       .populate('id_user', 'nombre correo')
-      .populate('id_producto', 'name price productType')
+      .populate('id_producto', 'name price')
       .sort({ fechaResena: -1 });
     
-    res.status(200).json({
+    // Respuesta exitosa
+    res.json({
       success: true,
-      data: resenas,
-      count: resenas.length
+      data: resenas
     });
   } catch (error) {
+    // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al obtener las reseñas",
+      message: "Error al obtener reseñas",
       error: error.message
     });
   }
@@ -30,18 +32,20 @@ resenaGeneralController.getResenaById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validar que el ID sea válido
+    // Validar ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
-        message: "ID de reseña no válido"
+        message: "ID no válido"
       });
     }
 
+    // Buscar reseña y poblar referencias
     const resena = await ResenaGeneral.findById(id)
       .populate('id_user', 'nombre correo')
-      .populate('id_producto', 'name price productType description');
+      .populate('id_producto', 'name price');
 
+    // Verificar si existe
     if (!resena) {
       return res.status(404).json({
         success: false,
@@ -49,226 +53,285 @@ resenaGeneralController.getResenaById = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    // Respuesta exitosa
+    res.json({
       success: true,
       data: resena
     });
   } catch (error) {
+    // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al obtener la reseña",
+      message: "Error al obtener reseña",
       error: error.message
     });
   }
 };
 
-// POST - Crear una nueva reseña general
+// POST - Crear nueva reseña
 resenaGeneralController.createResena = async (req, res) => {
   try {
     const { ranking, titulo, tiposExperiencia, detalle, id_user, id_producto } = req.body;
 
-    // Validaciones básicas
+    // Validar campos requeridos
     if (!ranking || !titulo || !detalle || !id_user || !id_producto) {
       return res.status(400).json({
         success: false,
-        message: "Todos los campos obligatorios deben ser proporcionados"
+        message: "Faltan campos obligatorios: ranking, titulo, detalle, id_user, id_producto"
       });
     }
 
-    // Validar IDs
-    if (!mongoose.Types.ObjectId.isValid(id_user) || !mongoose.Types.ObjectId.isValid(id_producto)) {
+    // Validar que titulo no esté vacío
+    if (titulo.trim().length === 0) {
       return res.status(400).json({
         success: false,
-        message: "IDs de usuario o producto no válidos"
+        message: "El título no puede estar vacío"
       });
     }
 
-    // Validar que tiposExperiencia sea un array si se proporciona
-    let experienciasArray = tiposExperiencia || [];
-    if (experienciasArray && !Array.isArray(experienciasArray)) {
-      experienciasArray = [experienciasArray];
+    // Validar que detalle no esté vacío
+    if (detalle.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "El detalle no puede estar vacío"
+      });
     }
 
-    // Verificar si ya existe una reseña del mismo usuario para el mismo producto
-    const resenaExistente = await ResenaGeneral.findOne({
-      id_user: id_user,
-      id_producto: id_producto
-    });
-
-    if (resenaExistente) {
+    // Validar ranking (debe ser número entre 1 y 5)
+    if (typeof ranking !== 'number' || ranking < 1 || ranking > 5) {
       return res.status(400).json({
+        success: false,
+        message: "El ranking debe ser un número entre 1 y 5"
+      });
+    }
+
+    // Validar IDs de usuario y producto
+    if (!mongoose.Types.ObjectId.isValid(id_user)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de usuario inválido"
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id_producto)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de producto inválido"
+      });
+    }
+
+    // Validar tiposExperiencia si se proporciona
+    if (tiposExperiencia && !Array.isArray(tiposExperiencia)) {
+      return res.status(400).json({
+        success: false,
+        message: "Los tipos de experiencia deben ser un array"
+      });
+    }
+
+    // Verificar reseña duplicada
+    const existe = await ResenaGeneral.findOne({ id_user, id_producto });
+    if (existe) {
+      return res.status(409).json({
         success: false,
         message: "Ya existe una reseña de este usuario para este producto"
       });
     }
 
+    // Crear nueva reseña
     const nuevaResena = new ResenaGeneral({
       ranking,
-      titulo,
-      tiposExperiencia: experienciasArray,
-      detalle,
+      titulo: titulo.trim(),
+      tiposExperiencia: tiposExperiencia || [],
+      detalle: detalle.trim(),
       id_user,
       id_producto
     });
 
-    const resenaGuardada = await nuevaResena.save();
+    // Guardar en base de datos
+    const guardada = await nuevaResena.save();
     
-    // Poblar la reseña guardada para la respuesta
-    const resenaCompleta = await ResenaGeneral.findById(resenaGuardada._id)
+    // Poblar para respuesta
+    const completa = await ResenaGeneral.findById(guardada._id)
       .populate('id_user', 'nombre correo')
-      .populate('id_producto', 'name price productType');
+      .populate('id_producto', 'name price');
 
+    // Respuesta exitosa
     res.status(201).json({
       success: true,
-      message: "Reseña creada exitosamente",
-      data: resenaCompleta
+      data: completa
     });
   } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({
-        success: false,
-        message: "Ya existe una reseña de este usuario para este producto"
-      });
-    }
-    
+    // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al crear la reseña",
+      message: "Error al crear reseña",
       error: error.message
     });
   }
 };
 
-// PUT - Actualizar una reseña por ID
+// PUT - Actualizar reseña
 resenaGeneralController.updateResena = async (req, res) => {
   try {
     const { id } = req.params;
     const { ranking, titulo, tiposExperiencia, detalle, activa } = req.body;
 
-    // Validar que el ID sea válido
+    // Validar ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
-        message: "ID de reseña no válido"
-      });
-    }
-
-    // Verificar si la reseña existe
-    const resenaExistente = await ResenaGeneral.findById(id);
-    if (!resenaExistente) {
-      return res.status(404).json({
-        success: false,
-        message: "Reseña no encontrada"
+        message: "ID no válido"
       });
     }
 
     // Preparar datos de actualización
     const updateData = {};
     
-    if (ranking !== undefined) updateData.ranking = ranking;
-    if (titulo) updateData.titulo = titulo;
-    if (detalle) updateData.detalle = detalle;
-    if (activa !== undefined) updateData.activa = activa;
-    
-    // Validar tipos de experiencia si se proporcionan
-    if (tiposExperiencia !== undefined) {
-      let experienciasArray = tiposExperiencia;
-      if (!Array.isArray(experienciasArray)) {
-        experienciasArray = [experienciasArray];
+    // Validar y agregar ranking si se proporciona
+    if (ranking !== undefined) {
+      if (typeof ranking !== 'number' || ranking < 1 || ranking > 5) {
+        return res.status(400).json({
+          success: false,
+          message: "El ranking debe ser un número entre 1 y 5"
+        });
       }
-      updateData.tiposExperiencia = experienciasArray;
+      updateData.ranking = ranking;
     }
 
-    const resenaActualizada = await ResenaGeneral.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    ).populate('id_user', 'nombre correo')
-     .populate('id_producto', 'name price productType');
-
-    res.status(200).json({
-      success: true,
-      message: "Reseña actualizada exitosamente",
-      data: resenaActualizada
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error al actualizar la reseña",
-      error: error.message
-    });
-  }
-};
-
-// DELETE - Eliminar una reseña por ID
-resenaGeneralController.deleteResena = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    // Validar que el ID sea válido
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "ID de reseña no válido"
-      });
+    // Validar y agregar titulo si se proporciona
+    if (titulo) {
+      if (titulo.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "El título no puede estar vacío"
+        });
+      }
+      updateData.titulo = titulo.trim();
     }
 
-    const resenaEliminada = await ResenaGeneral.findByIdAndDelete(id);
-    
-    if (!resenaEliminada) {
+    // Validar y agregar detalle si se proporciona
+    if (detalle) {
+      if (detalle.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "El detalle no puede estar vacío"
+        });
+      }
+      updateData.detalle = detalle.trim();
+    }
+
+    // Validar tiposExperiencia si se proporciona
+    if (tiposExperiencia) {
+      if (!Array.isArray(tiposExperiencia)) {
+        return res.status(400).json({
+          success: false,
+          message: "Los tipos de experiencia deben ser un array"
+        });
+      }
+      updateData.tiposExperiencia = tiposExperiencia;
+    }
+
+    if (activa !== undefined) updateData.activa = activa;
+
+    // Actualizar en base de datos
+    const actualizada = await ResenaGeneral.findByIdAndUpdate(id, updateData, { new: true })
+      .populate('id_user', 'nombre correo')
+      .populate('id_producto', 'name price');
+
+    // Verificar si existe
+    if (!actualizada) {
       return res.status(404).json({
         success: false,
         message: "Reseña no encontrada"
       });
     }
 
-    res.status(200).json({
+    // Respuesta exitosa
+    res.json({
       success: true,
-      message: "Reseña eliminada exitosamente",
-      data: resenaEliminada
+      data: actualizada
     });
   } catch (error) {
+    // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al eliminar la reseña",
+      message: "Error al actualizar reseña",
       error: error.message
     });
   }
 };
 
-// GET - Obtener reseñas por producto
+// DELETE - Eliminar reseña
+resenaGeneralController.deleteResena = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validar ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID no válido"
+      });
+    }
+
+    // Eliminar de base de datos
+    const eliminada = await ResenaGeneral.findByIdAndDelete(id);
+    
+    // Verificar si existía
+    if (!eliminada) {
+      return res.status(404).json({
+        success: false,
+        message: "Reseña no encontrada"
+      });
+    }
+
+    // Respuesta exitosa
+    res.json({
+      success: true,
+      message: "Reseña eliminada"
+    });
+  } catch (error) {
+    // Manejo de errores
+    res.status(500).json({
+      success: false,
+      message: "Error al eliminar reseña",
+      error: error.message
+    });
+  }
+};
+
+// GET - Reseñas por producto
 resenaGeneralController.getResenasByProducto = async (req, res) => {
   try {
     const { id_producto } = req.params;
 
+    // Validar ID de producto
     if (!mongoose.Types.ObjectId.isValid(id_producto)) {
       return res.status(400).json({
         success: false,
-        message: "ID de producto no válido"
+        message: "ID de producto inválido"
       });
     }
 
-    const resenas = await ResenaGeneral.find({ 
-      id_producto: id_producto, 
-      activa: true 
-    })
-    .populate('id_user', 'nombre')
-    .sort({ fechaResena: -1 });
+    // Buscar reseñas del producto
+    const resenas = await ResenaGeneral.find({ id_producto, activa: true })
+      .populate('id_user', 'nombre')
+      .sort({ fechaResena: -1 });
 
-    // Calcular estadísticas
-    const totalResenas = resenas.length;
-    const promedioRanking = totalResenas > 0 ? 
-      resenas.reduce((sum, resena) => sum + resena.ranking, 0) / totalResenas : 0;
+    // Calcular promedio de ranking
+    const total = resenas.length;
+    const promedio = total > 0 ? 
+      resenas.reduce((sum, r) => sum + r.ranking, 0) / total : 0;
 
-    res.status(200).json({
+    // Respuesta exitosa
+    res.json({
       success: true,
       data: resenas,
-      estadisticas: {
-        totalResenas,
-        promedioRanking: Math.round(promedioRanking * 10) / 10
-      }
+      total: total,
+      promedio: Math.round(promedio * 10) / 10
     });
   } catch (error) {
+    // Manejo de errores
     res.status(500).json({
       success: false,
       message: "Error al obtener reseñas del producto",
@@ -277,31 +340,32 @@ resenaGeneralController.getResenasByProducto = async (req, res) => {
   }
 };
 
-// GET - Obtener reseñas por usuario
+// GET - Reseñas por usuario
 resenaGeneralController.getResenasByUsuario = async (req, res) => {
   try {
     const { id_user } = req.params;
 
+    // Validar ID de usuario
     if (!mongoose.Types.ObjectId.isValid(id_user)) {
       return res.status(400).json({
         success: false,
-        message: "ID de usuario no válido"
+        message: "ID de usuario inválido"
       });
     }
 
-    const resenas = await ResenaGeneral.find({ 
-      id_user: id_user, 
-      activa: true 
-    })
-    .populate('id_producto', 'name price productType')
-    .sort({ fechaResena: -1 });
+    // Buscar reseñas del usuario
+    const resenas = await ResenaGeneral.find({ id_user, activa: true })
+      .populate('id_producto', 'name price')
+      .sort({ fechaResena: -1 });
 
-    res.status(200).json({
+    // Respuesta exitosa
+    res.json({
       success: true,
       data: resenas,
-      count: resenas.length
+      total: resenas.length
     });
   } catch (error) {
+    // Manejo de errores
     res.status(500).json({
       success: false,
       message: "Error al obtener reseñas del usuario",
@@ -310,18 +374,20 @@ resenaGeneralController.getResenasByUsuario = async (req, res) => {
   }
 };
 
-// PUT - Marcar reseña como útil
+// PUT - Marcar como útil
 resenaGeneralController.marcarUtil = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Validar ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
-        message: "ID de reseña no válido"
+        message: "ID no válido"
       });
     }
 
+    // Buscar reseña
     const resena = await ResenaGeneral.findById(id);
     if (!resena) {
       return res.status(404).json({
@@ -330,17 +396,20 @@ resenaGeneralController.marcarUtil = async (req, res) => {
       });
     }
 
-    await resena.marcarUtil();
+    // Incrementar utilidad
+    resena.util += 1;
+    await resena.save();
 
-    res.status(200).json({
+    // Respuesta exitosa
+    res.json({
       success: true,
-      message: "Reseña marcada como útil",
-      data: resena
+      util: resena.util
     });
   } catch (error) {
+    // Manejo de errores
     res.status(500).json({
       success: false,
-      message: "Error al marcar la reseña como útil",
+      message: "Error al marcar como útil",
       error: error.message
     });
   }

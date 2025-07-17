@@ -67,3 +67,16 @@
   align-items: center;
   padding: 8px;
 }
+
+.logout-icon {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px;
+  transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
+}
+
+.logout-icon:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}

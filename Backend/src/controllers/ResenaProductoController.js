@@ -2,7 +2,7 @@ import ResenaProducto from "../models/ResenaProducto.js";
 import { v2 as cloudinary } from "cloudinary";
 import mongoose from "mongoose";
 
-// Configuración de Cloudinary - Usa variables de entorno directamente
+// Configuración de Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -12,65 +12,42 @@ cloudinary.config({
 
 const resenaProductoController = {};
 
-// Función auxiliar para subir múltiples imágenes a Cloudinary
-const uploadMultipleImages = async (files) => {
+// Función auxiliar para subir imágenes a Cloudinary
+const uploadImages = async (files) => {
+  if (!files || files.length === 0) return [];
+
   const imageUrls = [];
-  if (!files || files.length === 0) {
-    console.log("No se recibieron archivos de imagen");
-    return imageUrls;
-  }
-
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
+  for (const file of files) {
     try {
-      if (!file.path) {
-        console.error(`Error: El archivo ${i + 1} no tiene ruta válida`, file);
-        continue;
-      }
-
       const result = await cloudinary.uploader.upload(file.path, {
         folder: "ResenasProducto",
-        resource_type: "auto",
-        allowed_formats: ["jpg", "png", "jpeg", "webp", "tiff"],
         transformation: [{ width: 800, height: 600, crop: "limit" }],
-        quality: "auto:good",
-        fetch_format: "auto"
+        quality: "auto:good"
       });
-
-      if (result && result.secure_url) {
-        imageUrls.push(result.secure_url);
-      } else {
-        console.error(`Error: Cloudinary no devolvió una URL segura para la imagen ${i + 1}`, result);
-      }
-    } catch (cloudinaryError) {
-      console.error(`Error al subir imagen ${i + 1} a Cloudinary:`, cloudinaryError);
+      imageUrls.push(result.secure_url);
+    } catch (error) {
+      console.error("Error subiendo imagen:", error);
     }
   }
-
   return imageUrls;
 };
 
 // Función auxiliar para eliminar imágenes de Cloudinary
-const deleteCloudinaryImages = async (imageUrls) => {
+const deleteImages = async (imageUrls) => {
   if (!imageUrls || imageUrls.length === 0) return;
 
   for (const imageUrl of imageUrls) {
     try {
-      // Extraer el public_id de la URL de Cloudinary
-      const urlParts = imageUrl.split('/');
-      const fileNameWithExtension = urlParts.pop();
-      const fileName = fileNameWithExtension.split('.')[0];
-      const folderPublicId = `ResenasProducto/${fileName}`;
-      
-      await cloudinary.uploader.destroy(folderPublicId);
-      console.log(`Imagen eliminada de Cloudinary: ${folderPublicId}`);
+      const fileName = imageUrl.split('/').pop().split('.')[0];
+      const publicId = `ResenasProducto/${fileName}`;
+      await cloudinary.uploader.destroy(publicId);
     } catch (error) {
-      console.error(`Error al eliminar imagen de Cloudinary: ${imageUrl}`, error);
+      console.error("Error eliminando imagen:", error);
     }
   }
 };
 
-// GET todas las reseñas de productos
+// GET - Obtener todas las reseñas activas
 resenaProductoController.getResenasProducto = async (req, res) => {
   try {
     const resenas = await ResenaProducto.find({ activa: true })
@@ -86,27 +63,28 @@ resenaProductoController.getResenasProducto = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Error al obtener reseñas de producto",
+      message: "Error al obtener reseñas",
       error: error.message
     });
   }
 };
 
-// GET reseña por ID
+// GET - Obtener reseña por ID
 resenaProductoController.getResenaProductoById = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Validar ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
-        message: "ID de reseña no válido"
+        message: "ID no válido"
       });
     }
 
     const resena = await ResenaProducto.findById(id)
       .populate('id_user', 'nombre correo')
-      .populate('id_producto', 'name price productType description');
+      .populate('id_producto', 'name price productType');
 
     if (!resena) {
       return res.status(404).json({
@@ -122,104 +100,134 @@ resenaProductoController.getResenaProductoById = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Error al obtener la reseña",
+      message: "Error al obtener reseña",
       error: error.message
     });
   }
 };
 
-// CREATE reseña de producto con múltiples imágenes
+// POST - Crear nueva reseña con imágenes
 resenaProductoController.createResenaProducto = async (req, res) => {
   try {
-    const {
-      ranking,
-      titulo,
-      detalle,
-      id_user,
-      id_producto,
-      compraVerificada,
-      respuestaVendedor,
-      tags
-    } = req.body;
+    const { ranking, titulo, detalle, id_user, id_producto, compraVerificada, tags } = req.body;
 
-    // Validaciones básicas
+    // Validar campos obligatorios
     if (!ranking || !titulo || !detalle || !id_user || !id_producto) {
       return res.status(400).json({
         success: false,
-        message: "Ranking, título, detalle, ID de usuario e ID de producto son obligatorios"
+        message: "Faltan campos obligatorios: ranking, titulo, detalle, id_user, id_producto"
       });
     }
 
-    // Validar IDs
-    if (!mongoose.Types.ObjectId.isValid(id_user) || !mongoose.Types.ObjectId.isValid(id_producto)) {
+    // Validar que titulo no esté vacío
+    if (titulo.trim().length === 0) {
       return res.status(400).json({
         success: false,
-        message: "IDs de usuario o producto no válidos"
+        message: "El título no puede estar vacío"
       });
     }
 
-    // Verificar si ya existe una reseña del mismo usuario para el mismo producto
-    const resenaExistente = await ResenaProducto.findOne({
-      id_user: id_user,
-      id_producto: id_producto
-    });
-
-    if (resenaExistente) {
+    // Validar que detalle no esté vacío
+    if (detalle.trim().length === 0) {
       return res.status(400).json({
+        success: false,
+        message: "El detalle no puede estar vacío"
+      });
+    }
+
+    // Validar ranking (debe ser número entre 1 y 5)
+    if (typeof ranking !== 'number' || ranking < 1 || ranking > 5) {
+      return res.status(400).json({
+        success: false,
+        message: "El ranking debe ser un número entre 1 y 5"
+      });
+    }
+
+    // Validar ObjectIds
+    if (!mongoose.Types.ObjectId.isValid(id_user)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de usuario inválido"
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id_producto)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de producto inválido"
+      });
+    }
+
+    // Validar tags si se proporcionan
+    if (tags && !Array.isArray(tags)) {
+      return res.status(400).json({
+        success: false,
+        message: "Los tags deben ser un array"
+      });
+    }
+
+    // Verificar si ya existe reseña del usuario para este producto
+    const resenaExistente = await ResenaProducto.findOne({ id_user, id_producto });
+    if (resenaExistente) {
+      return res.status(409).json({
         success: false,
         message: "Ya existe una reseña de este usuario para este producto"
       });
     }
 
-    // Procesar tags
-    let tagsArray = tags || [];
-    if (tagsArray && !Array.isArray(tagsArray)) {
-      tagsArray = [tagsArray];
-    }
-
-    // Obtener archivos de imágenes desde multer
+    // Procesar archivos de imagen
     let files = [];
-    if (req.files && req.files.img && Array.isArray(req.files.img)) {
-      files = req.files.img;
-    } else if (req.files && req.files.img) {
-      files = [req.files.img];
-    } else if (req.files && req.files.images && Array.isArray(req.files.images)) {
-      files = req.files.images;
+    if (req.files?.img) {
+      files = Array.isArray(req.files.img) ? req.files.img : [req.files.img];
     } else if (req.file) {
       files = [req.file];
     }
 
-    const imgUrls = await uploadMultipleImages(files);
+    // Subir imágenes a Cloudinary
+    let imgUrls = [];
+    if (files.length > 0) {
+      try {
+        imgUrls = await uploadImages(files);
+      } catch (uploadError) {
+        return res.status(400).json({
+          success: false,
+          message: "Error al subir imágenes",
+          error: uploadError.message
+        });
+      }
+    }
 
-    // Crear la reseña
+    // Procesar tags
+    const tagsArray = tags ? (Array.isArray(tags) ? tags : [tags]) : [];
+
+    // Crear nueva reseña
     const nuevaResena = new ResenaProducto({
       ranking,
-      titulo,
-      detalle,
+      titulo: titulo.trim(),
+      detalle: detalle.trim(),
       id_user,
       id_producto,
       compraVerificada: compraVerificada || false,
       img: imgUrls,
-      respuestaVendedor,
       tags: tagsArray
     });
 
     const savedResena = await nuevaResena.save();
     
-    // Poblar la reseña guardada para la respuesta
+    // Poblar datos para respuesta
     const resenaCompleta = await ResenaProducto.findById(savedResena._id)
       .populate('id_user', 'nombre correo')
       .populate('id_producto', 'name price productType');
 
     res.status(201).json({
       success: true,
-      message: "Reseña de producto creada exitosamente",
-      data: resenaCompleta,
-      imagesUploaded: imgUrls.length
+      message: "Reseña creada exitosamente",
+      data: resenaCompleta
     });
   } catch (error) {
+    // Manejar error de duplicado (índice único)
     if (error.code === 11000) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
         message: "Ya existe una reseña de este usuario para este producto"
       });
@@ -227,23 +235,23 @@ resenaProductoController.createResenaProducto = async (req, res) => {
     
     res.status(500).json({
       success: false,
-      message: "Error al crear la reseña de producto",
+      message: "Error al crear reseña",
       error: error.message
     });
   }
 };
 
-// UPDATE reseña de producto
+// PUT - Actualizar reseña existente
 resenaProductoController.updateResenaProducto = async (req, res) => {
   try {
     const { id } = req.params;
     const { ranking, titulo, detalle, compraVerificada, respuestaVendedor, tags, activa } = req.body;
 
-    // Validar que el ID sea válido
+    // Validar ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
-        message: "ID de reseña no válido"
+        message: "ID no válido"
       });
     }
 
@@ -251,55 +259,99 @@ resenaProductoController.updateResenaProducto = async (req, res) => {
     if (!resena) {
       return res.status(404).json({
         success: false,
-        message: "Reseña de producto no encontrada"
+        message: "Reseña no encontrada"
       });
     }
 
     // Preparar datos de actualización
     const updateData = {};
-    if (ranking !== undefined) updateData.ranking = ranking;
-    if (titulo) updateData.titulo = titulo;
-    if (detalle) updateData.detalle = detalle;
+    
+    // Validar y agregar ranking si se proporciona
+    if (ranking !== undefined) {
+      if (typeof ranking !== 'number' || ranking < 1 || ranking > 5) {
+        return res.status(400).json({
+          success: false,
+          message: "El ranking debe ser un número entre 1 y 5"
+        });
+      }
+      updateData.ranking = ranking;
+    }
+
+    // Validar y agregar titulo si se proporciona
+    if (titulo) {
+      if (titulo.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "El título no puede estar vacío"
+        });
+      }
+      updateData.titulo = titulo.trim();
+    }
+
+    // Validar y agregar detalle si se proporciona
+    if (detalle) {
+      if (detalle.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "El detalle no puede estar vacío"
+        });
+      }
+      updateData.detalle = detalle.trim();
+    }
+
     if (compraVerificada !== undefined) updateData.compraVerificada = compraVerificada;
+    if (activa !== undefined) updateData.activa = activa;
+
+    // Manejar respuesta del vendedor
     if (respuestaVendedor !== undefined) {
-      updateData.respuestaVendedor = respuestaVendedor;
+      if (respuestaVendedor && respuestaVendedor.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "La respuesta del vendedor no puede estar vacía"
+        });
+      }
+      updateData.respuestaVendedor = respuestaVendedor.trim();
       if (respuestaVendedor.trim()) {
         updateData.fechaRespuestaVendedor = new Date();
       }
     }
-    if (activa !== undefined) updateData.activa = activa;
 
-    // Procesar tags si se proporcionan
+    // Procesar tags
     if (tags !== undefined) {
-      let tagsArray = tags;
-      if (!Array.isArray(tagsArray)) {
-        tagsArray = [tagsArray];
+      if (!Array.isArray(tags)) {
+        return res.status(400).json({
+          success: false,
+          message: "Los tags deben ser un array"
+        });
       }
-      updateData.tags = tagsArray;
+      updateData.tags = tags;
     }
 
     // Manejar nuevas imágenes
     let files = [];
-    if (req.files && req.files.img && Array.isArray(req.files.img)) {
-      files = req.files.img;
-    } else if (req.files && req.files.img) {
-      files = [req.files.img];
-    } else if (req.files && req.files.images && Array.isArray(req.files.images)) {
-      files = req.files.images;
+    if (req.files?.img) {
+      files = Array.isArray(req.files.img) ? req.files.img : [req.files.img];
     } else if (req.file) {
       files = [req.file];
     }
 
+    // Si hay nuevas imágenes, reemplazar las anteriores
     if (files.length > 0) {
-      // Eliminar imágenes anteriores de Cloudinary
-      if (resena.img && resena.img.length > 0) {
-        await deleteCloudinaryImages(resena.img);
+      try {
+        // Eliminar imágenes anteriores
+        await deleteImages(resena.img);
+        // Subir nuevas imágenes
+        updateData.img = await uploadImages(files);
+      } catch (uploadError) {
+        return res.status(400).json({
+          success: false,
+          message: "Error al procesar imágenes",
+          error: uploadError.message
+        });
       }
-      // Subir nuevas imágenes
-      const newImgUrls = await uploadMultipleImages(files);
-      updateData.img = newImgUrls;
     }
 
+    // Actualizar reseña en base de datos
     const updatedResena = await ResenaProducto.findByIdAndUpdate(
       id, 
       updateData, 
@@ -310,28 +362,28 @@ resenaProductoController.updateResenaProducto = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Reseña de producto actualizada exitosamente",
+      message: "Reseña actualizada exitosamente",
       data: updatedResena
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Error al actualizar la reseña de producto",
+      message: "Error al actualizar reseña",
       error: error.message
     });
   }
 };
 
-// DELETE reseña de producto
+// DELETE - Eliminar reseña completamente
 resenaProductoController.deleteResenaProducto = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validar que el ID sea válido
+    // Validar ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
-        message: "ID de reseña no válido"
+        message: "ID no válido"
       });
     }
 
@@ -339,35 +391,40 @@ resenaProductoController.deleteResenaProducto = async (req, res) => {
     if (!resena) {
       return res.status(404).json({
         success: false,
-        message: "Reseña de producto no encontrada"
+        message: "Reseña no encontrada"
       });
     }
 
     // Eliminar imágenes de Cloudinary
-    if (resena.img && resena.img.length > 0) {
-      await deleteCloudinaryImages(resena.img);
+    try {
+      await deleteImages(resena.img);
+    } catch (deleteError) {
+      console.error("Error eliminando imágenes:", deleteError);
+      // Continuar con la eliminación de la reseña aunque falle la eliminación de imágenes
     }
 
+    // Eliminar reseña de base de datos
     await ResenaProducto.findByIdAndDelete(id);
     
     res.status(200).json({
       success: true,
-      message: "Reseña de producto eliminada exitosamente"
+      message: "Reseña eliminada exitosamente"
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Error al eliminar la reseña de producto",
+      message: "Error al eliminar reseña",
       error: error.message
     });
   }
 };
 
-// GET reseñas por producto
+// GET - Obtener reseñas de un producto específico con estadísticas
 resenaProductoController.getResenasByProducto = async (req, res) => {
   try {
     const { id_producto } = req.params;
 
+    // Validar ObjectId
     if (!mongoose.Types.ObjectId.isValid(id_producto)) {
       return res.status(400).json({
         success: false,
@@ -375,8 +432,9 @@ resenaProductoController.getResenasByProducto = async (req, res) => {
       });
     }
 
+    // Obtener reseñas del producto
     const resenas = await ResenaProducto.find({ 
-      id_producto: id_producto, 
+      id_producto, 
       activa: true 
     })
     .populate('id_user', 'nombre')
@@ -387,6 +445,7 @@ resenaProductoController.getResenasByProducto = async (req, res) => {
     const promedioRanking = totalResenas > 0 ? 
       resenas.reduce((sum, resena) => sum + resena.ranking, 0) / totalResenas : 0;
     
+    // Distribución de rankings
     const distribucionRanking = {
       5: resenas.filter(r => r.ranking === 5).length,
       4: resenas.filter(r => r.ranking === 4).length,
@@ -414,11 +473,12 @@ resenaProductoController.getResenasByProducto = async (req, res) => {
   }
 };
 
-// GET reseñas por usuario
+// GET - Obtener reseñas de un usuario específico
 resenaProductoController.getResenasByUsuario = async (req, res) => {
   try {
     const { id_user } = req.params;
 
+    // Validar ObjectId
     if (!mongoose.Types.ObjectId.isValid(id_user)) {
       return res.status(400).json({
         success: false,
@@ -427,7 +487,7 @@ resenaProductoController.getResenasByUsuario = async (req, res) => {
     }
 
     const resenas = await ResenaProducto.find({ 
-      id_user: id_user, 
+      id_user, 
       activa: true 
     })
     .populate('id_producto', 'name price productType')
@@ -447,15 +507,16 @@ resenaProductoController.getResenasByUsuario = async (req, res) => {
   }
 };
 
-// PUT - Marcar reseña como útil
+// PUT - Incrementar contador de utilidad de una reseña
 resenaProductoController.marcarUtil = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Validar ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
-        message: "ID de reseña no válido"
+        message: "ID no válido"
       });
     }
 
@@ -467,6 +528,7 @@ resenaProductoController.marcarUtil = async (req, res) => {
       });
     }
 
+    // Incrementar utilidad usando método del modelo
     await resena.marcarUtil();
 
     res.status(200).json({
@@ -477,29 +539,38 @@ resenaProductoController.marcarUtil = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Error al marcar la reseña como útil",
+      message: "Error al marcar reseña como útil",
       error: error.message
     });
   }
 };
 
-// PUT - Agregar respuesta del vendedor
+// PUT - Agregar respuesta del vendedor a una reseña
 resenaProductoController.agregarRespuestaVendedor = async (req, res) => {
   try {
     const { id } = req.params;
     const { respuesta } = req.body;
 
-    if (!respuesta || !respuesta.trim()) {
-      return res.status(400).json({
-        success: false,
-        message: "La respuesta del vendedor es obligatoria"
-      });
-    }
-
+    // Validar ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
-        message: "ID de reseña no válido"
+        message: "ID no válido"
+      });
+    }
+
+    // Validar datos de entrada
+    if (!respuesta) {
+      return res.status(400).json({
+        success: false,
+        message: "La respuesta es obligatoria"
+      });
+    }
+
+    if (respuesta.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "La respuesta no puede estar vacía"
       });
     }
 
@@ -511,113 +582,24 @@ resenaProductoController.agregarRespuestaVendedor = async (req, res) => {
       });
     }
 
-    await resena.agregarRespuestaVendedor(respuesta);
+    // Agregar respuesta usando método del modelo
+    await resena.agregarRespuestaVendedor(respuesta.trim());
 
     res.status(200).json({
       success: true,
-      message: "Respuesta del vendedor agregada exitosamente",
+      message: "Respuesta agregada exitosamente",
       data: resena
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Error al agregar respuesta del vendedor",
+      message: "Error al agregar respuesta",
       error: error.message
     });
   }
 };
 
-// PUT - Agregar tag a reseña
-resenaProductoController.agregarTag = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { tag } = req.body;
-
-    if (!tag || !tag.trim()) {
-      return res.status(400).json({
-        success: false,
-        message: "El tag es obligatorio"
-      });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "ID de reseña no válido"
-      });
-    }
-
-    const resena = await ResenaProducto.findById(id);
-    if (!resena) {
-      return res.status(404).json({
-        success: false,
-        message: "Reseña no encontrada"
-      });
-    }
-
-    resena.agregarTag(tag.toLowerCase());
-    await resena.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Tag agregado exitosamente",
-      data: { tags: resena.tags }
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error al agregar tag",
-      error: error.message
-    });
-  }
-};
-
-// PUT - Remover tag de reseña
-resenaProductoController.removerTag = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { tag } = req.body;
-
-    if (!tag || !tag.trim()) {
-      return res.status(400).json({
-        success: false,
-        message: "El tag es obligatorio"
-      });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "ID de reseña no válido"
-      });
-    }
-
-    const resena = await ResenaProducto.findById(id);
-    if (!resena) {
-      return res.status(404).json({
-        success: false,
-        message: "Reseña no encontrada"
-      });
-    }
-
-    resena.removerTag(tag.toLowerCase());
-    await resena.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Tag removido exitosamente",
-      data: { tags: resena.tags }
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error al remover tag",
-      error: error.message
-    });
-  }
-};
-
-// GET - Obtener reseñas con compra verificada
+// GET - Obtener solo reseñas con compra verificada
 resenaProductoController.getResenasVerificadas = async (req, res) => {
   try {
     const resenas = await ResenaProducto.find({ 

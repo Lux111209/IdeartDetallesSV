@@ -12,6 +12,7 @@ const ReviewSection = () => {
   const userId = '665fda4f32b934a68ea2be30';
   const productId = '665fa2b3d82d77e174c60fdc';
 
+  // Refrescar reseñas después de crear una nueva o marcar útil
   const handleRefresh = () => {
     fetchAllResenas();
   };
@@ -34,16 +35,17 @@ const ReviewSection = () => {
       )}
 
       {loading && <p>Cargando reseñas...</p>}
-      {error && <p>Error: {error}</p>}
+
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+
+      {!loading && !error && resenas.length === 0 && (
+        <p>No hay reseñas aún.</p>
+      )}
 
       <div className="review-list">
-        {resenas.length > 0 ? (
-          resenas.map(r => (
-            <ReviewCard key={r._id} resena={r} onUpdate={handleRefresh} />
-          ))
-        ) : (
-          !loading && <p>No hay reseñas aún.</p>
-        )}
+        {resenas.map(resena => (
+          <ReviewCard key={resena._id} resena={resena} onUpdate={handleRefresh} />
+        ))}
       </div>
     </div>
   );

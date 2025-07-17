@@ -1,0 +1,110 @@
+/* src/css/Pedidos.css */
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.contenedor-pedidos {
+  display: flex;
+  flex: 1;
+}
+
+.lista-pedidos {
+  width: 50%;
+  padding: 30px;
+  background-color: #dff0ff;
+}
+
+.cards-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-pedido {
+  background-color: #fce6f5;
+  border: 1px solid #ccc;
+  padding: 15px;
+  display: flex;
+  gap: 15px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.card-pedido.activa {
+  background-color: #f8c0d7;
+  border: 2px solid #9c0d38;
+}
+
+.icono-cliente {
+  font-size: 24px;
+}
+
+.info .nombre {
+  font-weight: bold;
+}
+
+.detalle-pedido {
+  width: 50%;
+  background-color: #e9d8ff;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.producto-detalle {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.imagen-producto {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.info-producto .titulo {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.extra-info {
+  font-size: 14px;
+}
+
+.botones {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn.completado {
+  background-color: #d168a0;
+  color: white;
+}
+
+.btn.cancelar {
+  background-color: #f5c0c0;
+}
+
+.btn.descargar {
+  background-color: #9c0d38;
+  color: white;
+}
+.btn.rechazar {
+  background-color: #a70029;
+  color: white;
+}

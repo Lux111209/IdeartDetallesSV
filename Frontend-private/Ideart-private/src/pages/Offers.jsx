@@ -4,17 +4,20 @@ import Sidebar from "../components/Sidebar";
 import '../css/OfferManager.css'; 
 
 const OfferManager = () => {
+  // Estados principales para modales
   const [showAddModal, setShowAddModal] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
+  
+  // Estados para formularios de ofertas
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [discountFrom, setDiscountFrom] = useState('');
-  const [discountTo, setDiscountTo] = useState('');
   const [offerType, setOfferType] = useState('category');
   const [offerName, setOfferName] = useState('');
-  const [validFrom, setValidFrom] = useState('');
   const [validTo, setValidTo] = useState('');
   const [actionType, setActionType] = useState('');
+  
+  // Estados para datos
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState({});
@@ -22,230 +25,228 @@ const OfferManager = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [offers, setOffers] = useState([]);
 
-  // Estado para paginación de productos en grupos de 3
-  const [productPage, setProductPage] = useState(0);
+  // Configuración de la API
+  const API_URL = 'http://localhost:5000/api';
 
-  // Calcula el número total de páginas (3 productos por página)
-  const productsPerPage = 3;
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-
-  // Obtiene los productos para la página actual
-  const paginatedProducts = filteredProducts.slice(
-    productPage * productsPerPage,
-    productPage * productsPerPage + productsPerPage
-  );
-
-  // Navegación de páginas
-  const handlePrevPage = () => {
-    setProductPage((prev) => (prev === 0 ? totalPages - 1 : prev - 1));
-  };
-
-  const handleNextPage = () => {
-    setProductPage((prev) => (prev === totalPages - 1 ? 0 : prev + 1));
-  };
-
-  // Productos de ejemplo
-  const mockProducts = [
-    {
-      id: 1,
-      name: 'Taza de Nubes Premium',
-      description: 'Taza de cerámica con diseño de nubes, perfecta para café matutino',
-      price: 25.99,
-      originalPrice: 29.99,
-      category: 'tazas',
-      stock: 12,
-      orders: 22,
-      published: '2024-11-24',
-      image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?w=300&h=300&fit=crop',
-      rating: 4.5,
-      reviews: 18,
-      discount: 15,
-      featured: true,
-      tags: ['premium', 'cerámica', 'diseño']
-    },
-    {
-      id: 2,
-      name: 'Camisa Casual Moderna',
-      description: 'Camisa de algodón con diseño contemporáneo, ideal para uso diario',
-      price: 35.00,
-      originalPrice: 42.00,
-      category: 'camisas',
-      stock: 8,
-      orders: 15,
-      published: '2024-11-20',
-      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop',
-      rating: 4.2,
-      reviews: 12,
-      discount: 17,
-      featured: false,
-      tags: ['algodón', 'casual', 'moderna']
-    },
-    {
-      id: 3,
-      name: 'Mousepad Gaming Pro',
-      description: 'Mousepad de alta precisión para gaming profesional',
-      price: 20.00,
-      originalPrice: 20.00,
-      category: 'accesorios',
-      stock: 25,
-      orders: 18,
-      published: '2024-11-22',
-      image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=300&h=300&fit=crop',
-      rating: 4.8,
-      reviews: 32,
-      discount: 0,
-      featured: true,
-      tags: ['gaming', 'precisión', 'profesional']
-    },
-    {
-      id: 4,
-      name: 'Juego de Mesa Estratégico',
-      description: 'Juego de mesa para 2-4 jugadores con mecánicas innovadoras',
-      price: 45.00,
-      originalPrice: 50.00,
-      category: 'juegos',
-      stock: 5,
-      orders: 8,
-      published: '2024-11-18',
-      image: 'https://images.unsplash.com/photo-1632501641765-e568d28b0015?w=300&h=300&fit=crop',
-      rating: 4.3,
-      reviews: 7,
-      discount: 10,
-      featured: false,
-      tags: ['estrategia', 'familia', 'innovador']
-    },
-    {
-      id: 5,
-      name: 'Auriculares Bluetooth',
-      description: 'Auriculares inalámbricos con cancelación de ruido',
-      price: 89.99,
-      originalPrice: 120.00,
-      category: 'accesorios',
-      stock: 15,
-      orders: 28,
-      published: '2024-11-25',
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop',
-      rating: 4.6,
-      reviews: 45,
-      discount: 25,
-      featured: true,
-      tags: ['bluetooth', 'inalámbrico', 'audio']
-    },
-    {
-      id: 6,
-      name: 'Chaqueta Deportiva',
-      description: 'Chaqueta ligera ideal para actividades deportivas',
-      price: 65.00,
-      originalPrice: 75.00,
-      category: 'camisas',
-      stock: 10,
-      orders: 11,
-      published: '2024-11-23',
-      image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=300&h=300&fit=crop',
-      rating: 4.4,
-      reviews: 23,
-      discount: 13,
-      featured: false,
-      tags: ['deportiva', 'ligera', 'actividad']
-    },
-    {
-      id: 7,
-      name: 'Reloj Inteligente',
-      description: 'Smartwatch con funciones de salud y fitness',
-      price: 159.99,
-      originalPrice: 199.99,
-      category: 'accesorios',
-      stock: 18,
-      orders: 35,
-      published: '2024-11-26',
-      image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop',
-      rating: 4.7,
-      reviews: 28,
-      discount: 20,
-      featured: true,
-      tags: ['smartwatch', 'fitness', 'tecnología']
-    },
-    {
-      id: 8,
-      name: 'Mochila Urbana',
-      description: 'Mochila resistente para uso diario y viajes',
-      price: 49.99,
-      originalPrice: 59.99,
-      category: 'accesorios',
-      stock: 12,
-      orders: 19,
-      published: '2024-11-27',
-      image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=300&fit=crop',
-      rating: 4.3,
-      reviews: 15,
-      discount: 17,
-      featured: false,
-      tags: ['mochila', 'viaje', 'urbana']
-    },
-    {
-      id: 9,
-      name: 'Lámpara LED Moderna',
-      description: 'Lámpara de escritorio con control táctil y regulador',
-      price: 75.00,
-      originalPrice: 85.00,
-      category: 'accesorios',
-      stock: 8,
-      orders: 12,
-      published: '2024-11-28',
-      image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=300&h=300&fit=crop',
-      rating: 4.5,
-      reviews: 22,
-      discount: 12,
-      featured: true,
-      tags: ['lámpara', 'LED', 'moderna']
+  /**
+   * Función auxiliar para hacer peticiones GET al backend
+   * @param {string} url - URL del endpoint
+   * @returns {Array} - Datos obtenidos o array vacío en caso de error
+   */
+  const fetchData = async (url) => {
+    try {
+      console.log('Fetching:', url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Response data:', data);
+      return data.success ? data.data : [];
+    } catch (error) {
+      console.error('Fetch error:', error);
+      return [];
     }
-  ];
+  };
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setProducts(mockProducts);
-      setFilteredProducts(mockProducts);
+  /**
+   * Función para crear una nueva oferta en el backend
+   * @param {Object} offerData - Datos de la oferta a crear
+   * @returns {Object} - Respuesta del servidor
+   */
+  const createOffer = async (offerData) => {
+    try {
+      console.log('Creating offer:', offerData);
+      const response = await fetch(`${API_URL}/ofertas`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(offerData)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Create response:', data);
+      return data;
+    } catch (error) {
+      console.error('Create error:', error);
+      throw error;
+    }
+  };
+
+  /**
+   * Función para eliminar una oferta del backend
+   * @param {string} id - ID de la oferta a eliminar
+   * @returns {boolean} - true si se eliminó correctamente
+   */
+  const deleteOfferAPI = async (id) => {
+    try {
+      console.log('Deleting offer:', id);
+      const response = await fetch(`${API_URL}/ofertas/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Delete response:', data);
+      return data.success;
+    } catch (error) {
+      console.error('Delete error:', error);
+      return false;
+    }
+  };
+
+  /**
+   * Función principal para cargar productos y ofertas del backend al iniciar
+   */
+  const loadData = async () => {
+    setLoading(true);
+    
+    try {
+      // Cargar productos del backend
+      const productosData = await fetchData(`${API_URL}/products`);
+      console.log('Productos cargados:', productosData);
+      
+      // Transformar datos del backend al formato que espera el frontend
+      const productosFormateados = productosData.map(product => ({
+        id: product._id,
+        name: product.name || 'Producto sin nombre',
+        description: product.description || 'Sin descripción',
+        price: product.price || 0,
+        originalPrice: product.price || 0,
+        category: product.productType || 'general',
+        stock: product.stock || 0,
+        orders: Math.floor(Math.random() * 50), // Datos simulados
+        published: product.createdAt || new Date(),
+        image: product.images?.[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop',
+        rating: (Math.random() * 2 + 3).toFixed(1), // Rating simulado 3-5
+        reviews: Math.floor(Math.random() * 30) + 5, // Reviews simuladas
+        discount: 0,
+        featured: Math.random() > 0.7, // 30% chance de ser destacado
+        tags: product.tags || [],
+        originalData: product
+      }));
+
+      setProducts(productosFormateados);
+      setFilteredProducts(productosFormateados);
+
+      // Cargar ofertas del backend
+      const ofertasData = await fetchData(`${API_URL}/ofertas`);
+      console.log('Ofertas cargadas:', ofertasData);
+      
+      // Transformar ofertas del backend al formato del frontend
+      const ofertasFormateadas = ofertasData.map(offer => ({
+        id: offer._id,
+        name: offer.nombreOferta || 'Oferta sin nombre',
+        type: 'product',
+        target: offer.productos?.[0] || null,
+        targetName: offer.productos?.length > 0 ? `${offer.productos.length} producto(s)` : 'Sin productos',
+        discountFrom: offer.DescuentoRealizado || 0,
+        discountTo: offer.DescuentoRealizado || 0,
+        validFrom: offer.creada ? new Date(offer.creada).toLocaleDateString() : '',
+        validTo: offer.expirada ? new Date(offer.expirada).toLocaleDateString() : '',
+        active: offer.activa || false,
+        createdAt: offer.creada ? new Date(offer.creada).toLocaleDateString() : '',
+        originalData: offer
+      }));
+
+      setOffers(ofertasFormateadas);
+
+    } catch (error) {
+      console.error('Error cargando datos:', error);
+      alert('Error al cargar los datos del servidor');
+    } finally {
       setLoading(false);
-    };
+    }
+  };
 
-    fetchProducts();
+  // Cargar datos al montar el componente
+  useEffect(() => {
+    loadData();
   }, []);
 
-  // Filtrar productos cuando cambia la categoría seleccionada
+  /**
+   * Filtrar productos cuando cambia la categoría seleccionada
+   */
   useEffect(() => {
     if (selectedCategoryFilter === 'all') {
       setFilteredProducts(products);
     } else {
       setFilteredProducts(products.filter(product => product.category === selectedCategoryFilter));
     }
-    setProductPage(0); // Reset a la primera página cuando cambia el filtro
   }, [selectedCategoryFilter, products]);
 
+  // Definición de categorías disponibles
   const categories = [
-    { id: 'accesorios', name: 'Accesorios', icon: '🎧' },
-    { id: 'juegos', name: 'Juegos', icon: '🎮' },
-    { id: 'tazas', name: 'Tazas', icon: '☕' },
-    { id: 'camisas', name: 'Camisas', icon: '👕' }
+    { id: 'electronics', name: 'Electrónicos', icon: '📱' },
+    { id: 'clothing', name: 'Ropa', icon: '👕' },
+    { id: 'home', name: 'Hogar', icon: '🏠' },
+    { id: 'books', name: 'Libros', icon: '📚' },
+    { id: 'sports', name: 'Deportes', icon: '⚽' },
+    { id: 'beauty', name: 'Belleza', icon: '💄' },
+    { id: 'toys', name: 'Juguetes', icon: '🧸' },
+    { id: 'food', name: 'Alimentos', icon: '🍎' }
   ];
 
+  /**
+   * Manejar filtro de productos por categoría
+   * @param {string} categoryId - ID de la categoría a filtrar
+   */
   const handleCategoryFilter = (categoryId) => {
     setSelectedCategoryFilter(categoryId);
   };
 
+  /**
+   * Preparar una oferta de descuento para toda una categoría
+   * @param {string} categoryId - ID de la categoría
+   */
   const handleCategoryDiscount = (categoryId) => {
+    const categoryName = categories.find(c => c.id === categoryId)?.name;
+    const productosEnCategoria = products.filter(p => p.category === categoryId);
+    
+    // Validar que la categoría tenga productos
+    if (productosEnCategoria.length === 0) {
+      alert(`No hay productos disponibles en la categoría "${categoryName}". No se puede crear una oferta.`);
+      return;
+    }
+    
+    // Preparar formulario de oferta con datos predeterminados
     setSelectedCategory(categoryId);
     setOfferType('category');
-    setOfferName(`Descuento ${categories.find(c => c.id === categoryId)?.name}`);
+    setOfferName(`Descuento ${categoryName}`);
+    setDiscountFrom('15'); 
+    
+    console.log(`Preparando oferta para categoría "${categoryName}" con ${productosEnCategoria.length} productos:`, 
+      productosEnCategoria.map(p => p.name));
+    
     setShowAddModal(true);
   };
 
+  /**
+   * Manejar acciones sobre productos individuales (editar, descuento, etc.)
+   * @param {Object} product - Producto seleccionado
+   * @param {string} action - Tipo de acción ('edit', 'discount')
+   */
   const handleProductAction = (product, action) => {
     setSelectedProduct(product);
     setActionType(action);
     
     if (action === 'edit') {
+      // Preparar datos para edición
       setEditingProduct({
         name: product.name,
         description: product.description,
@@ -253,15 +254,19 @@ const OfferManager = () => {
         stock: product.stock
       });
     } else if (action === 'discount') {
+      // Preparar datos para descuento
       setDiscountFrom(product.discount?.toString() || '');
-      setDiscountTo((product.discount + 10)?.toString() || '10');
     }
     
     setShowProductModal(true);
   };
 
+  /**
+   * Actualizar producto después de edición o aplicación de descuento
+   */
   const handleProductUpdate = async () => {
     if (actionType === 'edit') {
+      // Actualizar datos del producto
       const updatedProducts = products.map(p => 
         p.id === selectedProduct.id 
           ? { ...p, ...editingProduct }
@@ -270,6 +275,7 @@ const OfferManager = () => {
       setProducts(updatedProducts);
       alert('Producto actualizado exitosamente');
     } else if (actionType === 'discount') {
+      // Aplicar descuento al producto
       const discount = parseInt(discountFrom);
       const updatedProducts = products.map(p => 
         p.id === selectedProduct.id 
@@ -288,6 +294,10 @@ const OfferManager = () => {
     resetForm();
   };
 
+  /**
+   * Eliminar producto con confirmación
+   * @param {string} productId - ID del producto a eliminar
+   */
   const handleProductDelete = async (productId) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este producto?')) {
       const updatedProducts = products.filter(p => p.id !== productId);
@@ -296,52 +306,167 @@ const OfferManager = () => {
     }
   };
 
+  /**
+   * Limpiar todos los campos del formulario
+   */
   const resetForm = () => {
     setOfferName('');
     setSelectedCategory('');
     setSelectedProduct(null);
     setDiscountFrom('');
-    setDiscountTo('');
-    setValidFrom('');
     setValidTo('');
     setOfferType('category');
     setActionType('');
     setEditingProduct({});
   };
 
-  const handleCreateOffer = () => {
-    if (offerType === 'category' && !selectedCategory) {
-      alert('Por favor selecciona una categoría');
-      return;
-    }
-    if (!discountFrom || !discountTo) {
-      alert('Por favor ingresa el rango de descuento');
-      return;
-    }
+  /**
+   * Función principal para crear una nueva oferta
+   */
+  const handleCreateOffer = async () => {
+    try {
+      // Validaciones del formulario
+      if (!offerName.trim()) {
+        alert('Por favor ingresa un nombre para la oferta');
+        return;
+      }
 
-    const newOffer = {
-      id: Date.now(),
-      name: offerName,
-      type: offerType,
-      target: offerType === 'category' ? selectedCategory : selectedProduct?.id,
-      targetName: offerType === 'category' ? categories.find(c => c.id === selectedCategory)?.name : selectedProduct?.name,
-      discountFrom: parseInt(discountFrom),
-      discountTo: parseInt(discountTo),
-      validFrom,
-      validTo,
-      active: true,
-      createdAt: new Date().toLocaleDateString()
-    };
+      if (offerType === 'category' && !selectedCategory) {
+        alert('Por favor selecciona una categoría');
+        return;
+      }
 
-    setOffers([...offers, newOffer]);
-    setShowAddModal(false);
-    resetForm();
+      if (offerType === 'product' && !selectedProduct) {
+        alert('Por favor selecciona un producto');
+        return;
+      }
+
+      if (!discountFrom || parseInt(discountFrom) <= 0 || parseInt(discountFrom) > 100) {
+        alert('Por favor ingresa un descuento válido (1-100%)');
+        return;
+      }
+
+      if (!validTo) {
+        alert('Por favor selecciona una fecha de expiración');
+        return;
+      }
+
+      // Obtener productos según el tipo de oferta
+      let productosOferta = [];
+      let targetName = '';
+      
+      if (offerType === 'category') {
+        // Oferta por categoría - obtener todos los productos de esa categoría
+        const productosCategoria = products.filter(p => p.category === selectedCategory);
+        productosOferta = productosCategoria.map(p => p.id);
+        targetName = `Categoría: ${categories.find(c => c.id === selectedCategory)?.name} (${productosCategoria.length} productos)`;
+        
+        if (productosCategoria.length === 0) {
+          alert(`No hay productos disponibles en la categoría "${categories.find(c => c.id === selectedCategory)?.name}"`);
+          return;
+        }
+        
+        console.log(`Aplicando oferta a categoría "${selectedCategory}":`, productosCategoria.map(p => p.name));
+      } else {
+        // Oferta por producto individual
+        productosOferta = [selectedProduct.id];
+        targetName = `Producto: ${selectedProduct.name}`;
+        console.log(`Aplicando oferta a producto:`, selectedProduct.name);
+      }
+
+      // Preparar datos para enviar al backend
+      const ofertaData = {
+        nombreOferta: offerName.trim(),
+        DescuentoRealizado: parseInt(discountFrom),
+        productos: productosOferta,
+        expirada: validTo,
+        activa: true
+      };
+
+      console.log('Enviando oferta al backend:', ofertaData);
+
+      // Enviar al backend
+      const response = await createOffer(ofertaData);
+      
+      if (response.success) {
+        // Crear oferta local para mostrar inmediatamente en la UI
+        const newLocalOffer = {
+          id: response.data._id,
+          name: offerName.trim(),
+          type: offerType,
+          target: offerType === 'category' ? selectedCategory : selectedProduct.id,
+          targetName: targetName,
+          discountFrom: parseInt(discountFrom),
+          discountTo: parseInt(discountFrom),
+          validFrom: new Date().toLocaleDateString(),
+          validTo: new Date(validTo).toLocaleDateString(),
+          active: true,
+          createdAt: new Date().toLocaleDateString(),
+          originalData: response.data
+        };
+
+        // Agregar a la lista de ofertas
+        setOffers(prevOffers => [...prevOffers, newLocalOffer]);
+
+        // Aplicar descuento a productos localmente para vista previa
+        if (offerType === 'category') {
+          const updatedProducts = products.map(product => {
+            if (product.category === selectedCategory) {
+              return {
+                ...product,
+                discount: parseInt(discountFrom),
+                price: product.originalPrice * (1 - parseInt(discountFrom) / 100)
+              };
+            }
+            return product;
+          });
+          setProducts(updatedProducts);
+        } else {
+          const updatedProducts = products.map(product => {
+            if (product.id === selectedProduct.id) {
+              return {
+                ...product,
+                discount: parseInt(discountFrom),
+                price: product.originalPrice * (1 - parseInt(discountFrom) / 100)
+              };
+            }
+            return product;
+          });
+          setProducts(updatedProducts);
+        }
+
+        alert(`✅ Oferta creada exitosamente!\n\n Nombre: ${offerName}\n Aplica a: ${targetName}\n Descuento: ${discountFrom}%\n Válida hasta: ${new Date(validTo).toLocaleDateString()}`);
+        
+        setShowAddModal(false);
+        resetForm();
+      } else {
+        alert('Error al crear la oferta: ' + (response.message || 'Error desconocido'));
+      }
+
+    } catch (error) {
+      console.error('Error creando oferta:', error);
+      alert('Error al crear la oferta: ' + error.message);
+    }
   };
 
-  const deleteOffer = (id) => {
-    setOffers(offers.filter(offer => offer.id !== id));
+  /**
+   * Eliminar oferta con confirmación
+   * @param {string} id - ID de la oferta a eliminar
+   */
+  const deleteOffer = async (id) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta oferta?')) {
+      const success = await deleteOfferAPI(id);
+      
+      if (success) {
+        setOffers(offers.filter(offer => offer.id !== id));
+        alert('✅ Oferta eliminada exitosamente');
+      } else {
+        alert('Error al eliminar la oferta');
+      }
+    }
   };
 
+  // Mostrar pantalla de carga mientras se obtienen los datos
   if (loading) {
     return (
       <div className="app-container">
@@ -349,7 +474,7 @@ const OfferManager = () => {
         <div className="loading-container">
           <div className="loading-content">
             <div className="spinner"></div>
-            <p className="loading-text">Cargando productos...</p>
+            <p className="loading-text">Cargando datos...</p>
           </div>
         </div>
       </div>
@@ -359,288 +484,255 @@ const OfferManager = () => {
   return (
     <div className="app-container">
       <Sidebar />
-        <div className="content-wrapper">
-          <div className="content-inner">
-            
-            {/* Header */}
-            <div className="header">
-              <div className="header-content">
-                <h1 className="header-title">Gestor de Ofertas</h1>
-                <div className="notification-icon">🔔</div>
-              </div>
+      <div className="content-wrapper">
+        <div className="content-inner">
+          
+          {/* Header de la página */}
+          <div className="header">
+            <div className="header-content">
+              <h1 className="header-title">Gestor de Ofertas</h1>
             </div>
+          </div>
 
-            {/* Action Buttons */}
-            <div className="action-section">
-              <button onClick={() => setShowAddModal(true)} className="add-button">
-                <Plus className="button-icon" />
-                Agregar
+          {/* Botón para agregar nueva oferta */}
+          <div className="action-section">
+            <button onClick={() => setShowAddModal(true)} className="add-button">
+              <Plus className="button-icon" />
+              Agregar Oferta
+            </button>
+          </div>
+
+          {/* Sección de categorías con filtros */}
+          <div className="categories-section">
+            <div className="categories-header">
+              <h2 className="section-title">Categorías</h2>
+              <button
+                onClick={() => handleCategoryFilter('all')}
+                className={`filter-button ${selectedCategoryFilter === 'all' ? 'active' : ''}`}
+              >
+                Todas las categorías
               </button>
             </div>
-
-            {/* Categories */}
-            <div className="categories-section">
-              <div className="categories-header">
-                <h2 className="section-title">Categorías</h2>
-                <button
-                  onClick={() => handleCategoryFilter('all')}
-                  className={`filter-button ${selectedCategoryFilter === 'all' ? 'active' : ''}`}
-                >
-                  Todas las categorías
-                </button>
-              </div>
-              
-              <div className="categories-grid">
-                {categories.map((category) => (
-                  <div key={category.id} className="category-item">
-                    <div 
-                      onClick={() => handleCategoryFilter(category.id)}
-                      className={`category-icon ${selectedCategoryFilter === category.id ? 'active' : ''}`}
-                    >
-                      <span className="category-emoji">{category.icon}</span>
-                    </div>
-                    <p className={`category-name ${selectedCategoryFilter === category.id ? 'active' : ''}`}>
-                      {category.name}
-                    </p>
-                    <div className="category-actions">
-                      <button
-                        onClick={() => handleCategoryDiscount(category.id)}
-                        className="category-button secondary"
-                      >
-                        Aplicar descuento
-                      </button>
-                    </div>
+            
+            {/* Grid de categorías */}
+            <div className="categories-grid">
+              {categories.map((category) => (
+                <div key={category.id} className="category-item">
+                  <div 
+                    onClick={() => handleCategoryFilter(category.id)}
+                    className={`category-icon ${selectedCategoryFilter === category.id ? 'active' : ''}`}
+                  >
+                    <span className="category-emoji">{category.icon}</span>
                   </div>
-                ))}
-              </div>
-              
-              {selectedCategoryFilter !== 'all' && (
-                <div className="filter-status">
-                  <div className="filter-info">
-                    <span className="filter-text">
-                      Mostrando productos de: {categories.find(c => c.id === selectedCategoryFilter)?.name}
-                      {filteredProducts.length > 0 && ` (${filteredProducts.length} productos)`}
-                    </span>
-                    <button
-                      onClick={() => handleCategoryFilter('all')}
-                      className="clear-filter"
-                    >
-                      Limpiar filtro
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Products Section */}
-            <div className="products-section">
-              <div className="products-header">
-                <div className="products-title-wrapper">
-                  <h2 className="products-title">Productos</h2>
-                  {selectedCategoryFilter !== 'all' && (
-                    <span className="filter-badge">
-                      {categories.find(c => c.id === selectedCategoryFilter)?.name}
-                    </span>
-                  )}
-                </div>
-                <div className="products-count">
-                  <span>
-                    {filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''}
-                  </span>
-                </div>
-              </div>
-
-              {filteredProducts.length > 0 ? (
-                <div className="carousel-container">
-                  {totalPages > 1 && (
-                    <button
-                      className="carousel-arrow carousel-arrow-left"
-                      onClick={handlePrevPage}
-                      aria-label="Anterior"
-                    >
-                      <ChevronLeft className="arrow-icon" />
-                    </button>
-                  )}
-                  
-                  <div className="carousel-track-container">
-                    <div className="carousel-track">
-                      {paginatedProducts.map((product) => (
-                        <div key={product.id} className="carousel-slide">
-                          <div className="product-card">
-                            <div className="product-image-container">
-                              <img
-                                src={product.image}
-                                alt={product.name}
-                                className="product-image"
-                              />
-                              {product.featured && (
-                                <div className="featured-badge">
-                                  <Star className="star-icon" />
-                                  Destacado
-                                </div>
-                              )}
-                              {product.discount > 0 && (
-                                <div className="discount-badge">
-                                  -{product.discount}%
-                                </div>
-                              )}
-                            </div>
-
-                            <div className="product-info">
-                              <h3 className="product-title">{product.name}</h3>
-                              <p className="product-description">{product.description}</p>
-                              
-                              {/* Price Section */}
-                              <div className="price-section">
-                                <div className="price-wrapper">
-                                  <span className="current-price">${product.price.toFixed(2)}</span>
-                                  {product.discount > 0 && (
-                                    <span className="original-price">${product.originalPrice.toFixed(2)}</span>
-                                  )}
-                                </div>
-                                <div className="rating-wrapper">
-                                  <Star className="rating-star" />
-                                  <span className="rating-text">{product.rating} ({product.reviews})</span>
-                                </div>
-                              </div>
-
-                              {/* Stats */}
-                              <div className="product-stats">
-                                <div className="stat">
-                                  <p className="stat-value">{product.stock}</p>
-                                  <p className="stat-label">Stock</p>
-                                </div>
-                                <div className="stat">
-                                  <p className="stat-value">{product.orders}</p>
-                                  <p className="stat-label">Órdenes</p>
-                                </div>
-                                <div className="stat">
-                                  <p className="stat-value">{new Date(product.published).toLocaleDateString()}</p>
-                                  <p className="stat-label">Publicado</p>
-                                </div>
-                              </div>
-
-                              {/* Tags */}
-                              <div className="product-tags">
-                                {product.tags.map((tag, tagIndex) => (
-                                  <span key={tagIndex} className="tag">
-                                    {tag}
-                                  </span>
-                                ))}
-                              </div>
-
-                              {/* Action Buttons */}
-                              <div className="product-actions">
-                                <button
-                                  onClick={() => handleProductAction(product, 'edit')}
-                                  className="action-button edit"
-                                >
-                                  <Edit className="action-icon" />
-                                  Editar
-                                </button>
-                                <button
-                                  onClick={() => handleProductAction(product, 'discount')}
-                                  className="action-button discount"
-                                >
-                                  <Percent className="action-icon" />
-                                  Descuento
-                                </button>
-                                <button
-                                  onClick={() => handleProductDelete(product.id)}
-                                  className="action-button delete"
-                                >
-                                  <Trash2 className="action-icon" />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {totalPages > 1 && (
-                    <button
-                      className="carousel-arrow carousel-arrow-right"
-                      onClick={handleNextPage}
-                      aria-label="Siguiente"
-                    >
-                      <ChevronRight className="arrow-icon" />
-                    </button>
-                  )}
-                  
-                  {/* Indicadores de página */}
-                  {totalPages > 1 && (
-                    <div className="carousel-indicators">
-                      {Array.from({ length: totalPages }).map((_, idx) => (
-                        <button
-                          key={idx}
-                          className={`indicator${productPage === idx ? ' active' : ''}`}
-                          onClick={() => setProductPage(idx)}
-                          aria-label={`Ir a la página ${idx + 1}`}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="empty-products">
-                  <div className="empty-icon">📦</div>
-                  <h3 className="empty-title">No hay productos que mostrar</h3>
-                  <p className="empty-description">
-                    {selectedCategoryFilter !== 'all' 
-                      ? `No hay productos en la categoría "${categories.find(c => c.id === selectedCategoryFilter)?.name}".`
-                      : 'Selecciona una categoría para ver los productos disponibles.'
-                    }
+                  <p className={`category-name ${selectedCategoryFilter === category.id ? 'active' : ''}`}>
+                    {category.name}
                   </p>
+                  <div className="category-actions">
+                    <button
+                      onClick={() => handleCategoryDiscount(category.id)}
+                      className="category-button secondary"
+                    >
+                      Aplicar descuento
+                    </button>
+                  </div>
                 </div>
-              )}
+              ))}
             </div>
-
-            {/* Current Offers */}
-            {offers.length > 0 && (
-              <div className="offers-section">
-                <h2 className="offers-title">Ofertas Activas</h2>
-                <div className="offers-grid">
-                  {offers.map((offer) => (
-                    <div key={offer.id} className="offer-card">
-                      <div className="offer-content">
-                        <div className="offer-header">
-                          <Tag className="offer-icon" />
-                          <span className="offer-name">{offer.name || 'Oferta sin nombre'}</span>
-                          <span className="offer-type">
-                            {offer.type === 'category' ? 'Categoría' : 'Producto'}
-                          </span>
-                        </div>
-                        <p className="offer-detail">
-                          <strong>Aplica a:</strong> {offer.targetName}
-                        </p>
-                        <p className="offer-detail">
-                          <strong>Descuento:</strong> {offer.discountFrom}% - {offer.discountTo}%
-                        </p>
-                        {offer.validFrom && offer.validTo && (
-                          <p className="offer-detail">
-                            <strong>Válido:</strong> {offer.validFrom} - {offer.validTo}
-                          </p>
-                        )}
-                        <p className="offer-date">Creado: {offer.createdAt}</p>
-                      </div>
-                      <button
-                        onClick={() => deleteOffer(offer.id)}
-                        className="delete-offer"
-                      >
-                        <X className="delete-icon" />
-                      </button>
-                    </div>
-                  ))}
+            
+            {/* Indicador de filtro activo */}
+            {selectedCategoryFilter !== 'all' && (
+              <div className="filter-status">
+                <div className="filter-info">
+                  <span className="filter-text">
+                    Mostrando productos de: {categories.find(c => c.id === selectedCategoryFilter)?.name}
+                    {filteredProducts.length > 0 && ` (${filteredProducts.length} productos)`}
+                  </span>
+                  <button
+                    onClick={() => handleCategoryFilter('all')}
+                    className="clear-filter"
+                  >
+                    Limpiar filtro
+                  </button>
                 </div>
               </div>
             )}
           </div>
-        </div>
-    
 
-      {/* Modal para crear oferta */}
+          {/* Sección de productos - Mostrar todos en grid */}
+          <div className="products-section">
+            <div className="products-header">
+              <div className="products-title-wrapper">
+                <h2 className="products-title">Productos</h2>
+                {selectedCategoryFilter !== 'all' && (
+                  <span className="filter-badge">
+                    {categories.find(c => c.id === selectedCategoryFilter)?.name}
+                  </span>
+                )}
+              </div>
+              <div className="products-count">
+                <span>
+                  {filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+            </div>
+
+            {/* Grid de productos - Mostrar todos */}
+            {filteredProducts.length > 0 ? (
+              <div className="products-grid-static">
+                {filteredProducts.map((product) => (
+                  <div key={product.id} className="product-card">
+                    {/* Imagen del producto con badges */}
+                    <div className="product-image-container">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="product-image"
+                      />
+                      {product.featured && (
+                        <div className="featured-badge">
+                          <Star className="star-icon" />
+                          Destacado
+                        </div>
+                      )}
+                      {product.discount > 0 && (
+                        <div className="discount-badge">
+                          -{product.discount}%
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Información del producto */}
+                    <div className="product-info">
+                      <h3 className="product-title">{product.name}</h3>
+                      <p className="product-description">{product.description}</p>
+                      
+                      {/* Sección de precios y rating */}
+                      <div className="price-section">
+                        <div className="price-wrapper">
+                          <span className="current-price">${product.price.toFixed(2)}</span>
+                          {product.discount > 0 && (
+                            <span className="original-price">${product.originalPrice.toFixed(2)}</span>
+                          )}
+                        </div>
+                        <div className="rating-wrapper">
+                          <Star className="rating-star" />
+                          <span className="rating-text">{product.rating} ({product.reviews})</span>
+                        </div>
+                      </div>
+
+                      {/* Estadísticas del producto */}
+                      <div className="product-stats">
+                        <div className="stat">
+                          <p className="stat-value">{product.stock}</p>
+                          <p className="stat-label">Stock</p>
+                        </div>
+                        <div className="stat">
+                          <p className="stat-value">{product.orders}</p>
+                          <p className="stat-label">Órdenes</p>
+                        </div>
+                        <div className="stat">
+                          <p className="stat-value">{new Date(product.published).toLocaleDateString()}</p>
+                          <p className="stat-label">Publicado</p>
+                        </div>
+                      </div>
+
+                      {/* Tags del producto */}
+                      <div className="product-tags">
+                        {product.tags.map((tag, tagIndex) => (
+                          <span key={tagIndex} className="tag">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Botones de acción */}
+                      <div className="product-actions">
+                        <button
+                          onClick={() => handleProductAction(product, 'edit')}
+                          className="action-button edit"
+                        >
+                          <Edit className="action-icon" />
+                          Editar
+                        </button>
+                        <button
+                          onClick={() => handleProductAction(product, 'discount')}
+                          className="action-button discount"
+                        >
+                          <Percent className="action-icon" />
+                          Descuento
+                        </button>
+                        <button
+                          onClick={() => handleProductDelete(product.id)}
+                          className="action-button delete"
+                        >
+                          <Trash2 className="action-icon" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              // Mensaje cuando no hay productos que mostrar
+              <div className="empty-products">
+                <h3 className="empty-title">No hay productos que mostrar</h3>
+                <p className="empty-description">
+                  {selectedCategoryFilter !== 'all' 
+                    ? `No hay productos en la categoría "${categories.find(c => c.id === selectedCategoryFilter)?.name}".`
+                    : 'Selecciona una categoría para ver los productos disponibles.'
+                  }
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Sección de ofertas activas */}
+          {offers.length > 0 && (
+            <div className="offers-section">
+              <h2 className="offers-title">Ofertas Activas ({offers.length})</h2>
+              <div className="offers-grid">
+                {offers.map((offer) => (
+                  <div key={offer.id} className="offer-card">
+                    <div className="offer-content">
+                      <div className="offer-header">
+                        <Tag className="offer-icon" />
+                        <span className="offer-name">{offer.name}</span>
+                        <span className="offer-type">
+                          {offer.type === 'category' ? 'Categoría' : 'Producto'}
+                        </span>
+                      </div>
+                      <p className="offer-detail">
+                        <strong>Aplica a:</strong> {offer.targetName}
+                      </p>
+                      <p className="offer-detail">
+                        <strong>Descuento:</strong> {offer.discountFrom}%
+                      </p>
+                      <p className="offer-detail">
+                        <strong>Válido hasta:</strong> {offer.validTo}
+                      </p>
+                      <p className="offer-date">Creado: {offer.createdAt}</p>
+                      <p className="offer-detail">
+                        <strong>Estado:</strong> 
+                        <span style={{color: offer.active ? '#16a34a' : '#ef4444'}}>
+                          {offer.active ? ' Activa' : ' Inactiva'}
+                        </span>
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => deleteOffer(offer.id)}
+                      className="delete-offer"
+                    >
+                      <X className="delete-icon" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Modal para crear nueva oferta */}
       {showAddModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -652,6 +744,7 @@ const OfferManager = () => {
             </div>
 
             <div className="modal-body">
+              {/* Nombre de la oferta */}
               <div className="form-group">
                 <label className="form-label">Nombre de la Oferta</label>
                 <input
@@ -663,6 +756,7 @@ const OfferManager = () => {
                 />
               </div>
 
+              {/* Tipo de oferta */}
               <div className="form-group">
                 <label className="form-label">Tipo de Oferta</label>
                 <div className="radio-group">
@@ -691,6 +785,7 @@ const OfferManager = () => {
                 </div>
               </div>
 
+              {/* Selector de categoría o producto según el tipo */}
               {offerType === 'category' ? (
                 <div className="form-group">
                   <label className="form-label">Seleccionar Categoría</label>
@@ -700,18 +795,21 @@ const OfferManager = () => {
                     className="form-select"
                   >
                     <option value="">Seleccionar categoría...</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
+                    {categories.map((category) => {
+                      const productosEnCategoria = products.filter(p => p.category === category.id);
+                      return (
+                        <option key={category.id} value={category.id}>
+                          {category.name} ({productosEnCategoria.length} productos)
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
               ) : (
                 <div className="form-group">
                   <label className="form-label">Seleccionar Producto</label>
                   <div className="product-selector">
-                    {products.map((product) => (
+                    {products.length > 0 ? products.map((product) => (
                       <div
                         key={product.id}
                         onClick={() => setSelectedProduct(product)}
@@ -728,68 +826,55 @@ const OfferManager = () => {
                           <div className="selected-indicator"></div>
                         )}
                       </div>
-                    ))}
+                    )) : (
+                      <div style={{ 
+                        textAlign: 'center', 
+                        padding: '2rem', 
+                        color: '#6b7280',
+                        backgroundColor: '#f9fafb',
+                        borderRadius: '0.5rem'
+                      }}>
+                        <p>No hay productos disponibles</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
 
+              {/* Porcentaje de descuento */}
               <div className="form-group">
                 <label className="form-label">
                   <Percent className="label-icon" />
-                  Rango de Descuento
+                  Porcentaje de Descuento
                 </label>
-                <div className="discount-range">
-                  <div className="discount-input">
-                    <input
-                      type="number"
-                      value={discountFrom}
-                      onChange={(e) => setDiscountFrom(e.target.value)}
-                      placeholder="5"
-                      className="form-input"
-                    />
-                    <span className="input-label">Desde %</span>
-                  </div>
-                  <span className="range-separator">-</span>
-                  <div className="discount-input">
-                    <input
-                      type="number"
-                      value={discountTo}
-                      onChange={(e) => setDiscountTo(e.target.value)}
-                      placeholder="50"
-                      className="form-input"
-                    />
-                    <span className="input-label">Hasta %</span>
-                  </div>
-                </div>
+                <input
+                  type="number"
+                  value={discountFrom}
+                  onChange={(e) => setDiscountFrom(e.target.value)}
+                  placeholder="Ej: 15"
+                  min="1"
+                  max="100"
+                  className="form-input"
+                />
+                <span className="input-help">Ingresa el porcentaje de descuento (1-100%)</span>
               </div>
 
+              {/* Fecha de expiración */}
               <div className="form-group">
                 <label className="form-label">
                   <Calendar className="label-icon" />
-                  Período de Validez
+                  Fecha de Expiración
                 </label>
-                <div className="date-range">
-                  <div className="date-input">
-                    <input
-                      type="date"
-                      value={validFrom}
-                      onChange={(e) => setValidFrom(e.target.value)}
-                      className="form-input"
-                    />
-                    <span className="input-label">Desde</span>
-                  </div>
-                  <div className="date-input">
-                    <input
-                      type="date"
-                      value={validTo}
-                      onChange={(e) => setValidTo(e.target.value)}
-                      className="form-input"
-                    />
-                    <span className="input-label">Hasta</span>
-                  </div>
-                </div>
+                <input
+                  type="date"
+                  value={validTo}
+                  onChange={(e) => setValidTo(e.target.value)}
+                  className="form-input"
+                  min={new Date().toISOString().split('T')[0]}
+                />
               </div>
 
+              {/* Botones de acción */}
               <div className="modal-actions">
                 <button onClick={() => setShowAddModal(false)} className="button secondary">
                   Cancelar
@@ -803,20 +888,20 @@ const OfferManager = () => {
         </div>
       )}
 
-      {/* Modal para acciones de producto */}
+      {/* Modal para acciones de producto (editar/descuento) */}
       {showProductModal && selectedProduct && (
         <div className="modal-overlay">
           <div className="modal-content modal-small">
             <div className="modal-header">
               <h2 className="modal-title">
-                {actionType === 'edit' ? 'Editar Producto' : 
-                 actionType === 'discount' ? 'Aplicar Descuento' : 'Acción de Producto'}
+                {actionType === 'edit' ? 'Editar Producto' : 'Aplicar Descuento'}
               </h2>
               <button onClick={() => setShowProductModal(false)} className="modal-close">
                 <X className="close-icon" />
               </button>
             </div>
 
+            {/* Vista previa del producto seleccionado */}
             <div className="product-preview">
               <div className="preview-content">
                 <img 
@@ -834,6 +919,7 @@ const OfferManager = () => {
 
             <div className="modal-body">
               {actionType === 'edit' ? (
+                // Formulario de edición
                 <div className="edit-form">
                   <div className="form-group">
                     <label className="form-label">Nombre del Producto</label>
@@ -875,7 +961,8 @@ const OfferManager = () => {
                     </div>
                   </div>
                 </div>
-              ) : actionType === 'discount' ? (
+              ) : (
+                // Formulario de descuento
                 <div className="discount-form">
                   <div className="form-group">
                     <label className="form-label">
@@ -893,58 +980,10 @@ const OfferManager = () => {
                     />
                     <span className="input-help">Ingresa el porcentaje de descuento (0-90%)</span>
                   </div>
-                  
-                  {discountFrom && (
-                    <div className="discount-preview">
-                      <h4 className="preview-title">Vista Previa del Descuento</h4>
-                      <div className="preview-calculations">
-                        <div className="calc-item">
-                          <p className="calc-label">Precio Original:</p>
-                          <p className="calc-value original">${selectedProduct.originalPrice.toFixed(2)}</p>
-                        </div>
-                        <div className="calc-item">
-                          <p className="calc-label">Descuento:</p>
-                          <p className="calc-value discount">-{discountFrom}%</p>
-                        </div>
-                        <div className="calc-item">
-                          <p className="calc-label">Precio Final:</p>
-                          <p className="calc-value final">
-                            ${(selectedProduct.originalPrice * (1 - parseInt(discountFrom || 0) / 100)).toFixed(2)}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="form-group">
-                    <label className="form-label">
-                      <Calendar className="label-icon" />
-                      Vigencia del Descuento (Opcional)
-                    </label>
-                    <div className="date-range">
-                      <div className="date-input">
-                        <input
-                          type="date"
-                          value={validFrom}
-                          onChange={(e) => setValidFrom(e.target.value)}
-                          className="form-input"
-                        />
-                        <span className="input-label">Desde</span>
-                      </div>
-                      <div className="date-input">
-                        <input
-                          type="date"
-                          value={validTo}
-                          onChange={(e) => setValidTo(e.target.value)}
-                          className="form-input"
-                        />
-                        <span className="input-label">Hasta</span>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-              ) : null}
+              )}
 
+              {/* Botones de acción */}
               <div className="modal-actions">
                 <button onClick={() => setShowProductModal(false)} className="button secondary">
                   Cancelar

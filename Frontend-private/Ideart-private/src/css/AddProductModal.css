@@ -137,3 +137,31 @@
   border-radius: 16px;
   box-shadow: inset 0 0 10px rgba(32, 76, 60, 0.1);
 }
+
+
+@media (max-width: 768px) {
+  .modal-content {
+    width: 90%;
+    padding: 1.5rem;
+    border-radius: 14px;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .modal-buttons button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  .image-preview img {
+    width: 100px;
+  }
+
+  .model-preview-container h4 {
+    font-size: 1rem;
+  }
+}
