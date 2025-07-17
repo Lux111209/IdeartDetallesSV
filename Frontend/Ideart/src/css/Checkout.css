@@ -260,3 +260,77 @@ p.Tittle {
 .inline-toast.success {
   border-color: #12b76a;
 }
+
+@media (max-width: 1024px) {
+  .form-card {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  input {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .credit-card-wrapper {
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .checkout-container {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .form-card {
+    padding: 1rem;
+  }
+
+  .payment-methods {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .payment-methods button {
+    width: 100%;
+  }
+
+  .summary img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-number {
+    font-size: 1rem;
+  }
+
+  .card-footer {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .cvv-value {
+    font-size: 1rem;
+    padding: 0.3rem 0.8rem;
+  }
+
+  .confirm-button {
+    width: 100%;
+  }
+
+  .back-button {
+    width: 100%;
+    text-align: left;
+  }
+
+  .inline-toast {
+    max-width: 100%;
+  }
+
+  p.Tittle {
+    margin-top: 50px;
+  }
+}

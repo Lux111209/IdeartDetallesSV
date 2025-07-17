@@ -5,57 +5,10 @@
   font-family: 'Segoe UI', sans-serif;
   background-image: url('/Login.jpg');
   background-size: cover;
-  background-position: center -25px; 
+  background-position: center -25px;
   background-repeat: no-repeat;
-  background-attachment: fixed; 
+  background-attachment: fixed;
   color: white;
-}
-
-
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-    padding: 1rem;
-    align-items: center;
-  }
-
-  .left,
-  .right {
-    width: 100%;
-    padding: 1rem;
-    margin: 0;
-    align-items: center;
-  }
-
-  .title {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  align-self: flex-end;
-  width: 100%;
-  max-width: 300px;
-  text-align: left
-}
-
-@media (max-width: 768px) {
-  .title {
-    text-align: center;
-    align-self: center;
-    max-width: 250px;
-  }
-}
-
-  .form {
-    margin-left: 0;
-    width: 100%;
-    max-width: 250px;
-    align-items: center;
-  }
-
-  .input,
-  .button {
-    width: 100%;
-    max-width: 100%;
-  }
 }
 
 .left, .right {
@@ -72,7 +25,7 @@
 }
 
 .right {
-  background-color: transparent; 
+  background-color: transparent;
   margin-right: 5%;
   padding: 2rem;
 }
@@ -112,7 +65,7 @@
   padding: 0.75rem 1rem;
   border: none;
   border-radius: 20px;
-  background-color: #b7cada; 
+  background-color: #b7cada;
   color: black;
   cursor: pointer;
   font-weight: bold;
@@ -120,17 +73,63 @@
 }
 
 .button:hover {
-  background-color: #8eb6d7; 
+  background-color: #8eb6d7;
 }
 
 .link {
   margin-top: 0.5rem;
   font-size: 0.9rem;
-  color: #a9d4b2; 
+  color: #a9d4b2;
   cursor: pointer;
   text-align: center;
 }
 
 .link:hover {
   text-decoration: underline;
+}
+
+/* ✅ Responsive */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    padding: 1rem;
+    align-items: center;
+    justify-content: center;
+    background-position: center;
+  }
+
+  .left,
+  .right {
+    width: 100%;
+    padding: 1rem;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .title {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    margin-left: 0;
+    text-align: center;
+    align-self: center;
+    max-width: 90%;
+  }
+
+  .form {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 280px;
+    align-items: center;
+  }
+
+  .input,
+  .button {
+    width: 100%;
+  }
+
+  .logo {
+    font-size: 1.8rem;
+    text-align: center;
+  }
 }
