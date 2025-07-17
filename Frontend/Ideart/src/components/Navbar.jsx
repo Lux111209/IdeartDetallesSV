@@ -11,7 +11,7 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
-    navigate('/login'); // Redirige a la página de login después del logout
+    navigate('/login');
   };
 
   return (
@@ -38,27 +38,25 @@ const Navbar = () => {
         <li className={path === '/profile' ? 'active' : ''}>
           <Link to="/profile" className="nav-item">Mi Perfil</Link>
         </li>
+      </ul>
 
-        <li className={`nav-settings ${path === '/settings' ? 'active' : ''}`}>
-          <Link to="/settings" className="nav-item nav-icon-link">
-            <img
-              src="/settings.png"
-              alt="Configuración"
-              className="settings-icon"
-            />
-          </Link>
-        </li>
-
-        {/* Ícono de cerrar sesión */}
-        <li
-          className="nav-icon-link logout-icon"
+      {/* ✅ Íconos aparte y pegados a la derecha */}
+      <div className="nav-settings">
+        <div
+          className="logout-icon"
           onClick={handleLogout}
           title="Cerrar sesión"
-          style={{ cursor: 'pointer' }}
         >
           <LogOut size={28} color="white" />
-        </li>
-      </ul>
+        </div>
+        <Link to="/settings" className="nav-icon-link">
+          <img
+            src="/settings.png"
+            alt="Configuración"
+            className="settings-icon"
+          />
+        </Link>
+      </div>
     </nav>
   );
 };
