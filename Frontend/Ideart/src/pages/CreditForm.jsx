@@ -9,14 +9,15 @@ import "../css/Checkout.css";
 const CreditForm = () => {
   const navigate = useNavigate();
 
+  // Estados para los datos de la tarjeta
   const [cardNumber, setCardNumber] = useState("");
   const [cvv, setCvv] = useState("");
   const [expiry, setExpiry] = useState("");
   const [name, setName] = useState("");
   const [isCvvFocused, setIsCvvFocused] = useState(false);
-
   const [errors, setErrors] = useState({});
 
+  // Formatea el número de tarjeta como XXXX XXXX XXXX XXXX
   const formatCardNumber = (value) => {
     const digits = value.replace(/\D/g, "").slice(0, 16);
     const formatted = digits.replace(/(.{4})/g, "$1 ").trim();
@@ -24,8 +25,7 @@ const CreditForm = () => {
   };
 
   const handleCardNumberChange = (e) => {
-    const value = e.target.value;
-    setCardNumber(formatCardNumber(value));
+    setCardNumber(formatCardNumber(e.target.value));
   };
 
   const handleCvvChange = (e) => {
@@ -35,9 +35,7 @@ const CreditForm = () => {
 
   const handleExpiryChange = (e) => {
     let value = e.target.value.replace(/\D/g, "").slice(0, 4);
-    if (value.length > 2) {
-      value = value.slice(0, 2) + "/" + value.slice(2);
-    }
+    if (value.length > 2) value = value.slice(0, 2) + "/" + value.slice(2);
     setExpiry(value);
   };
 
@@ -46,12 +44,13 @@ const CreditForm = () => {
     setName(value);
   };
 
+  // Validaciones con expresiones regulares
   const validateCardNumber = (num) => /^\d{4} \d{4} \d{4} \d{4}$/.test(num);
   const validateCVV = (code) => /^\d{3,4}$/.test(code);
   const validateExpiry = (date) => /^(0[1-9]|1[0-2])\/\d{2}$/.test(date);
-  const validatePassword = (pwd) => pwd.length >= 8;
 
   const handlePay = () => {
+    // Creamos errores si los campos no cumplen
     const newErrors = {
       cardNumber: validateCardNumber(cardNumber) ? "" : "Número inválido (16 dígitos)",
       cvv: validateCVV(cvv) ? "" : "CVV inválido (3-4 dígitos)",
@@ -60,9 +59,12 @@ const CreditForm = () => {
     };
 
     setErrors(newErrors);
+
+    // Si hay algún error, no seguimos
     const hasError = Object.values(newErrors).some((e) => e);
     if (hasError) return;
 
+    // Simulamos compra exitosa
     alert("¡Tu compra fue exitosa!");
     navigate("/");
   };
@@ -71,11 +73,14 @@ const CreditForm = () => {
     <>
       <TopBar />
       <Navbar />
+
       <div className="checkout-container">
         <button className="back-button" onClick={() => navigate("/checkout")}>
           ← Regresar
         </button>
+
         <div className="form-card credit-form">
+          {/* Lado izquierdo - formulario */}
           <div className="form-left">
             <label>Nombre en la Tarjeta</label>
             <input
@@ -116,8 +121,10 @@ const CreditForm = () => {
             </button>
           </div>
 
+          {/* Lado derecho - vista previa de tarjeta */}
           <div className="form-right summary">
             <div className={`credit-card-wrapper ${isCvvFocused ? "flipped" : ""}`}>
+              {/* Vista frontal */}
               <div className="credit-card-preview front">
                 <div className="chip" />
                 <div className="card-number">{cardNumber || "1234 5678 9012 3456"}</div>
@@ -126,11 +133,14 @@ const CreditForm = () => {
                   <div className="card-expiry">{expiry || "MM/AA"}</div>
                 </div>
               </div>
+
+              {/* Vista trasera */}
               <div className="credit-card-preview back">
                 <div className="cvv-label">CVV</div>
                 <div className="cvv-value">{cvv || "•••"}</div>
               </div>
             </div>
+
             <p className="Tittle">
               <strong>Total a Pagar</strong>
               <br />$112.67
@@ -138,6 +148,7 @@ const CreditForm = () => {
           </div>
         </div>
       </div>
+
       <Footer />
     </>
   );

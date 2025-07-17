@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 
 const API_URL = "http://localhost:5000/api/carrito";
 
+// Hook para obtener y manejar el carrito de compras
 const useFetchShoppingCart = () => {
   const [carritos, setCarritos] = useState([]);
   const [carrito, setCarrito] = useState(null);

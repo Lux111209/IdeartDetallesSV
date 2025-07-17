@@ -1,7 +1,8 @@
-// src/pages/Providers.jsx
 import { useState, useEffect, useRef } from "react";
 import EmpleadoCard from "../components/providersCart";
-import Sidebar from "../components/Sidebar"; 
+import Sidebar from "../components/Sidebar";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../css/Providers.css";
 
 const empleadosIniciales = [
@@ -13,7 +14,8 @@ const empleadosIniciales = [
     titulo: "Proveedor de Ropa",
     descripcion: "Entrega semanal de mercancía desde Colombia.",
     edad: 35,
-    genero: "Masculino"
+    genero: "Masculino",
+    telefono: "1234-5678"
   },
   {
     id: 2,
@@ -23,7 +25,8 @@ const empleadosIniciales = [
     titulo: "Proveedor de Calzado",
     descripcion: "Especialista en calzado de cuero artesanal.",
     edad: 42,
-    genero: "Femenino"
+    genero: "Femenino",
+    telefono: "8765-4321"
   }
 ];
 
@@ -41,11 +44,13 @@ export default function Providers() {
     genero: "",
     telefono: ""
   });
-  
   const [errores, setErrores] = useState({});
-
   const panelDerechoRef = useRef(null);
 
+  // Para guardar el id del empleado a eliminar tras confirmación
+  const [empleadoEliminarId, setEmpleadoEliminarId] = useState(null);
+
+  // Cierra panel de detalle/edición al hacer click fuera
   useEffect(() => {
     function handleClickOutside(event) {
       if (
@@ -59,19 +64,20 @@ export default function Providers() {
         }
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [activo, modoEdicion]);
 
+  // Seleccionar proveedor para mostrar detalle
   function seleccionarEmpleado(emp) {
     setActivo(emp);
     setModoEdicion(false);
     setErrores({});
   }
 
+  // Preparar formulario para agregar nuevo proveedor
   function agregarNuevo() {
     setActivo(null);
     setModoEdicion(true);
@@ -88,6 +94,7 @@ export default function Providers() {
     setErrores({});
   }
 
+  // Preparar formulario para editar proveedor seleccionado
   function editarEmpleado() {
     if (!activo) return;
     setFormData({
@@ -104,6 +111,7 @@ export default function Providers() {
     setErrores({});
   }
 
+  // Validación de formulario con mensajes de error en cada campo
   function validar() {
     const errs = {};
     if (!formData.nombre.trim()) errs.nombre = "Nombre requerido";
@@ -123,22 +131,27 @@ export default function Providers() {
     return errs;
   }
 
+  // Guardar nuevo proveedor o actualizar existente
   function guardarEmpleado(e) {
     e.preventDefault();
 
     const errs = validar();
     if (Object.keys(errs).length > 0) {
       setErrores(errs);
+      toast.error("Corrige los errores del formulario");
       return;
     }
 
     if (activo) {
+      // Actualizo proveedor existente
       const nuevos = empleados.map(emp =>
         emp.id === activo.id ? { ...emp, ...formData, edad: Number(formData.edad) } : emp
       );
       setEmpleados(nuevos);
       setActivo({ ...activo, ...formData, edad: Number(formData.edad) });
+      toast.success("Proveedor actualizado con éxito");
     } else {
+      // Agrego nuevo proveedor
       const nuevoEmp = {
         ...formData,
         id: empleados.length ? Math.max(...empleados.map(e => e.id)) + 1 : 1,
@@ -147,29 +160,86 @@ export default function Providers() {
       };
       setEmpleados([...empleados, nuevoEmp]);
       setActivo(nuevoEmp);
+      toast.success("Proveedor agregado con éxito");
     }
 
     setModoEdicion(false);
     setErrores({});
   }
 
+  // Cancelar edición o creación
   function cancelar() {
     setModoEdicion(false);
     setErrores({});
     setActivo(null);
+    toast.info("Edición cancelada");
   }
 
-  function eliminarEmpleado() {
+  // *** NUEVO: Confirmación con toast para eliminar ***
+  function confirmarEliminarEmpleado() {
     if (!activo) return;
-    if (window.confirm(`¿Eliminar proveedor ${activo.nombre}?`)) {
-      setEmpleados(empleados.filter(emp => emp.id !== activo.id));
-      setActivo(null);
-      setModoEdicion(false);
-      setErrores({});
-    }
+
+    // Guardamos el id para eliminar después
+    setEmpleadoEliminarId(activo.id);
+
+    // Mostramos toast con botones Sí/No
+    toast.info(
+      ({ closeToast }) => (
+        <div>
+          <p>¿Estás seguro que deseas eliminar a <b>{activo.nombre}</b>?</p>
+          <div style={{ display: "flex", justifyContent: "space-around", marginTop: 10 }}>
+            <button
+              onClick={() => {
+                eliminarEmpleado(activo.id);
+                closeToast();
+              }}
+              style={{
+                backgroundColor: "#dc3545",
+                color: "white",
+                border: "none",
+                padding: "6px 12px",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              Sí
+            </button>
+            <button
+              onClick={() => closeToast()}
+              style={{
+                backgroundColor: "#6c757d",
+                color: "white",
+                border: "none",
+                padding: "6px 12px",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              No
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
+        draggable: false,
+      }
+    );
   }
 
-  // Manejo archivo de imagen para subir desde dispositivo
+  // Función que elimina al empleado y muestra toast de éxito
+  function eliminarEmpleado(id) {
+    setEmpleados(empleados.filter(emp => emp.id !== id));
+    setActivo(null);
+    setModoEdicion(false);
+    setErrores({});
+    setEmpleadoEliminarId(null);
+    toast.success("Proveedor eliminado con éxito");
+  }
+
+  // Maneja selección de archivo imagen para preview local
   function manejarArchivoImagen(e) {
     const archivo = e.target.files[0];
     if (archivo) {
@@ -212,7 +282,7 @@ export default function Providers() {
 
                 <div className="botones-derecha">
                   <button onClick={editarEmpleado} className="btn-editar">Editar</button>
-                  <button onClick={eliminarEmpleado} className="btn-eliminar">Eliminar</button>
+                  <button onClick={confirmarEliminarEmpleado} className="btn-eliminar">Eliminar</button>
                 </div>
               </>
             )}
@@ -319,6 +389,9 @@ export default function Providers() {
           </div>
         </div>
       </main>
+
+      {/* Contenedor para los toasts */}
+      <ToastContainer />
     </div>
   );
 }

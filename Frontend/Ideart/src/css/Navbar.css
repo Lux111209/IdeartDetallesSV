@@ -1,3 +1,4 @@
+/* Navbar base (igual que tú) */
 .navbar {
   display: flex;
   align-items: center;
@@ -7,6 +8,7 @@
   color: white;
   font-family: 'Segoe UI', sans-serif;
   max-width: 100vw;
+  flex-wrap: nowrap; /* No queremos que se rompa en dos filas */
 }
 
 .nav-links {
@@ -16,12 +18,22 @@
   gap: 1rem;
   padding: 0;
   margin: 0;
-  width: 100%;
+  width: auto; /* Ajustamos para que no tome todo el ancho */
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  overflow-x: auto; /* Permitir scroll horizontal suave si no cabe */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.nav-links::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
 }
 
 .nav-links li {
   cursor: pointer;
   transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
+  white-space: nowrap; /* evitar salto de texto */
 }
 
 .nav-links li:hover {
@@ -36,12 +48,10 @@
   padding: 8px 12px;
 }
 
-
 .nav-links li.active .nav-item {
   font-weight: bold;
   border-bottom: 2px solid white;
 }
-
 
 .settings-icon {
   width: 45px;
@@ -56,11 +66,12 @@
   filter: brightness(1.2);
 }
 
-
 .nav-settings {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-
 
 .nav-icon-link {
   display: flex;
@@ -79,4 +90,43 @@
 .logout-icon:hover {
   transform: scale(1.1);
   filter: brightness(1.2);
+}
+
+/* Responsive sutil */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.8rem 1rem; /* menos padding horizontal */
+  }
+
+  .nav-links {
+    gap: 0.7rem; /* un poco menos espacio */
+    overflow-x: auto; /* mantenemos scroll horizontal */
+  }
+
+  .nav-links li .nav-item {
+    padding: 6px 10px; /* un poco menos padding para que entren más */
+    font-size: 0.9rem;
+  }
+
+  .settings-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-settings {
+    margin-left: 1rem; /* no tan pegado */
+  }
+}
+
+/* Opcional: un pequeño ajuste para móviles muy pequeños */
+@media (max-width: 480px) {
+  .nav-links li .nav-item {
+    padding: 5px 8px;
+    font-size: 0.85rem;
+  }
+
+  .settings-icon {
+    width: 36px;
+    height: 36px;
+  }
 }

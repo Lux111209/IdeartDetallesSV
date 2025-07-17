@@ -2,6 +2,7 @@ import { useState } from "react";
 
 const API_BASE_URL = "http://localhost:5000/api";
 
+
 const useAuth = () => {
   // Estado del formulario
   const [formData, setFormData] = useState({
@@ -70,6 +71,20 @@ const useAuth = () => {
     setVerifyError(null);
     setVerifySuccess(false);
 
+// Hook para manejar el registro de usuarios
+const useRegister = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState("");
+  const [success, setSuccess] = useState(false);
+
+  // Función para manejar el registro
+  const register = useCallback(async (userData) => {
+    setLoading(true);
+    setError("");
+    setSuccess(false);
+
+
+    // Validación básica del formulario
     try {
       const res = await fetch(`${API_BASE_URL}/registerUser/verifyCodeEmail`, {
         method: "POST",
@@ -78,6 +93,7 @@ const useAuth = () => {
         credentials: "include"
       });
 
+      // Verifica si la respuesta es exitosa
       const data = await res.json();
 
       if (!res.ok) {

@@ -2,6 +2,7 @@
   padding: 2rem;
   background-color: #f8fdf9;
   min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .cart-title {
@@ -27,6 +28,8 @@
   margin-bottom: 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   font-weight: 500;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .clear-cart-btn {
@@ -37,6 +40,8 @@
   padding: 0.5rem 1rem;
   cursor: pointer;
   font-size: 0.9rem;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .clear-cart-btn:hover {
@@ -59,6 +64,8 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   font-family: 'Segoe UI', sans-serif;
   transition: transform 0.2s ease;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .cart-item:hover {
@@ -66,7 +73,7 @@
 }
 
 .cart-item.last-item {
-  margin-bottom: 4rem; 
+  margin-bottom: 4rem;
 }
 
 .product-image img {
@@ -76,11 +83,13 @@
   margin-right: 1rem;
   border: 1px solid #ccc;
   object-fit: contain;
+  flex-shrink: 0;
 }
 
 .product-details {
-  flex: 1;
+  flex: 1 1 200px;
   padding: 0 1rem;
+  min-width: 150px;
 }
 
 .product-details h3 {
@@ -103,6 +112,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .selectors select {
@@ -138,6 +148,8 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 0.5rem;
+  flex-shrink: 0;
+  min-width: 120px;
 }
 
 .action-buttons {
@@ -167,14 +179,14 @@
 }
 
 .save-btn:hover,
-.remove-btn:hover
+.remove-btn:hover,
 .add-btn:hover {
   color: white;
   background-color: #444;
 }
 
 .buy-now:hover {
-    transform: translateY(-2px);
+  transform: translateY(-2px);
 }
 
 .order-summary {
@@ -186,6 +198,7 @@
   margin: 2rem auto;
   font-family: 'Segoe UI', sans-serif;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
 }
 
 .order-summary h3 {
@@ -213,6 +226,7 @@
   background-color: white;
   cursor: pointer;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .order-summary button:hover {
@@ -302,5 +316,11 @@
   .clear-cart-btn {
     align-self: stretch;
     width: 100%;
+  }
+
+  .order-summary {
+    width: 90%;
+    max-width: none;
+    margin: 1rem auto 2rem;
   }
 }

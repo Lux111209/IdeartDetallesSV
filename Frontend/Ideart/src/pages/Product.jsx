@@ -6,9 +6,11 @@ import TopBar from '../components/TopBar';
 import ProductCard from '../components/ProductCard';
 import '../css/Products.css';
 
+// Componente para mostrar la lista de productos
 const Product = () => {
   const { products, loadingProducts } = useFetchProducts();
 
+  // Renderiza la página de productos
   return (
     <>
       <div className="top-bar">

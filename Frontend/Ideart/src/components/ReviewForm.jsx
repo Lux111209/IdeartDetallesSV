@@ -4,6 +4,7 @@ import StarRating from './StarRating';
 import Toast from './Toast';
 import '../css/Reviews.css';
 
+// Componente para el formulario de reseñas
 const ReviewForm = ({ onCancel, id_user, id_producto, onSuccess }) => {
   const [titulo, setTitulo] = useState('');
   const [detalle, setDetalle] = useState('');
@@ -11,6 +12,7 @@ const ReviewForm = ({ onCancel, id_user, id_producto, onSuccess }) => {
   const [errors, setErrors] = useState({});
   const [toast, setToast] = useState(null);
 
+  // Maneja los cambios en el título
   const validate = () => {
     const newErrors = {};
     if (!titulo.trim()) newErrors.titulo = 'El título es obligatorio';
@@ -22,20 +24,23 @@ const ReviewForm = ({ onCancel, id_user, id_producto, onSuccess }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Verifica si el ID es un ObjectId válido
   const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
 
+  // Maneja el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) {
       setToast({ type: 'error', message: 'Corrige los errores del formulario.' });
       return;
     }
-
+    // Verifica que los IDs sean válidos
     if (!isValidObjectId(id_user) || !isValidObjectId(id_producto)) {
       setToast({ type: 'error', message: 'ID de usuario o producto no válido.' });
       return;
     }
 
+    // Crea el payload para la API
     const payload = {
       titulo,
       detalle,
@@ -45,6 +50,7 @@ const ReviewForm = ({ onCancel, id_user, id_producto, onSuccess }) => {
       id_producto,
     };
 
+    // Envía la reseña a la API
     try {
       const res = await axios.post('http://localhost:5000/api/resenasgeneral', payload);
       setToast({ type: 'success', message: 'Reseña enviada correctamente!' });
@@ -60,6 +66,7 @@ const ReviewForm = ({ onCancel, id_user, id_producto, onSuccess }) => {
     }
   };
 
+  // Renderiza el formulario de reseña
   return (
     <div className="review-modal" onClick={e => e.target.className === 'review-modal' && onCancel()}>
       <form className="review-form" onSubmit={handleSubmit} noValidate>

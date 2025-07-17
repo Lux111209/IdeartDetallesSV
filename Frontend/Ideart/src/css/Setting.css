@@ -5,6 +5,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  box-sizing: border-box;
 }
 
 .settings-box {
@@ -14,6 +15,7 @@
   padding: 2rem;
   width: 100%;
   max-width: 700px;
+  box-sizing: border-box;
 }
 
 .settings-header {
@@ -29,6 +31,8 @@
   align-items: center;
   padding: 1rem 0;
   border-bottom: 1px solid #ddd;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .icon-label {
@@ -37,6 +41,8 @@
   gap: 1rem;
   font-size: 1rem;
   font-weight: 500;
+  flex: 1 1 auto;
+  min-width: 150px;
 }
 
 .switch {
@@ -44,6 +50,7 @@
   display: inline-block;
   width: 42px;
   height: 24px;
+  flex-shrink: 0;
 }
 
 .switch input {
@@ -86,4 +93,47 @@ input:checked + .slider:before {
 
 .clickable {
   cursor: pointer;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 600px) {
+  .settings-page {
+    padding: 1rem;
+  }
+
+  .settings-box {
+    padding: 1.5rem;
+  }
+
+  .settings-header {
+    font-size: 1.5rem;
+  }
+
+  .settings-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .icon-label {
+    font-size: 0.95rem;
+    min-width: auto;
+    margin-bottom: 0.5rem;
+  }
+
+  .switch {
+    width: 36px;
+    height: 20px;
+  }
+
+  .slider:before {
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(16px);
+  }
 }

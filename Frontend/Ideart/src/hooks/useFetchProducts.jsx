@@ -1,10 +1,12 @@
 // src/hooks/useFetchProducts.js
 import { useEffect, useState } from 'react';
 
+// Hook para obtener productos desde la API
 const useFetchProducts = () => {
   const [products, setProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
 
+  // Función para obtener productos
   const getProducts = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/products');
@@ -22,6 +24,7 @@ const useFetchProducts = () => {
     }
   };
 
+  // Cargar productos al montar el componente
   useEffect(() => {
     getProducts();
   }, []);

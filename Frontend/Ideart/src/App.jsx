@@ -1,3 +1,4 @@
+// App.jsx
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoutes";
 import PublicRoute from "./routes/PublicRoutes";
@@ -16,18 +17,21 @@ import CheckoutInfo from "./pages/Checkout";
 import CreditForm from "./pages/CreditForm";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+
 import RecoverPassword from "./pages/RecoverPassword";
 import CheckNumber from "./pages/CheckNumber";
 import NewPassword from "./pages/NewPassword";
 
 
+import EmailVerification from "./pages/EmailVerification";
+
+
 function App() {
   return (
     <Routes>
-      {/* Primera vez: Register como página de inicio */}
       <Route path="/" element={<Register />} />
 
-      {/* Solo si no hay sesión (públicas) */}
+      {/* Solo si no hay sesión */}
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -50,11 +54,11 @@ function App() {
         <Route path="/reviews" element={<Reviews />} />
       </Route>
 
-      {/* Rutas accesibles sin importar autenticación */}
+      {/* Accesibles sin sesión */}
       <Route path="/contactus" element={<ContactUs />} />
       <Route path="/terminos" element={<TermsAndConditions />} />
+      <Route path="/verificar-email" element={<EmailVerification />} />
     </Routes>
-
   );
 }
 

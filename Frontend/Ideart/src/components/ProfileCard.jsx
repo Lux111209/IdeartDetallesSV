@@ -5,15 +5,18 @@ import ChangePasswordModal from './ChangePasswordModal';
 import ProfileImageUploader from './ProfileImageUpload';
 import '../css/Profile.css';
 
+// Componente para mostrar la tarjeta de perfil del usuario
 const ProfileCard = ({ user, setUser, updateUser }) => {
     const [showNameModal, setShowNameModal] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const fileInputRef = useRef(null);
 
+    // Maneja el cambio de imagen de perfil
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
+        // Verifica que el archivo sea una imagen
         const reader = new FileReader();
         reader.onloadend = () => {
             const imageUrl = reader.result;
@@ -28,6 +31,7 @@ const ProfileCard = ({ user, setUser, updateUser }) => {
         reader.readAsDataURL(file);
     };
 
+    
     return (
         <div className="profile-card">
             <div className="profile-image-wrapper">
@@ -82,7 +86,7 @@ const ProfileCard = ({ user, setUser, updateUser }) => {
                     onClose={() => setShowNameModal(false)}
                 />
             )}
-
+            // Modal para cambiar la contraseña
             {showPasswordModal && (
                 <ChangePasswordModal
                     user={user}

@@ -1,12 +1,17 @@
+// Este componente es para registrar nuevos usuarios
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useRegister from "../hooks/useFetchRegister";
+import Toast from "../components/Toast";
 import "../css/Login.css";
 
 const AuthRegister = () => {
-  const { register, loading, error, success } = useRegister();
-  const navigate = useNavigate();
+  const { register, loading } = useRegister(); // Hook para hacer el registro
+  const navigate = useNavigate(); // Para redirigir
+  const [toast, setToast] = useState(null); // Para mostrar alertas
 
+  // Formulario base
   const [form, setForm] = useState({
     nombre: "",
     correo: "",
@@ -15,61 +20,59 @@ const AuthRegister = () => {
     favoritos: [],
   });
 
+  // Cada vez que escriben en un input, actualizamos ese campo
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // Cuando se envía el formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const { nombre, correo, password, fechaNacimiento } = form;
+
+    // Validaciones básicas
+    if (!nombre || !correo || !password || !fechaNacimiento) {
+      return setToast({ type: "error", message: "Todos los campos son obligatorios." });
+    }
+
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(correo)) {
+      return setToast({ type: "error", message: "Correo no válido." });
+    }
+
+    if (password.length < 6) {
+      return setToast({ type: "error", message: "La contraseña debe tener al menos 6 caracteres." });
+    }
+
+    // Registramos al usuario
     const result = await register(form);
     if (result.success) {
-      alert("Registro exitoso. Revisa tu correo para verificar tu cuenta.");
-      navigate("/home"); // Navega a /home después de registrarse
+      setToast({ type: "success", message: "Registro exitoso. Verifica tu correo." });
+      setTimeout(() => navigate("/verificar-email"), 1500); // Redirige a pantalla de verificación
+    } else {
+      setToast({ type: "error", message: "Error al registrar usuario." });
     }
   };
 
   return (
     <div className="container">
-      <div className="left">{/* Puedes agregar un logo o imagen aquí */}</div>
+      <div className="left" />
       <div className="right">
         <h1 className="title">Registrarse</h1>
+
         <form onSubmit={handleSubmit} className="form">
-          <input
-            name="nombre"
-            type="text"
-            placeholder="Nombre"
-            className="input"
-            onChange={handleChange}
-            required
-          />
-          <input
-            name="correo"
-            type="email"
-            placeholder="Correo electrónico"
-            className="input"
-            onChange={handleChange}
-            required
-          />
-          <input
-            name="password"
-            type="password"
-            placeholder="Contraseña"
-            className="input"
-            onChange={handleChange}
-            required
-          />
-          <input
-            name="fechaNacimiento"
-            type="date"
-            className="input"
-            onChange={handleChange}
-            required
-          />
+          <input name="nombre" type="text" placeholder="Nombre" className="input" onChange={handleChange} required />
+          <input name="correo" type="email" placeholder="Correo electrónico" className="input" onChange={handleChange} required />
+          <input name="password" type="password" placeholder="Contraseña" className="input" onChange={handleChange} required />
+          <input name="fechaNacimiento" type="date" className="input" onChange={handleChange} required />
+
           <button type="submit" className="button" disabled={loading}>
             {loading ? "Registrando..." : "Registrarse"}
           </button>
-          {error && <div style={{ color: "red", marginTop: "10px" }}>{error}</div>}
-          {success && <div style={{ color: "green", marginTop: "10px" }}>¡Registro exitoso!</div>}
+
+          {toast && <Toast type={toast.type} message={toast.message} />}
+
           <div className="link">
             ¿Ya tienes cuenta?{" "}
             <strong onClick={() => navigate("/login")} style={{ cursor: "pointer" }}>

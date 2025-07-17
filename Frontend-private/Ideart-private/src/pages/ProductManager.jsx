@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar.jsx";
-import ProductCard from "../components/ProductCard.jsx";
-import ProductModal from "../components/ProductModal.jsx"; // modal sin 3D
-import AddProductModal from "../components/AddProductModal.jsx";
+import Sidebar from "../components/Sidebar.jsx"; // Menú lateral fijo
+import ProductCard from "../components/ProductCard.jsx"; // Tarjeta para mostrar producto
+import ProductModal from "../components/ProductModal.jsx"; // Modal para editar producto
+import AddProductModal from "../components/AddProductModal.jsx"; // Modal para agregar producto
 import "../css/ProductManager.css";
-import { toast } from "react-toastify";
+import { toast } from "react-toastify"; // Notificaciones
 import "react-toastify/dist/ReactToastify.css";
 
 const ProductManager = () => {
+  // Estado con lista de productos
   const [products, setProducts] = useState([]);
+  // Estado para buscar productos por nombre
   const [search, setSearch] = useState("");
+  // Producto seleccionado para editar
   const [selectedProduct, setSelectedProduct] = useState(null);
+  // Controla si mostrar modal para agregar producto
   const [showAddModal, setShowAddModal] = useState(false);
 
+  // Simula carga inicial de productos (podría ser fetch real)
   useEffect(() => {
     const fakeProducts = [
       {
@@ -49,14 +54,17 @@ const ProductManager = () => {
     setProducts(fakeProducts);
   }, []);
 
+  // Al hacer click en una tarjeta, selecciona el producto para editar
   const handleCardClick = (product) => {
     setSelectedProduct(product);
   };
 
+  // Cierra el modal de edición
   const handleCloseModal = () => {
     setSelectedProduct(null);
   };
 
+  // Guarda cambios al editar un producto y actualiza la lista
   const handleSave = (updatedProduct) => {
     setProducts((prev) =>
       prev.map((p) => (p._id === updatedProduct._id ? updatedProduct : p))
@@ -65,18 +73,21 @@ const ProductManager = () => {
     toast.success("Producto actualizado exitosamente!");
   };
 
+  // Elimina un producto de la lista
   const handleDelete = (id) => {
     setProducts((prev) => prev.filter((p) => p._id !== id));
     handleCloseModal();
     toast.info("Producto eliminado");
   };
 
+  // Agrega un nuevo producto a la lista
   const handleAdd = (newProduct) => {
     setProducts((prev) => [...prev, newProduct]);
     setShowAddModal(false);
     toast.success("Producto agregado con éxito!");
   };
 
+  // Filtra productos según búsqueda (nombre)
   const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -86,9 +97,10 @@ const ProductManager = () => {
       className="product-manager-layout"
       style={{ display: "flex", minHeight: "100vh" }}
     >
-      <Sidebar />
+      <Sidebar /> {/* Sidebar fijo */}
 
       <div className="product-manager-content" style={{ flex: 1, padding: "20px" }}>
+        {/* Barra superior con título, botón agregar y búsqueda */}
         <div
           className="top-bar"
           style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}
@@ -106,6 +118,7 @@ const ProductManager = () => {
           />
         </div>
 
+        {/* Grid con tarjetas de productos */}
         <div
           className="product-grid"
           style={{
@@ -130,6 +143,7 @@ const ProductManager = () => {
         </div>
       </div>
 
+      {/* Modal para editar producto seleccionado */}
       {selectedProduct && (
         <ProductModal
           product={selectedProduct}
@@ -139,6 +153,7 @@ const ProductManager = () => {
         />
       )}
 
+      {/* Modal para agregar nuevo producto */}
       {showAddModal && (
         <AddProductModal
           onClose={() => setShowAddModal(false)}

@@ -1,5 +1,6 @@
 import { ReactNode } from "react"
 
+// Componente para la sección de términos
 export default function TerminosSection({ icon: Icon, title, children }) {
   return (
     <section className="space-y-3">

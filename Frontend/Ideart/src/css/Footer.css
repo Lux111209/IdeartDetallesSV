@@ -47,3 +47,43 @@
 .footer a:active {
   color: inherit; 
 }
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 1.5rem 1rem;
+  }
+
+  .footer .title {
+    font-size: 1rem;
+  }
+
+  .footer p {
+    font-size: 0.95rem;
+    max-width: 100%;
+  }
+
+  .footer .social-icons {
+    gap: 16px;
+    font-size: 1.2rem;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding: 1rem 0.5rem;
+  }
+
+  .footer .title {
+    font-size: 0.95rem;
+  }
+
+  .footer p {
+    font-size: 0.875rem;
+  }
+
+  .footer .social-icons {
+    gap: 12px;
+    font-size: 1rem;
+  }
+}
