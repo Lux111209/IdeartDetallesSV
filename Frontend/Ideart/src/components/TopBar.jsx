@@ -2,7 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "../css/TopBar.css";
 
+// Componente para la barra superior
 const TopBar = () => {
+  // Renderiza la barra superior con el logo, campo de búsqueda y enlaces a perfil y carrito
   return (
     <div className="top-bar">
       <Link to="/">

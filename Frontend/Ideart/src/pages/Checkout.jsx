@@ -6,9 +6,11 @@ import TopBar from "../components/TopBar";
 import InlineToast from "../components/Toast";
 import "../css/Checkout.css";
 
+// Página de Checkout donde se ingresan datos personales y método de pago
 const CheckoutInfo = () => {
   const [paymentMethod, setPaymentMethod] = useState("credit");
 
+  // Campos del formulario
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [city, setCity] = useState("");
@@ -16,12 +18,13 @@ const CheckoutInfo = () => {
   const [note, setNote] = useState("");
 
   const [errors, setErrors] = useState({});
-
   const navigate = useNavigate();
 
+  // Validaciones básicas
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const onlyLetters = (text) => /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]*$/.test(text);
 
+  // Confirma los datos, muestra errores si los hay y redirige según el método de pago
   const handleConfirm = () => {
     const newErrors = {
       name: name.trim() ? "" : "El nombre es obligatorio.",
@@ -39,6 +42,7 @@ const CheckoutInfo = () => {
     const hasError = Object.values(newErrors).some((e) => e);
     if (hasError) return;
 
+    // Navega a la forma de pago correspondiente
     if (paymentMethod === "credit") {
       navigate("/creditform");
     } else {
@@ -51,11 +55,13 @@ const CheckoutInfo = () => {
       <TopBar />
       <Navbar />
       <div className="checkout-container">
+        {/* Botón para regresar al carrito */}
         <button className="back-button" onClick={() => navigate("/shoppingcart")}>
           ← Regresar
         </button>
 
         <div className="form-card">
+          {/* Columna izquierda: datos personales */}
           <div className="form-left">
             <label>Nombre</label>
             <input
@@ -96,6 +102,7 @@ const CheckoutInfo = () => {
             {errors.address && <InlineToast type="warning" message={errors.address} />}
           </div>
 
+          {/* Columna derecha: método de pago y nota */}
           <div className="form-right">
             <label>Método de Pago</label>
             <div className="payment-methods">

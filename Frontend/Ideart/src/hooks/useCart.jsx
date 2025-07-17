@@ -1,17 +1,21 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
+// Contexto para el carrito de compras
 const CartContext = createContext();
 
+// Proveedor del contexto del carrito
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
     const storedCart = localStorage.getItem("cart");
     return storedCart ? JSON.parse(storedCart) : [];
   });
 
+  // Guarda el carrito en localStorage cada vez que cambia
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
+  // Funciones para manipular el carrito
   const addToCart = (item) => {
     const existingIndex = cartItems.findIndex(
       (i) =>
@@ -20,6 +24,7 @@ export const CartProvider = ({ children }) => {
         i.color === item.color
     );
 
+    // Si el item ya existe, incrementa la cantidad
     if (existingIndex !== -1) {
       const updatedCart = [...cartItems];
       updatedCart[existingIndex].quantity += item.quantity;
@@ -29,6 +34,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  // Funciones para manipular los items del carrito
   const removeFromCart = (index) => {
     const updatedCart = [...cartItems];
     updatedCart.splice(index, 1);
@@ -39,12 +45,14 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
   };
 
+  // Funciones para aumentar y disminuir la cantidad de un item
   const increaseQuantity = (index) => {
     const updatedCart = [...cartItems];
     updatedCart[index].quantity += 1;
     setCartItems(updatedCart);
   };
 
+  // Disminuye la cantidad de un item, pero no permite que sea menor a 1
   const decreaseQuantity = (index) => {
     const updatedCart = [...cartItems];
     if (updatedCart[index].quantity > 1) {
@@ -53,6 +61,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  // Obtiene el total de items y el total del precio del carrito
   const getTotalItems = () => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
@@ -63,7 +72,7 @@ export const CartProvider = ({ children }) => {
       0
     );
   };
-
+  // Proporciona el contexto del carrito a los componentes hijos
   return (
     <CartContext.Provider
       value={{

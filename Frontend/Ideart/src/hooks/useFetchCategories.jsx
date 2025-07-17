@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 
+// Hook para obtener y construir las categorías de productos
 const API_URL = "http://localhost:5000/api/products";
 
 const useFetchCategories = () => {

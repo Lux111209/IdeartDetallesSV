@@ -9,6 +9,7 @@ const useLogin = () => {
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
 
+  // Función para manejar el login
   const login = useCallback(async (email, password) => {
     setLoading(true);
     setError("");
@@ -22,6 +23,7 @@ const useLogin = () => {
         body: JSON.stringify({ correo: email, password }),
       });
 
+      // Verifica si la respuesta es exitosa
       const data = await res.json();
 
       if (!res.ok) {
@@ -31,6 +33,7 @@ const useLogin = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("userId", data.userId);
 
+      // Guarda el usuario en el estado
       setUser({ id: data.userId, token: data.token });
       setLoading(false);
       return true;

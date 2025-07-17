@@ -7,6 +7,7 @@ import ProfileCard from "../components/ProfileCard";
 import useUser from "../hooks/useFetchUser";
 import "../css/Profile.css";
 
+// Componente para mostrar el perfil del usuario
 const Profile = () => {
   const userId = localStorage.getItem("userId");
 
@@ -16,6 +17,7 @@ const Profile = () => {
   if (error) return <p>Error: {error}</p>;
   if (!user) return <p>No se encontró usuario</p>;
 
+  // Renderiza la página de perfils
   return (
     <>
       <TopBar />

@@ -7,6 +7,7 @@ import CategoryCard from "../components/CategoryCard";
 import useFetchCategories from "../hooks/useFetchCategories";
 import "../css/Products.css";
 
+// Componente para mostrar las categorías y subcategorías
 const Category = () => {
   const { categories, loading, error } = useFetchCategories();
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+// Hook para manejar la carga de imágenes
 export const useImageUpload = () => {
   const [uploadedImage, setUploadedImage] = useState(null);
 

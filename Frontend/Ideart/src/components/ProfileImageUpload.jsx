@@ -2,6 +2,7 @@
 import React from 'react';
 import '../css/Profile.css';
 
+// Componente para subir la imagen de perfil
 const ProfileImageUploader = ({ user, setUser }) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -9,6 +10,7 @@ const ProfileImageUploader = ({ user, setUser }) => {
     setUser({ ...user, image: imageUrl });
   };
 
+  // Renderiza el contenedor de la imagen de perfil
   return (
     <div className="profile-img-container">
       <label htmlFor="file-input">
