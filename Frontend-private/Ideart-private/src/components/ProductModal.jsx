@@ -1,187 +1,609 @@
-import React, { useState, useEffect } from "react";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "../css/AddProductModal.css";
+import React, { useState, useEffect } from 'react';
+import '../css/ProductModal.css';
 
-const COLORS = [
-  "#fff", "#000", "#ff0", "#f00", "#0f0", "#00f", "#f0f", "#ff69b4", "#800080", "#999"
-];
-
-const ProductModal = ({ product, onClose, onSave }) => {
+const ProductModal = ({ product, onClose, onSave, onDelete, loading = false }) => {
+  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    price: "",
-    stock: "",
-    productType: "",
-    size: "",
-    color: "",
-    imageFile: null,
-    imagePreview: null,
+    name: '',
+    productType: '',
+    subType: '',
+    usageCategory: '',
+    color: '',
+    size: '',
+    description: '',
+    stock: '',
+    price: '',
+    material: '',
+    tags: ''
   });
-
+  
+  const [newImages, setNewImages] = useState([]);
+  const [newImagePreviews, setNewImagePreviews] = useState([]);
   const [errors, setErrors] = useState({});
 
+  // Tipos de productos predefinidos
+  const productTypes = [
+    'Ropa', 'Camisas', 'Pantalones', 'Vestidos',
+    'Accesorios', 'Tecnología', 'Electrónicos', 'Celulares',
+    'Hogar', 'Muebles', 'Decoración', 'Cocina',
+    'Libros', 'Literatura', 'Educación',
+    'Deportes', 'Fitness', 'Aire libre',
+    'Belleza', 'Cosméticos', 'Cuidado personal',
+    'Juguetes', 'Infantil', 'Bebés',
+    'Alimentos', 'Bebidas', 'Comida'
+  ];
+
+  // Cargar datos del producto cuando cambie
   useEffect(() => {
     if (product) {
       setFormData({
-        name: product.name || "",
-        price: product.price || "",
-        stock: product.stock || "",
-        productType: product.productType || "",
-        size: product.size || "",
-        color: product.color || "",
-        imageFile: null,
-        imagePreview: product.images?.[0] || null,
+        name: product.name || '',
+        productType: product.productType || '',
+        subType: product.subType || '',
+        usageCategory: product.usageCategory || '',
+        color: product.color || '',
+        size: product.size || '',
+        description: product.description || '',
+        stock: product.stock?.toString() || '0',
+        price: product.price?.toString() || '0',
+        material: product.material || '',
+        tags: Array.isArray(product.tags) ? product.tags.join(', ') : ''
       });
-      setErrors({});
     }
   }, [product]);
 
-  const validate = () => {
-    const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "El nombre es obligatorio 🫢";
-    if (!formData.price || isNaN(formData.price) || Number(formData.price) <= 0)
-      newErrors.price = "Precio inválido, no te pases 😒";
-    if (!formData.stock || isNaN(formData.stock) || Number(formData.stock) < 0)
-      newErrors.stock = "Stock no puede ser negativo 🤨";
-    if (!formData.productType.trim()) newErrors.productType = "Falta el tipo 😤";
-    if (!formData.size.trim()) newErrors.size = "¿Y la talla? 🤔";
-    if (!formData.color) newErrors.color = "Seleccioná un color, porfa 🎨";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Limpiar error cuando el usuario empiece a escribir
+    if (errors[name]) {
+      setErrors(prev => ({
         ...prev,
-        imageFile: file,
-        imagePreview: URL.createObjectURL(file),
+        [name]: ''
       }));
     }
   };
 
-  const handleColorSelect = (color) => {
-    setFormData((prev) => ({ ...prev, color }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!validate()) {
-      toast.error("Porfa completá bien todo antes de guardar 🙏");
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    
+    if (files.length > 5) {
+      alert('Máximo 5 imágenes permitidas');
       return;
     }
 
-    const updatedProduct = {
-      ...product,
-      name: formData.name.trim(),
-      price: Number(formData.price),
-      stock: Number(formData.stock),
-      productType: formData.productType.trim(),
-      size: formData.size.trim(),
-      color: formData.color,
-      images: [formData.imagePreview || "/images/placeholder.png"],
-    };
+    // Validar tipos de archivo
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    const invalidFiles = files.filter(file => !allowedTypes.includes(file.type));
+    
+    if (invalidFiles.length > 0) {
+      alert('Solo se permiten archivos JPG, PNG y JPEG');
+      return;
+    }
 
-    onSave(updatedProduct);
-    toast.success("Producto actualizado con éxito ✨");
+    // Validar tamaño de archivo (máximo 5MB por imagen)
+    const oversizedFiles = files.filter(file => file.size > 5 * 1024 * 1024);
+    
+    if (oversizedFiles.length > 0) {
+      alert('Cada imagen debe ser menor a 5MB');
+      return;
+    }
+
+    setNewImages(files);
+
+    // Crear previsualizaciones
+    const previews = files.map(file => URL.createObjectURL(file));
+    setNewImagePreviews(previews);
   };
 
+  const removeNewImage = (index) => {
+    const filteredImages = newImages.filter((_, i) => i !== index);
+    const filteredPreviews = newImagePreviews.filter((_, i) => i !== index);
+    
+    setNewImages(filteredImages);
+    setNewImagePreviews(filteredPreviews);
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'El nombre es obligatorio';
+    }
+
+    if (!formData.productType.trim()) {
+      newErrors.productType = 'El tipo de producto es obligatorio';
+    }
+
+    if (!formData.price.trim()) {
+      newErrors.price = 'El precio es obligatorio';
+    } else if (isNaN(formData.price) || parseFloat(formData.price) < 0) {
+      newErrors.price = 'El precio debe ser un número mayor o igual a 0';
+    }
+
+    if (!formData.stock.trim()) {
+      newErrors.stock = 'El stock es obligatorio';
+    } else if (isNaN(formData.stock) || parseInt(formData.stock) < 0) {
+      newErrors.stock = 'El stock debe ser un número mayor o igual a 0';
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = 'La descripción es obligatoria';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSave = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      // Preparar datos del producto
+      const updatedProduct = {
+        ...formData,
+        price: parseFloat(formData.price),
+        stock: parseInt(formData.stock),
+        tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag) : []
+      };
+
+      // Agregar nuevas imágenes si las hay
+      if (newImages.length > 0) {
+        updatedProduct.newImages = newImages;
+      }
+
+      await onSave(updatedProduct);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error al guardar producto:', error);
+      alert('Error al guardar producto: ' + error.message);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+      try {
+        await onDelete(product.id || product._id);
+      } catch (error) {
+        console.error('Error al eliminar producto:', error);
+        alert('Error al eliminar producto: ' + error.message);
+      }
+    }
+  };
+
+  const handleClose = () => {
+    // Limpiar URLs de vista previa para evitar memory leaks
+    newImagePreviews.forEach(url => URL.revokeObjectURL(url));
+    setIsEditing(false);
+    onClose();
+  };
+
+  if (!product) return null;
+
   return (
-    <div className="modal-overlay">
-      <form className="modal-content" onSubmit={handleSubmit} noValidate>
-        <h2>Editar Producto</h2>
+    <div className="popup-fullscreen">
+      <div className="popup-container" style={{ maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto' }}>
+        <button className="popup-close" onClick={handleClose} disabled={loading}>
+          ✕
+        </button>
+        
+        <h2>{isEditing ? 'Editar Producto' : 'Detalles del Producto'}</h2>
+        
+        {!isEditing ? (
+          // Vista de solo lectura
+          <div>
+            {/* Imágenes del producto */}
+            {product.images && product.images.length > 0 && (
+              <div className="img-preview" style={{ marginBottom: '20px' }}>
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', 
+                  gap: '10px',
+                  marginBottom: '15px'
+                }}>
+                  {product.images.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={`${product.name} ${index + 1}`}
+                      style={{
+                        width: '100%',
+                        height: '150px',
+                        objectFit: 'cover',
+                        borderRadius: '8px',
+                        border: '2px solid #ddd'
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
-        <input
-          type="text"
-          name="name"
-          placeholder="Nombre"
-          value={formData.name}
-          onChange={handleInputChange}
-        />
-        {errors.name && <p className="error">{errors.name}</p>}
+            {/* Información del producto */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+              <div>
+                <h3 style={{ color: '#333', marginBottom: '15px' }}>Información Básica</h3>
+                <div style={{ background: '#f8f9fa', padding: '15px', borderRadius: '8px' }}>
+                  <p><strong>Nombre:</strong> {product.name}</p>
+                  <p><strong>Tipo:</strong> {product.productType}</p>
+                  <p><strong>Precio:</strong> ${parseFloat(product.price || 0).toFixed(2)}</p>
+                  <p><strong>Stock:</strong> {product.stock}</p>
+                  <p><strong>Estado:</strong> 
+                    <span style={{ 
+                      color: product.stock > 0 ? '#28a745' : '#dc3545',
+                      fontWeight: 'bold',
+                      marginLeft: '5px'
+                    }}>
+                      {product.stock > 0 ? 'Disponible' : 'Sin Stock'}
+                    </span>
+                  </p>
+                </div>
+              </div>
+              
+              <div>
+                <h3 style={{ color: '#333', marginBottom: '15px' }}>Detalles Adicionales</h3>
+                <div style={{ background: '#f8f9fa', padding: '15px', borderRadius: '8px' }}>
+                  {product.subType && <p><strong>Subtipo:</strong> {product.subType}</p>}
+                  {product.color && <p><strong>Color:</strong> {product.color}</p>}
+                  {product.size && <p><strong>Talla/Tamaño:</strong> {product.size}</p>}
+                  {product.material && <p><strong>Material:</strong> {product.material}</p>}
+                  {product.usageCategory && <p><strong>Categoría de Uso:</strong> {product.usageCategory}</p>}
+                </div>
+              </div>
+            </div>
 
-        <input
-          type="number"
-          step="0.01"
-          name="price"
-          placeholder="Precio"
-          value={formData.price}
-          onChange={handleInputChange}
-        />
-        {errors.price && <p className="error">{errors.price}</p>}
+            {/* Descripción */}
+            {product.description && (
+              <div style={{ marginBottom: '20px' }}>
+                <h3 style={{ color: '#333', marginBottom: '10px' }}>Descripción</h3>
+                <div style={{ background: '#f8f9fa', padding: '15px', borderRadius: '8px' }}>
+                  <p style={{ lineHeight: '1.6', margin: 0 }}>{product.description}</p>
+                </div>
+              </div>
+            )}
 
-        <input
-          type="number"
-          name="stock"
-          placeholder="Stock"
-          value={formData.stock}
-          onChange={handleInputChange}
-        />
-        {errors.stock && <p className="error">{errors.stock}</p>}
+            {/* Tags */}
+            {product.tags && product.tags.length > 0 && (
+              <div style={{ marginBottom: '20px' }}>
+                <h3 style={{ color: '#333', marginBottom: '10px' }}>Etiquetas</h3>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {product.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      style={{
+                        background: '#007bff',
+                        color: 'white',
+                        padding: '4px 12px',
+                        borderRadius: '20px',
+                        fontSize: '14px'
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
-        <input
-          type="text"
-          name="productType"
-          placeholder="Tipo de producto"
-          value={formData.productType}
-          onChange={handleInputChange}
-        />
-        {errors.productType && <p className="error">{errors.productType}</p>}
-
-        <input
-          type="text"
-          name="size"
-          placeholder="Tamaño"
-          value={formData.size}
-          onChange={handleInputChange}
-        />
-        {errors.size && <p className="error">{errors.size}</p>}
-
-        <label>
-          Seleccionar imagen:
-          <input type="file" accept="image/*" onChange={handleImageChange} />
-        </label>
-
-        {formData.imagePreview && (
-          <div className="image-preview">
-            <img src={formData.imagePreview} alt="Preview" />
+            {/* Botones de acción */}
+            <div className="popup-actions">
+              <button 
+                className="cancel" 
+                onClick={handleDelete}
+                disabled={loading}
+                style={{ background: '#dc3545' }}
+              >
+                {loading ? 'Eliminando...' : 'Eliminar'}
+              </button>
+              <button 
+                className="save" 
+                onClick={() => setIsEditing(true)}
+                disabled={loading}
+              >
+                Editar
+              </button>
+            </div>
           </div>
+        ) : (
+          // Vista de edición
+          <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+            {/* Información básica */}
+            <div style={{ marginBottom: '20px' }}>
+              <h3 style={{ marginBottom: '15px', color: '#333', borderBottom: '2px solid #eee', paddingBottom: '5px' }}>
+                Información Básica
+              </h3>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                    Nombre del Producto *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    disabled={loading}
+                    style={{ width: '100%' }}
+                  />
+                  {errors.name && <span className="error">{errors.name}</span>}
+                </div>
+                
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                    Tipo de Producto *
+                  </label>
+                  <select
+                    name="productType"
+                    value={formData.productType}
+                    onChange={handleInputChange}
+                    disabled={loading}
+                    style={{ width: '100%', padding: '10px', border: '1.8px solid #ccc', borderRadius: '8px' }}
+                  >
+                    <option value="">Seleccionar tipo...</option>
+                    {productTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                  {errors.productType && <span className="error">{errors.productType}</span>}
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                    Precio ($) *
+                  </label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    min="0"
+                    step="0.01"
+                    disabled={loading}
+                    style={{ width: '100%' }}
+                  />
+                  {errors.price && <span className="error">{errors.price}</span>}
+                </div>
+                
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                    Stock *
+                  </label>
+                  <input
+                    type="number"
+                    name="stock"
+                    value={formData.stock}
+                    onChange={handleInputChange}
+                    min="0"
+                    disabled={loading}
+                    style={{ width: '100%' }}
+                  />
+                  {errors.stock && <span className="error">{errors.stock}</span>}
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                  Descripción *
+                </label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows="3"
+                  disabled={loading}
+                  style={{ 
+                    width: '100%', 
+                    padding: '10px', 
+                    border: '1.8px solid #ccc', 
+                    borderRadius: '8px',
+                    resize: 'vertical'
+                  }}
+                />
+                {errors.description && <span className="error">{errors.description}</span>}
+              </div>
+            </div>
+
+            {/* Detalles adicionales */}
+            <div style={{ marginBottom: '20px' }}>
+              <h3 style={{ marginBottom: '15px', color: '#333', borderBottom: '2px solid #eee', paddingBottom: '5px' }}>
+                Detalles Adicionales
+              </h3>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                    Subtipo
+                  </label>
+                  <input
+                    type="text"
+                    name="subType"
+                    value={formData.subType}
+                    onChange={handleInputChange}
+                    disabled={loading}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                    Color
+                  </label>
+                  <input
+                    type="text"
+                    name="color"
+                    value={formData.color}
+                    onChange={handleInputChange}
+                    disabled={loading}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                    Talla/Tamaño
+                  </label>
+                  <input
+                    type="text"
+                    name="size"
+                    value={formData.size}
+                    onChange={handleInputChange}
+                    disabled={loading}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                    Material
+                  </label>
+                  <input
+                    type="text"
+                    name="material"
+                    value={formData.material}
+                    onChange={handleInputChange}
+                    disabled={loading}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                    Categoría de Uso
+                  </label>
+                  <input
+                    type="text"
+                    name="usageCategory"
+                    value={formData.usageCategory}
+                    onChange={handleInputChange}
+                    disabled={loading}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                  Etiquetas/Tags
+                </label>
+                <input
+                  type="text"
+                  name="tags"
+                  value={formData.tags}
+                  onChange={handleInputChange}
+                  placeholder="Separados por comas"
+                  disabled={loading}
+                  style={{ width: '100%' }}
+                />
+              </div>
+            </div>
+
+            {/* Nuevas imágenes */}
+            <div style={{ marginBottom: '20px' }}>
+              <h3 style={{ marginBottom: '15px', color: '#333', borderBottom: '2px solid #eee', paddingBottom: '5px' }}>
+                Cambiar Imágenes
+              </h3>
+              
+              <div style={{ marginBottom: '15px' }}>
+                <label className="img-label">
+                  Seleccionar Nuevas Imágenes (opcional)
+                </label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/jpeg,image/png,image/jpg"
+                  onChange={handleImageChange}
+                  disabled={loading}
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '1.8px solid #ccc',
+                    borderRadius: '8px',
+                    backgroundColor: '#f8f9fa'
+                  }}
+                />
+                <small style={{ color: '#666', fontSize: '12px', display: 'block', marginTop: '5px' }}>
+                  Si seleccionas nuevas imágenes, reemplazarán las actuales.
+                </small>
+              </div>
+
+              {/* Preview de nuevas imágenes */}
+              {newImagePreviews.length > 0 && (
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', 
+                  gap: '10px',
+                  marginTop: '15px'
+                }}>
+                  {newImagePreviews.map((preview, index) => (
+                    <div key={index} style={{ position: 'relative' }}>
+                      <img
+                        src={preview}
+                        alt={`Nueva imagen ${index + 1}`}
+                        style={{
+                          width: '100%',
+                          height: '120px',
+                          objectFit: 'cover',
+                          borderRadius: '8px',
+                          border: '2px solid #28a745'
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeNewImage(index)}
+                        disabled={loading}
+                        style={{
+                          position: 'absolute',
+                          top: '5px',
+                          right: '5px',
+                          background: 'rgba(255, 0, 0, 0.8)',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '24px',
+                          height: '24px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Botones */}
+            <div className="popup-actions">
+              <button 
+                type="button" 
+                className="cancel" 
+                onClick={() => setIsEditing(false)}
+                disabled={loading}
+              >
+                Cancelar
+              </button>
+              <button 
+                type="submit" 
+                className="save"
+                disabled={loading}
+              >
+                {loading ? 'Guardando...' : 'Guardar Cambios'}
+              </button>
+            </div>
+          </form>
         )}
-
-        <div className="color-section">
-          <label>Color</label>
-          <div className="color-options" style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-            {COLORS.map((c) => (
-              <div
-                key={c}
-                onClick={() => handleColorSelect(c)}
-                className="color-circle"
-                style={{
-                  backgroundColor: c,
-                  width: "25px",
-                  height: "25px",
-                  borderRadius: "50%",
-                  cursor: "pointer",
-                  border: formData.color === c ? "3px solid #000" : "1px solid #333",
-                }}
-              />
-            ))}
-          </div>
-        </div>
-        {errors.color && <p className="error">{errors.color}</p>}
-
-        <div className="modal-buttons">
-          <button type="submit" className="save">Guardar Cambios</button>
-          <button type="button" className="cancel" onClick={onClose}>Cancelar</button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 };
