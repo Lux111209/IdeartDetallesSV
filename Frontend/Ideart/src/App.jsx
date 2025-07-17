@@ -18,6 +18,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import RecoverPassword from "./pages/RecoverPassword";
 import CheckNumber from "./pages/CheckNumber";
+import NewPassword from "./pages/NewPassword";
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/recupassword" element={<RecoverPassword />} />
         <Route path="/CheckNumber" element={<CheckNumber />} />
+        <Route path="/NewPassword" element={<NewPassword />} />
       </Route>
 
       {/* Rutas protegidas */}
