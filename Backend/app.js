@@ -1,5 +1,3 @@
-// server.js o app.js
-
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -21,35 +19,20 @@ import ventasRoutes from "./src/routes/venta.js";
 import personalizedProducts from "./src/routes/personalizedProducts.js";
 import passwordRecovery from "./src/routes/passswordRecovery.js";
 
-
 // Crear instancia de Express
 const app = express();
 
-// Middlewares globales
+// Configuración CORS global
 app.use(cors({
-  origin: config.FRONTEND_URL || "http://localhost:5173",
+  origin: config.FRONTEND_URL || "http://localhost:5173", // Ajusta según frontend real
   credentials: true,
 }));
+
+// Middleware para analizar JSON y datos URL-encoded
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// Importar middleware de validación (cuando lo tengas)
-import { validateAuthToken } from "./src/middlewares/validateAuthToken.js";
-// Crear una instancia de Express
-
-
-// Configuración de CORS
-app.use(
-  cors({
-    origin: ["http://localhost:5174", "http://localhost:5173"],
-    credentials: true
-  })
-);
-
-// Middleware para analizar JSON y cookies
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
+// Middleware para parsear cookies
 app.use(cookieParser());
 
 // Servir archivos estáticos (por ejemplo, imágenes subidas)
@@ -74,7 +57,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/ventas", ventasRoutes);
 app.use("/api/personalized-products", personalizedProducts);
 
-// Ruta para verificar autenticación
+// Ruta para verificar autenticación (ejemplo de ruta protegida)
 app.get("/api/auth/verify", (req, res) => {
   try {
     const { authToken } = req.cookies;

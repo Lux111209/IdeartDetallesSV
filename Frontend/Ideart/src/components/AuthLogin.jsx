@@ -1,4 +1,3 @@
-// Importamos cosas necesarias para que funcione el login
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useLogin from "../hooks/useFetchLogin";
@@ -6,10 +5,9 @@ import Toast from "../components/Toast";
 import '../css/Login.css';
 
 const AuthLogin = () => {
-  // Estados para guardar lo que el usuario escribe
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [toast, setToast] = useState(null); // Mensaje de error o éxito
+  const [toast, setToast] = useState(null);
 
   const { login, loading } = useLogin();
   const navigate = useNavigate();
@@ -17,7 +15,6 @@ const AuthLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validaciones básicas
     if (!email || !password) {
       return setToast({ type: "error", message: "Todos los campos son obligatorios." });
     }
@@ -27,7 +24,6 @@ const AuthLogin = () => {
       return setToast({ type: "error", message: "Correo no válido." });
     }
 
-    // Intentamos iniciar sesión
     const success = await login(email, password);
     if (success) {
       setToast({ type: "success", message: "Inicio de sesión exitoso." });
@@ -67,7 +63,13 @@ const AuthLogin = () => {
           {toast && <Toast type={toast.type} message={toast.message} />}
 
           <div className="link">
-            ¿Olvidaste tu contraseña? <strong>Registrarme</strong>
+            ¿Olvidaste tu contraseña?{" "}
+            <strong
+              style={{ cursor: "pointer", color: "#e91e63" }}
+              onClick={() => navigate("/recover-password")}
+            >
+              Recuperar contraseña
+            </strong>
           </div>
         </form>
       </div>

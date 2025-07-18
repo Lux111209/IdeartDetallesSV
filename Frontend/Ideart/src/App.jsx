@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoutes";
 import PublicRoute from "./routes/PublicRoutes";
 
@@ -18,14 +18,16 @@ import CreditForm from "./pages/CreditForm";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import EmailVerification from "./pages/EmailVerification";
+import RecoverPassword from "./pages/RecoverPassword"; // <-- Importa la página de recuperación
 
-// Componente principal de la aplicación
 function App() {
   return (
     <Routes>
-      {/* Cambiado: / ahora va a Home */}
+      {/* Ruta raíz pública que redirige al registro */}
+      <Route path="/" element={<Navigate to="/register" replace />} />
+
+      {/* Rutas protegidas */}
       <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/products" element={<Product />} />
         <Route path="/products/:nombre" element={<ProductDetail />} />
@@ -38,16 +40,20 @@ function App() {
         <Route path="/reviews" element={<Reviews />} />
       </Route>
 
-      {/* Solo si no hay sesión */}
+      {/* Rutas públicas */}
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/recover-password" element={<RecoverPassword />} /> {/* <-- Aquí */}
       </Route>
 
-      {/* Accesibles sin sesión */}
+      {/* Rutas accesibles sin sesión */}
       <Route path="/contactus" element={<ContactUs />} />
       <Route path="/terminos" element={<TermsAndConditions />} />
       <Route path="/verificar-email" element={<EmailVerification />} />
+
+      {/* Ruta catch-all */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }
