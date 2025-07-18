@@ -1,175 +1,199 @@
 import personalizedModel from "../models/PersonalizedProducts.js";
-import {v2 as cloudinary} from "cloudinary";
-import { config } from "../../config.js";
-import productsController from "./productsController.js";
-
-//Configuramos Cloudinary
-
-console.log("Cloudinary Config Values:");
-console.log("cloud_name:", config.CLOUDINARY.CLOUD_NAME);
-console.log("api_key:", config.CLOUDINARY.API_KEY);
-console.log("api_secret:", config.CLOUDINARY.API_SECRET);
-
-cloudinary.config({
-  cloud_name: config.CLOUDINARY.CLOUD_NAME,
-  api_key: config.CLOUDINARY.API_KEY,
-  api_secret: config.CLOUDINARY.API_SECRET,
-  secure: true
-});
 
 const personalizedProductsController = {};
 
-//Select Personalized Products
-
+// 📋 OBTENER TODAS LAS SOLICITUDES - SÚPER SIMPLE
 personalizedProductsController.getAllPersonalizedProducts = async (req, res) => {
-
     try {
-        const personalizedProducts = await personalizedModel.find();
-        res.json(personalizedProducts);
+        console.log('🔄 Obteniendo productos personalizados...');
+        
+        const products = await personalizedModel.find().sort({ createdAt: -1 });
+        
+        console.log(`✅ Encontrados ${products.length} productos`);
+        
+        res.status(200).json({
+            success: true,
+            data: products,
+            total: products.length
+        });
+        
     } catch (error) {
-        res.status(500).json({error: error.message});
+        console.error('❌ Error:', error.message);
+        
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener productos",
+            error: error.message
+        });
     }
 };
 
-//Select Personalized Product by ID
-
+// 📋 OBTENER POR ID - SÚPER SIMPLE  
 personalizedProductsController.getPersonalzizedProdcutById = async (req, res) => {
     try {
-        const personalizedProduct = await personalizedModel.findById(req.params.id);
-        if (!personalizedProduct) return res.status(404).json({message: "Personalized product not found"});
-        res.json(personalizedProduct);
-    } catch (error) {
-        res.status(500).json({error: error.message});
-    }
-};
-
-
-//Insert Peronnalized Product 
-
-personalizedProductsController.insertPersonalizedProduct = async (req, res) => {
-
-    try {
-        const{
-            productType,
-            subType,
-            imgPersonalized,
-            textPersonalized,
-            ubicationPersonalized,
-            usageCategory,
-            color,
-            size,
-            price,
-            material
-        }= req.body;
-
-        let imagesUrl = [];
-
-        //Subir todas las img a cloudinary
-        if (req.files && req.files.length > 0) {
-            const uploadPromises = req.files.map(file =>
-                cloudinary.uploader.upload(file.path,
-                    {
-                        folder: "personalizedProducts",
-                         allowed_formats: ["jpg", "png", "jpeg", "pdf", "tiff"],
-                    })
-            );
-              const results = await Promise.all(uploadPromises);
-              imagesUrl = results.map(results => results.secure_url);           
+        const { id } = req.params;
+        console.log(`🔍 Buscando producto ID: ${id}`);
+        
+        const product = await personalizedModel.findById(id);
+        
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Producto no encontrado"
+            });
         }
-          
-        //Creamoss el nuevo producto
-
-        const newPersonalizedProduct = new personalizedModel({
-            productType,
-            subType,
-            imgPersonalized: imagesUrl,
-            textPersonalized,
-            ubicationPersonalized,
-            usageCategory,
-            color,
-            size,
-            price,
-            material
+        
+        res.status(200).json({
+            success: true,
+            data: product
         });
-
-        await newPersonalizedProduct.save();
-
-
-         res.status(201).json({message: "Personalized product created", personalizedProduct: newPersonalizedProduct});
+        
     } catch (error) {
-        res.status(500).json({error: error.message});
+        console.error('❌ Error:', error.message);
+        
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener producto",
+            error: error.message
+        });
     }
 };
 
-personalizedProductsController.updatePersonalizedProduct = async (req, res) => {
-    const {
-        productType,
-        subType,
-        imgPersonalized,
-        textPersonalized,
-        ubicationPersonalized,
-        usageCategory,
-        color,
-        size,
-        price,
-        material
-    } = req.body;
+// ✅ CREAR PRODUCTO - SÚPER SIMPLE
+personalizedProductsController.insertPersonalizedProduct = async (req, res) => {
+    try {
+        console.log('📝 Creando nuevo producto...');
+        console.log('📦 Datos recibidos:', req.body);
+        
+        const newProduct = new personalizedModel(req.body);
+        const savedProduct = await newProduct.save();
+        
+        console.log(`✅ Producto creado con ID: ${savedProduct._id}`);
+        
+        res.status(201).json({
+            success: true,
+            message: "Producto creado exitosamente",
+            data: savedProduct
+        });
+        
+    } catch (error) {
+        console.error('❌ Error creando:', error.message);
+        
+        res.status(500).json({
+            success: false,
+            message: "Error al crear producto",
+            error: error.message
+        });
+    }
+};
 
-    let imagesURL = [];
-
-    // Subir nuevas imágenes a Cloudinary si se enviaron
-    if (req.files && req.files.length > 0) {
-        const uploadPromises = req.files.map(file =>
-            cloudinary.uploader.upload(file.path, {
-                folder: "personalizedProducts",
-                allowed_formats: ["jpg", "png", "jpeg", "pdf", "tiff"],
-            })
+// 🎯 ACTUALIZAR ESTADO - SÚPER SIMPLE
+personalizedProductsController.updateEstadoSolicitud = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
+        
+        console.log(`🔄 Actualizando producto ID: ${id}`);
+        console.log('📝 Datos de actualización:', updateData);
+        
+        const updatedProduct = await personalizedModel.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true, runValidators: false }
         );
-        const results = await Promise.all(uploadPromises);
-        imagesURL = results.map(result => result.secure_url);
+        
+        if (!updatedProduct) {
+            return res.status(404).json({
+                success: false,
+                message: "Producto no encontrado"
+            });
+        }
+        
+        console.log(`✅ Producto actualizado: ${id}`);
+        
+        res.status(200).json({
+            success: true,
+            message: "Producto actualizado exitosamente",
+            data: updatedProduct
+        });
+        
+    } catch (error) {
+        console.error('❌ Error actualizando:', error.message);
+        
+        res.status(500).json({
+            success: false,
+            message: "Error al actualizar",
+            error: error.message
+        });
     }
-
-    // Construir objeto de actualización
-    const updateData = {
-        productType,
-        subType,
-        imgPersonalized, // Este campo se actualizará solo si no llegan nuevas imágenes
-        textPersonalized,
-        ubicationPersonalized,
-        usageCategory,
-        color,
-        size,
-        price,
-        material
-    };
-
-    // Si se subieron nuevas imágenes, las agregamos
-    if (imagesURL.length > 0) {
-        updateData.imgPersonalized = imagesURL;
-    }
-
-    // Actualizar el producto en la base de datos
-    const updatePersonalizedProduct = await personalizedModel.findByIdAndUpdate(
-        req.params.id,
-        updateData,
-        { new: true }
-    );
-
-    res.status(200).json({
-        message: "Personalized product updated",
-        personalizedProduct: updatePersonalizedProduct
-    });
 };
 
-//delete Personalized Products
+// ✏️ ACTUALIZAR PRODUCTO COMPLETO - SÚPER SIMPLE
+personalizedProductsController.updatePersonalizedProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        console.log(`🔄 Actualizando producto completo ID: ${id}`);
+        
+        const updatedProduct = await personalizedModel.findByIdAndUpdate(
+            id,
+            req.body,
+            { new: true }
+        );
+        
+        if (!updatedProduct) {
+            return res.status(404).json({
+                success: false,
+                message: "Producto no encontrado"
+            });
+        }
+        
+        res.status(200).json({
+            success: true,
+            message: "Producto actualizado",
+            data: updatedProduct
+        });
+        
+    } catch (error) {
+        console.error('❌ Error:', error.message);
+        
+        res.status(500).json({
+            success: false,
+            message: "Error al actualizar producto",
+            error: error.message
+        });
+    }
+};
 
+// 🗑️ ELIMINAR PRODUCTO - SÚPER SIMPLE
 personalizedProductsController.deletePersonalizedProduct = async (req, res) => {
     try {
-        const personalizedProduct = await personalizedModel.findByIdAndDelete(req.params.id);
-        if (!personalizedProduct) return res.status(404).json({message: "Personalized product not found"});
-        res.json({message: "Personalized product deleted"});
+        const { id } = req.params;
+        
+        console.log(`🗑️ Eliminando producto ID: ${id}`);
+        
+        const deletedProduct = await personalizedModel.findByIdAndDelete(id);
+        
+        if (!deletedProduct) {
+            return res.status(404).json({
+                success: false,
+                message: "Producto no encontrado"
+            });
+        }
+        
+        res.status(200).json({
+            success: true,
+            message: "Producto eliminado exitosamente"
+        });
+        
     } catch (error) {
-        res.status(500).json({error: error.message});
+        console.error('❌ Error eliminando:', error.message);
+        
+        res.status(500).json({
+            success: false,
+            message: "Error al eliminar producto",
+            error: error.message
+        });
     }
 };
 

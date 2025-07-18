@@ -1,21 +1,46 @@
-import express from "express";
+import express from 'express';
+import personalizedProductsController from '../controllers/PersonalizedProducts.js';
+
 const router = express.Router();
-import personalizedProductsController  from "../controllers/PersonalizedProducts.js";
-import multer from "multer";
 
+console.log('🛣️ Configurando rutas de productos personalizados...');
 
-const upload = multer({dest: "public/"});
+// 📋 RUTA PRINCIPAL - OBTENER TODOS
+router.get('/', (req, res) => {
+    console.log(' GET /api/personalized-products llamado');
+    personalizedProductsController.getAllPersonalizedProducts(req, res);
+});
 
-//Eso era para asegurar que sse suba la carpeta
+// 📋 OBTENER POR ID
+router.get('/:id', (req, res) => {
+    console.log(`GET /api/personalized-products/${req.params.id} llamado`);
+    personalizedProductsController.getPersonalzizedProdcutById(req, res);
+});
 
-router.route("/")
-.get(personalizedProductsController.getAllPersonalizedProducts)
-.post(upload.array("imgPersonalized"), personalizedProductsController.insertPersonalizedProduct);    
+// ✅ CREAR NUEVO
+router.post('/', (req, res) => {
+    console.log(' POST /api/personalized-products llamado');
+    personalizedProductsController.insertPersonalizedProduct(req, res);
+});
 
-router.route("/:id")
-.get(personalizedProductsController.getPersonalzizedProdcutById)
-.put(upload.array("imgPersonalized"), personalizedProductsController.updatePersonalizedProduct)
-.delete(personalizedProductsController.deletePersonalizedProduct);
+// 🎯 ACTUALIZAR ESTADO
+router.put('/:id/estado', (req, res) => {
+    console.log(` PUT /api/personalized-products/${req.params.id}/estado llamado`);
+    personalizedProductsController.updateEstadoSolicitud(req, res);
+});
 
+// ✏️ ACTUALIZAR COMPLETO
+router.put('/:id', (req, res) => {
+    console.log(` PUT /api/personalized-products/${req.params.id} llamado`);
+    personalizedProductsController.updatePersonalizedProduct(req, res);
+});
+
+// 🗑️ ELIMINAR
+router.delete('/:id', (req, res) => {
+    console.log(` DELETE /api/personalized-products/${req.params.id} llamado`);
+    personalizedProductsController.deletePersonalizedProduct(req, res);
+});
+
+console.log('✅ Rutas de productos personalizados configuradas');
 
 export default router;

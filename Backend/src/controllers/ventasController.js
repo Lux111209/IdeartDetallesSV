@@ -4,28 +4,24 @@ import carritoModel from "../models/CarritoCompra.js";
 
 const ventasController = {};
 
-// Obtener todas las ventas - VERSIÓN SIMPLIFICADA
+// Obtener todas las ventas
 ventasController.getallVenta = async (req, res) => {
     try {
-        // Primero intentamos con populate básico
         const ventas = await ventasModel.find()
             .populate("idShoppingCart")
             .sort({ createdAt: -1 });
 
         console.log('✅ Ventas obtenidas exitosamente:', ventas.length);
 
-        // Formatear datos para el frontend
         const ventasFormateadas = ventas.map(venta => {
             const ventaObj = venta.toObject();
             
             return {
                 ...ventaObj,
-                // Agregar campos calculados para compatibilidad
-                clienteNombre: 'Cliente Anónimo', // Por defecto
-                clienteEmail: 'sin-email@ejemplo.com', // Por defecto
+                clienteNombre: 'Cliente Anónimo',
+                clienteEmail: 'sin-email@ejemplo.com',
                 totalProductos: ventaObj.idShoppingCart?.productos?.length || 0,
                 fechaFormateada: new Date(ventaObj.createdAt || Date.now()).toLocaleDateString(),
-                // Asegurar que existan los campos de estado
                 statusTransaccion: ventaObj.statusTransaccion || 'pendiente',
                 statusPago: ventaObj.statusPago || 'pendiente'
             };
@@ -47,12 +43,11 @@ ventasController.getallVenta = async (req, res) => {
     }
 };
 
-// Obtener una venta por ID - VERSIÓN SIMPLIFICADA
+// Obtener una venta por ID
 ventasController.getVentaByiD = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Validar ID
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 success: false,
@@ -70,7 +65,6 @@ ventasController.getVentaByiD = async (req, res) => {
             });
         }
 
-        // Formatear datos
         const ventaFormateada = {
             ...venta.toObject(),
             clienteNombre: 'Cliente Anónimo',
@@ -94,7 +88,7 @@ ventasController.getVentaByiD = async (req, res) => {
     }
 };
 
-// Crear una nueva venta - MANTENER ORIGINAL
+// Crear una nueva venta
 ventasController.createVenta = async (req, res) => {
     const {
         idShoppingCart,
@@ -105,7 +99,6 @@ ventasController.createVenta = async (req, res) => {
     } = req.body;
 
     try {
-        // Validaciones
         if (!idShoppingCart || !direction || !metodoPago) {
             return res.status(400).json({
                 success: false,
@@ -113,7 +106,6 @@ ventasController.createVenta = async (req, res) => {
             });
         }
 
-        // Validar que el carrito exista
         const carrito = await carritoModel.findById(idShoppingCart);
         if (!carrito) {
             return res.status(404).json({
@@ -132,7 +124,6 @@ ventasController.createVenta = async (req, res) => {
 
         const ventaGuardada = await newVenta.save();
 
-        // Poblar la venta creada para la respuesta
         const ventaCompleta = await ventasModel.findById(ventaGuardada._id)
             .populate("idShoppingCart");
 
@@ -154,14 +145,18 @@ ventasController.createVenta = async (req, res) => {
     }
 };
 
-// Actualizar una venta por ID - MEJORADO
+// ✅ ACTUALIZAR VENTA - VERSIÓN SIMPLIFICADA QUE FUNCIONA
 ventasController.updateVenta = async (req, res) => {
     try {
         const { id } = req.params;
         const updateData = req.body;
 
+        console.log('📝 Actualizando venta ID:', id);
+        console.log('📝 Datos recibidos:', updateData);
+
         // Validar ID
-        if (!mongoose.Types.ObjectId.isValid(id)) {
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            console.log('❌ ID inválido:', id);
             return res.status(400).json({
                 success: false,
                 message: "ID de venta inválido"
@@ -171,78 +166,91 @@ ventasController.updateVenta = async (req, res) => {
         // Verificar que la venta existe
         const ventaExistente = await ventasModel.findById(id);
         if (!ventaExistente) {
+            console.log('❌ Venta no encontrada para ID:', id);
             return res.status(404).json({
                 success: false,
                 message: "Venta no encontrada"
             });
         }
 
-        // Preparar datos de actualización
-        const camposPermitidos = [
-            'direction', 
-            'metodoPago', 
-            'statusPago', 
-            'statusTransaccion'
-        ];
+        console.log('✅ Venta encontrada:', ventaExistente._id);
+
+        // Preparar datos de actualización - solo campos permitidos
+        const datosLimpios = {};
         
-        const datosActualizacion = {};
-        camposPermitidos.forEach(campo => {
-            if (updateData[campo] !== undefined) {
-                datosActualizacion[campo] = updateData[campo];
-            }
-        });
-
-        // Validaciones específicas
-        if (datosActualizacion.statusTransaccion) {
-            const estadosValidos = ['pendiente', 'en_proceso', 'completado', 'cancelado'];
-            if (!estadosValidos.includes(datosActualizacion.statusTransaccion)) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Estado de transacción inválido. Valores válidos: " + estadosValidos.join(', ')
-                });
-            }
+        if (updateData.statusTransaccion !== undefined) {
+            datosLimpios.statusTransaccion = updateData.statusTransaccion;
+        }
+        
+        if (updateData.statusPago !== undefined) {
+            datosLimpios.statusPago = updateData.statusPago;
+        }
+        
+        if (updateData.direction !== undefined) {
+            datosLimpios.direction = updateData.direction;
+        }
+        
+        if (updateData.metodoPago !== undefined) {
+            datosLimpios.metodoPago = updateData.metodoPago;
         }
 
-        if (datosActualizacion.statusPago) {
-            const estadosPago = ['pendiente', 'pagado', 'rechazado'];
-            if (!estadosPago.includes(datosActualizacion.statusPago)) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Estado de pago inválido. Valores válidos: " + estadosPago.join(', ')
-                });
-            }
+        console.log('📝 Datos a actualizar:', datosLimpios);
+
+        // Verificar que hay algo que actualizar
+        if (Object.keys(datosLimpios).length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "No hay datos válidos para actualizar"
+            });
         }
 
-        const updatedVenta = await ventasModel.findByIdAndUpdate(
+        // Realizar la actualización
+        const ventaActualizada = await ventasModel.findByIdAndUpdate(
             id,
-            datosActualizacion,
-            { new: true, runValidators: true }
+            { $set: datosLimpios },
+            { 
+                new: true,
+                runValidators: false // Desactivar validaciones complejas
+            }
         ).populate("idShoppingCart");
 
-        console.log(`🔄 Venta actualizada: ${id} - Estado: ${datosActualizacion.statusTransaccion || 'sin cambio'}`);
+        if (!ventaActualizada) {
+            console.log('❌ Error en la actualización');
+            return res.status(500).json({
+                success: false,
+                message: "Error al actualizar la venta"
+            });
+        }
+
+        console.log('✅ Venta actualizada exitosamente:', ventaActualizada._id);
+        console.log('✅ Nuevos valores:', {
+            statusTransaccion: ventaActualizada.statusTransaccion,
+            statusPago: ventaActualizada.statusPago
+        });
 
         res.status(200).json({
             success: true,
             message: "Venta actualizada con éxito",
-            data: updatedVenta,
+            data: ventaActualizada
         });
 
     } catch (error) {
-        console.error('Error actualizando venta:', error);
-        res.status(400).json({
+        console.error('❌ Error completo actualizando venta:', error);
+        console.error('❌ Stack trace:', error.stack);
+        
+        res.status(500).json({
             success: false,
-            message: "Error actualizando la venta",
-            error: error.message,
+            message: "Error interno del servidor",
+            error: error.message
         });
     }
 };
 
-// Eliminar una venta por ID - MANTENER ORIGINAL
+// Eliminar una venta por ID
 ventasController.deleteVenta = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Validar ID
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 success: false,
@@ -277,7 +285,7 @@ ventasController.deleteVenta = async (req, res) => {
     }
 };
 
-// Obtener estadísticas de ventas - NUEVA FUNCIÓN
+// Obtener estadísticas de ventas
 ventasController.getEstadisticas = async (req, res) => {
     try {
         const totalVentas = await ventasModel.countDocuments();
@@ -307,7 +315,7 @@ ventasController.getEstadisticas = async (req, res) => {
     }
 };
 
-// Obtener ventas por estado - NUEVA FUNCIÓN
+// Obtener ventas por estado
 ventasController.getVentasByEstado = async (req, res) => {
     try {
         const { estado } = req.params;

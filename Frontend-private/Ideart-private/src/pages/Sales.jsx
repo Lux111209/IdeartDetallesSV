@@ -6,10 +6,10 @@ import DetallePedido from "../components/DetallePedido";
 import "react-toastify/dist/ReactToastify.css";
 import "../css/Pedidos.css";
 
-// Configuración de la API
+// URL base para las peticiones a la API
 const API_BASE_URL = "http://localhost:5000/api";
 
-// Datos de prueba para cuando el API no esté disponible
+// Datos de ejemplo que se usan cuando la API no está disponible
 const pedidosDePrueba = [
   {
     id: "1",
@@ -58,25 +58,27 @@ const pedidosDePrueba = [
 ];
 
 export default function Pedidos() {
-  const [pedidos, setPedidos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [seleccionado, setSeleccionado] = useState(null);
-  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
-  const [accionPendiente, setAccionPendiente] = useState("");
-  const [usingFallback, setUsingFallback] = useState(false);
+  // Estados principales del componente
+  const [pedidos, setPedidos] = useState([]); // Lista de todos los pedidos
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [error, setError] = useState(null); // Mensajes de error
+  const [seleccionado, setSeleccionado] = useState(null); // Pedido seleccionado actualmente
+  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false); // Mostrar modal de confirmación
+  const [accionPendiente, setAccionPendiente] = useState(""); // Qué acción se va a ejecutar
+  const [usingFallback, setUsingFallback] = useState(false); // Si está usando datos de prueba
 
-  // Cargar pedidos al montar el componente
+  // Cargar pedidos cuando el componente se monta
   useEffect(() => {
     cargarPedidos();
   }, []);
 
+  // Función principal para obtener pedidos desde la API
   const cargarPedidos = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Intentar cargar desde el API
+      // Intentar obtener datos reales de la API
       try {
         const response = await fetch(`${API_BASE_URL}/ventas`);
         
@@ -87,7 +89,7 @@ export default function Pedidos() {
         const ventasData = await response.json();
         console.log('Datos de ventas recibidos:', ventasData);
         
-        // Manejar respuesta del API
+        // Procesar la respuesta de la API en diferentes formatos
         let ventas = [];
         if (Array.isArray(ventasData)) {
           ventas = ventasData;
@@ -97,10 +99,10 @@ export default function Pedidos() {
           throw new Error('Formato de respuesta no válido');
         }
         
-        // Si llegamos aquí, el API funciona
+        // API funcionó correctamente
         setUsingFallback(false);
         
-        // Transformar datos de ventas a formato de pedidos
+        // Convertir datos de ventas al formato esperado por el componente
         const pedidosFormateados = ventas.map(venta => ({
           id: venta._id,
           clienteNombre: venta.idShoppingCart?.usuario?.nombre || 'Cliente Anónimo',
@@ -117,7 +119,7 @@ export default function Pedidos() {
             precio: item.producto?.price || item.precio || 0,
             imagen: item.producto?.images?.[0] || item.imagen || 'https://via.placeholder.com/80x80'
           })) || [],
-          ventaOriginal: venta
+          ventaOriginal: venta // Guardar datos originales por si se necesitan
         }));
 
         setPedidos(pedidosFormateados);
@@ -125,7 +127,7 @@ export default function Pedidos() {
       } catch (apiError) {
         console.warn('API no disponible, usando datos de prueba:', apiError.message);
         
-        // Usar datos de prueba
+        // Si la API falla, usar datos de ejemplo
         setUsingFallback(true);
         setPedidos(pedidosDePrueba);
         
@@ -145,32 +147,72 @@ export default function Pedidos() {
     }
   };
 
+  // Cerrar el panel de detalles y modales
   const cerrarPanel = () => {
     setSeleccionado(null);
     setMostrarConfirmacion(false);
     setAccionPendiente("");
   };
 
+  // Función general para actualizar el estado de una venta en la API
+  const actualizarVenta = async (id, updateData) => {
+    try {
+      console.log('Actualizando venta:', id, 'con datos:', updateData);
+      
+      const response = await fetch(`${API_BASE_URL}/ventas/${id}`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(updateData)
+      });
+      
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        
+        // Intentar extraer mensaje de error del servidor
+        let errorMessage = 'Error en el servidor';
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.message || errorMessage;
+        } catch (error) {
+          // Si no es JSON válido, usar el texto tal como está
+          console.warn('No se pudo parsear el error como JSON:'+ error);
+        }
+        
+        throw new Error(errorMessage);
+      }
+      
+      const responseData = await response.json();
+      console.log('Respuesta exitosa:', responseData);
+      
+      return responseData;
+      
+    } catch (error) {
+      console.error('Error en actualizarVenta:', error);
+      throw error;
+    }
+  };
+
+  // Marcar un pedido como completado
   const completarPedido = async () => {
     if (!seleccionado) return;
 
     try {
       setLoading(true);
       
+      // Solo actualizar en la API si no estamos usando datos de prueba
       if (!usingFallback) {
-        // Intentar actualizar en el API
-        const response = await fetch(`${API_BASE_URL}/ventas/${seleccionado.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ statusTransaccion: 'completado' })
+        await actualizarVenta(seleccionado.id, { 
+          statusTransaccion: 'completado' 
         });
-        
-        if (!response.ok) {
-          throw new Error('Error en el servidor');
-        }
       }
       
-      // Actualizar estado local
+      // Actualizar el estado local del componente
       setPedidos(prevPedidos => 
         prevPedidos.map(pedido => 
           pedido.id === seleccionado.id 
@@ -179,6 +221,7 @@ export default function Pedidos() {
         )
       );
 
+      // Actualizar el pedido seleccionado
       setSeleccionado(prev => ({ ...prev, estado: 'completado' }));
       toast.success("✅ Pedido marcado como completado");
       cerrarPanel();
@@ -191,26 +234,21 @@ export default function Pedidos() {
     }
   };
 
+  // Cancelar un pedido
   const cancelarPedido = async () => {
     if (!seleccionado) return;
 
     try {
       setLoading(true);
       
+      // Solo actualizar en la API si no estamos usando datos de prueba
       if (!usingFallback) {
-        // Intentar actualizar en el API
-        const response = await fetch(`${API_BASE_URL}/ventas/${seleccionado.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ statusTransaccion: 'cancelado' })
+        await actualizarVenta(seleccionado.id, { 
+          statusTransaccion: 'cancelado' 
         });
-        
-        if (!response.ok) {
-          throw new Error('Error en el servidor');
-        }
       }
       
-      // Actualizar estado local
+      // Actualizar el estado local del componente
       setPedidos(prevPedidos => 
         prevPedidos.map(pedido => 
           pedido.id === seleccionado.id 
@@ -219,6 +257,7 @@ export default function Pedidos() {
         )
       );
 
+      // Actualizar el pedido seleccionado
       setSeleccionado(prev => ({ ...prev, estado: 'cancelado' }));
       toast.info("❌ Pedido cancelado");
       cerrarPanel();
@@ -231,26 +270,21 @@ export default function Pedidos() {
     }
   };
 
+  // Marcar un pedido como pagado
   const marcarComoPagado = async () => {
     if (!seleccionado) return;
 
     try {
       setLoading(true);
       
+      // Solo actualizar en la API si no estamos usando datos de prueba
       if (!usingFallback) {
-        // Intentar actualizar en el API
-        const response = await fetch(`${API_BASE_URL}/ventas/${seleccionado.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ statusPago: 'pagado' })
+        await actualizarVenta(seleccionado.id, { 
+          statusPago: 'pagado' 
         });
-        
-        if (!response.ok) {
-          throw new Error('Error en el servidor');
-        }
       }
       
-      // Actualizar estado local
+      // Actualizar el estado local del componente
       setPedidos(prevPedidos => 
         prevPedidos.map(pedido => 
           pedido.id === seleccionado.id 
@@ -259,6 +293,7 @@ export default function Pedidos() {
         )
       );
 
+      // Actualizar el pedido seleccionado
       setSeleccionado(prev => ({ ...prev, estadoPago: 'pagado' }));
       toast.success("💰 Pago confirmado");
       
@@ -270,11 +305,13 @@ export default function Pedidos() {
     }
   };
 
+  // Mostrar modal de confirmación para cualquier acción
   const abrirConfirmacion = (accion) => {
     setAccionPendiente(accion);
     setMostrarConfirmacion(true);
   };
 
+  // Ejecutar la acción confirmada por el usuario
   const confirmarAccion = async () => {
     if (accionPendiente === "descargar") {
       descargarComprobante();
@@ -289,10 +326,12 @@ export default function Pedidos() {
     setAccionPendiente("");
   };
 
+  // Generar y descargar un comprobante del pedido en formato texto
   const descargarComprobante = () => {
     if (!seleccionado) return;
 
     try {
+      // Crear el contenido del comprobante
       const contenidoComprobante = `
 COMPROBANTE DE PEDIDO
 =====================
@@ -322,6 +361,7 @@ ${usingFallback ? '(Datos de prueba - API no disponible)' : ''}
 Generado el: ${new Date().toLocaleString()}
       `.trim();
 
+      // Crear y descargar el archivo
       const blob = new Blob([contenidoComprobante], { type: 'text/plain;charset=utf-8' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -339,6 +379,7 @@ Generado el: ${new Date().toLocaleString()}
     }
   };
 
+  // Obtener color según el estado del pedido
   const obtenerEstadoColor = (estado) => {
     switch (estado) {
       case 'completado': return '#28a745';
@@ -349,6 +390,7 @@ Generado el: ${new Date().toLocaleString()}
     }
   };
 
+  // Obtener color según el estado del pago
   const obtenerEstadoPagoColor = (estadoPago) => {
     switch (estadoPago) {
       case 'pagado': return '#28a745';
@@ -358,6 +400,7 @@ Generado el: ${new Date().toLocaleString()}
     }
   };
 
+  // Mostrar pantalla de carga inicial
   if (loading && pedidos.length === 0) {
     return (
       <div className="layout">
@@ -370,6 +413,7 @@ Generado el: ${new Date().toLocaleString()}
             height: '100vh',
             flexDirection: 'column'
           }}>
+            {/* Spinner de carga */}
             <div style={{
               border: '4px solid #f3f3f3',
               borderTop: '4px solid #3498db',
@@ -391,6 +435,8 @@ Generado el: ${new Date().toLocaleString()}
       <Sidebar />
       <div className="contenedor-pedidos">
         <div className="lista-pedidos">
+          
+          {/* Encabezado con título y botón de actualizar */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <h2>Pedidos ({pedidos.length})</h2>
             <button 
@@ -409,7 +455,7 @@ Generado el: ${new Date().toLocaleString()}
             </button>
           </div>
 
-          {/* Banner de estado */}
+          {/* Banner que indica si se están usando datos de prueba */}
           {usingFallback && (
             <div style={{ 
               background: '#fff3cd', 
@@ -423,7 +469,7 @@ Generado el: ${new Date().toLocaleString()}
             </div>
           )}
 
-          {/* Mostrar error si existe */}
+          {/* Mostrar mensajes de error */}
           {error && (
             <div style={{ 
               background: '#fee', 
@@ -445,25 +491,28 @@ Generado el: ${new Date().toLocaleString()}
             </div>
           )}
 
-          {/* Estadísticas rápidas */}
+          {/* Panel de estadísticas rápidas */}
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
             gap: '10px', 
             marginBottom: '20px' 
           }}>
+            {/* Contador de pedidos pendientes */}
             <div style={{ background: '#e7f3ff', padding: '10px', borderRadius: '5px', textAlign: 'center' }}>
               <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#0066cc' }}>
                 {pedidos.filter(p => p.estado === 'pendiente').length}
               </div>
               <div style={{ fontSize: '12px', color: '#666' }}>Pendientes</div>
             </div>
+            {/* Contador de pedidos completados */}
             <div style={{ background: '#e8f5e8', padding: '10px', borderRadius: '5px', textAlign: 'center' }}>
               <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#28a745' }}>
                 {pedidos.filter(p => p.estado === 'completado').length}
               </div>
               <div style={{ fontSize: '12px', color: '#666' }}>Completados</div>
             </div>
+            {/* Contador de pagos pendientes */}
             <div style={{ background: '#fff3cd', padding: '10px', borderRadius: '5px', textAlign: 'center' }}>
               <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#856404' }}>
                 {pedidos.filter(p => p.estadoPago === 'pendiente').length}
@@ -472,6 +521,7 @@ Generado el: ${new Date().toLocaleString()}
             </div>
           </div>
 
+          {/* Lista de tarjetas de pedidos */}
           <div className="cards-contenedor">
             {pedidos.length > 0 ? (
               pedidos.map((pedido) => (
@@ -481,7 +531,10 @@ Generado el: ${new Date().toLocaleString()}
                   onClick={() => setSeleccionado(pedido)}
                   style={{ cursor: 'pointer' }}
                 >
+                  {/* Icono del cliente */}
                   <div className="icono-cliente">👤</div>
+                  
+                  {/* Información principal del pedido */}
                   <div className="info" style={{ flex: 1 }}>
                     <div className="nombre">{pedido.clienteNombre}</div>
                     <div style={{ fontSize: '14px', color: '#666' }}>
@@ -491,6 +544,8 @@ Generado el: ${new Date().toLocaleString()}
                       {pedido.fecha} • ${pedido.total.toFixed(2)}
                     </div>
                   </div>
+                  
+                  {/* Badges de estado */}
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
                     <span style={{ 
                       padding: '2px 8px', 
@@ -516,6 +571,7 @@ Generado el: ${new Date().toLocaleString()}
                 </div>
               ))
             ) : (
+              // Mensaje cuando no hay pedidos
               <div style={{ 
                 textAlign: 'center', 
                 padding: '40px',
@@ -536,6 +592,7 @@ Generado el: ${new Date().toLocaleString()}
           </div>
         </div>
 
+        {/* Panel de detalles del pedido seleccionado */}
         {seleccionado && (
           <DetallePedido
             pedido={seleccionado}
@@ -547,6 +604,7 @@ Generado el: ${new Date().toLocaleString()}
           />
         )}
 
+        {/* Modal de confirmación para acciones */}
         {mostrarConfirmacion && (
           <div className="popup-overlay" onClick={() => setMostrarConfirmacion(false)}>
             <div className="popup-contenido" onClick={(e) => e.stopPropagation()}>
@@ -556,6 +614,8 @@ Generado el: ${new Date().toLocaleString()}
                 {accionPendiente === "descargar" && "¿Descargar comprobante del pedido?"}
                 {accionPendiente === "marcar-pagado" && "¿Marcar este pedido como pagado?"}
               </h3>
+              
+              {/* Botones del modal */}
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: '20px' }}>
                 <button 
                   className="btn cancelar" 
@@ -586,6 +646,7 @@ Generado el: ${new Date().toLocaleString()}
         )}
       </div>
 
+      {/* Estilos CSS en línea */}
       <style>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }

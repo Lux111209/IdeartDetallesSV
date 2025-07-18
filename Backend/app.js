@@ -72,7 +72,7 @@ app.use("/api/resenasgeneral", resenasGeneralRoutes);
 app.use("/api/resenasproducto", resenasProductoRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/ventas", ventasRoutes);
-app.use("/api/productPersonalized", personalizedProducts);
+app.use("/api/personalized-products", personalizedProducts);
 
 // Ruta para verificar autenticación
 app.get("/api/auth/verify", (req, res) => {

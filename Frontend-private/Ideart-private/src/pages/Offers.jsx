@@ -4,17 +4,17 @@ import Sidebar from "../components/Sidebar";
 import '../css/OfferManager.css'; 
 
 const OfferManager = () => {
-  // Estados principales
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Estados principales del componente
+  const [showAddModal, setShowAddModal] = useState(false); // Mostrar/ocultar modal de agregar oferta
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [error, setError] = useState(null); // Mensajes de error
   
-  // Estados para datos
-  const [products, setProducts] = useState([]);
-  const [offers, setOffers] = useState([]);
-  const [selectedProducts, setSelectedProducts] = useState([]);
+  // Estados para almacenar datos
+  const [products, setProducts] = useState([]); // Lista de productos disponibles
+  const [offers, setOffers] = useState([]); // Lista de ofertas creadas
+  const [selectedProducts, setSelectedProducts] = useState([]); // Productos seleccionados para la oferta
   
-  // Estados para formulario
+  // Estado para el formulario de nueva oferta
   const [formData, setFormData] = useState({
     nombreOferta: '',
     DescuentoRealizado: '',
@@ -22,21 +22,21 @@ const OfferManager = () => {
     activa: true
   });
 
-  // Configuración de la API
+  // URL base para las peticiones a la API
   const API_URL = 'http://localhost:5000/api';
 
-  // Cargar datos al iniciar
+  // Cargar datos cuando el componente se monta
   useEffect(() => {
     loadData();
   }, []);
 
   /**
-   * Cargar productos y ofertas del backend
+   * Función para cargar productos y ofertas desde el backend
    */
   const loadData = async () => {
     setLoading(true);
     try {
-      // Cargar productos
+      // Obtener productos desde la API
       const productsResponse = await fetch(`${API_URL}/products`);
       const productsData = await productsResponse.json();
       
@@ -46,7 +46,7 @@ const OfferManager = () => {
         console.error('Error cargando productos:', productsData.message);
       }
 
-      // Cargar ofertas
+      // Obtener ofertas desde la API
       const offersResponse = await fetch(`${API_URL}/ofertas`);
       
       if (!offersResponse.ok) {
@@ -56,7 +56,7 @@ const OfferManager = () => {
       const offersData = await offersResponse.json();
       console.log('Ofertas recibidas:', offersData); // Para debugging
       
-      // Manejar tanto el formato {success: true, data: []} como el array directo
+      // Manejar diferentes formatos de respuesta de la API
       if (offersData.success && Array.isArray(offersData.data)) {
         setOffers(offersData.data);
       } else if (Array.isArray(offersData)) {
@@ -76,12 +76,12 @@ const OfferManager = () => {
   };
 
   /**
-   * Crear nueva oferta
+   * Función para crear una nueva oferta
    */
   const handleCreateOffer = async (e) => {
     e.preventDefault();
     
-    // Validaciones
+    // Validar que todos los campos requeridos estén completos
     if (!formData.nombreOferta.trim()) {
       alert('Por favor ingresa un nombre para la oferta');
       return;
@@ -105,6 +105,7 @@ const OfferManager = () => {
     try {
       setLoading(true);
       
+      // Preparar los datos de la oferta para enviar al servidor
       const offerData = {
         nombreOferta: formData.nombreOferta.trim(),
         DescuentoRealizado: parseInt(formData.DescuentoRealizado),
@@ -113,6 +114,7 @@ const OfferManager = () => {
         activa: formData.activa
       };
 
+      // Enviar petición POST para crear la oferta
       const response = await fetch(`${API_URL}/ofertas`, {
         method: 'POST',
         headers: {
@@ -129,14 +131,14 @@ const OfferManager = () => {
       const result = await response.json();
       console.log('Respuesta crear oferta:', result); // Para debugging
 
-      // Verificar si la respuesta indica éxito
+      // Verificar si la creación fue exitosa
       const isSuccess = result.success !== false && response.ok;
 
       if (isSuccess) {
         alert('✅ Oferta creada exitosamente!');
         setShowAddModal(false);
         resetForm();
-        loadData(); // Recargar datos
+        loadData(); // Recargar los datos para mostrar la nueva oferta
       } else {
         throw new Error(result.message || 'Error desconocido');
       }
@@ -150,9 +152,10 @@ const OfferManager = () => {
   };
 
   /**
-   * Eliminar oferta
+   * Función para eliminar una oferta
    */
   const deleteOffer = async (id, nombreOferta) => {
+    // Confirmar antes de eliminar
     if (!window.confirm(`¿Estás seguro de que quieres eliminar la oferta "${nombreOferta}"?`)) {
       return;
     }
@@ -160,6 +163,7 @@ const OfferManager = () => {
     try {
       setLoading(true);
       
+      // Enviar petición DELETE para eliminar la oferta
       const response = await fetch(`${API_URL}/ofertas/${id}`, {
         method: 'DELETE'
       });
@@ -177,7 +181,7 @@ const OfferManager = () => {
 
       if (isSuccess) {
         alert('✅ Oferta eliminada exitosamente');
-        loadData(); // Recargar datos
+        loadData(); // Recargar datos para actualizar la lista
       } else {
         throw new Error(result.message || 'Error desconocido');
       }
@@ -191,20 +195,22 @@ const OfferManager = () => {
   };
 
   /**
-   * Manejar selección de productos
+   * Alternar la selección de un producto (seleccionar/deseleccionar)
    */
   const toggleProductSelection = (productId) => {
     setSelectedProducts(prev => {
       if (prev.includes(productId)) {
+        // Si ya está seleccionado, quitarlo de la lista
         return prev.filter(id => id !== productId);
       } else {
+        // Si no está seleccionado, agregarlo a la lista
         return [...prev, productId];
       }
     });
   };
 
   /**
-   * Seleccionar todos los productos
+   * Seleccionar todos los productos disponibles
    */
   const selectAllProducts = () => {
     setSelectedProducts(products.map(p => p._id));
@@ -218,7 +224,7 @@ const OfferManager = () => {
   };
 
   /**
-   * Limpiar formulario
+   * Restablecer el formulario a sus valores iniciales
    */
   const resetForm = () => {
     setFormData({
@@ -231,15 +237,16 @@ const OfferManager = () => {
   };
 
   /**
-   * Verificar si una oferta está vigente
+   * Verificar si una oferta está activa y no ha expirado
    */
   const isOfferActive = (offer) => {
-    if (!offer.activa) return false;
+    if (!offer.activa) return false; // Si está marcada como inactiva
     const now = new Date();
     const expDate = new Date(offer.expirada);
-    return expDate > now;
+    return expDate > now; // Verificar si no ha expirado
   };
 
+  // Mostrar pantalla de carga inicial
   if (loading && offers.length === 0 && products.length === 0) {
     return (
       <div className="app-container">
@@ -260,7 +267,7 @@ const OfferManager = () => {
       <div className="content-wrapper">
         <div className="content-inner">
           
-          {/* Header */}
+          {/* Encabezado de la página */}
           <div className="header">
             <div className="header-content">
               <h1 className="header-title">Gestor de Ofertas</h1>
@@ -279,7 +286,7 @@ const OfferManager = () => {
             </button>
           </div>
 
-          {/* Mostrar error si existe */}
+          {/* Mostrar mensajes de error si existen */}
           {error && (
             <div style={{ 
               background: '#fee', 
@@ -301,7 +308,7 @@ const OfferManager = () => {
             </div>
           )}
 
-          {/* Estadísticas */}
+          {/* Panel de estadísticas */}
           <div style={{ 
             display: "flex", 
             gap: "20px", 
@@ -310,18 +317,21 @@ const OfferManager = () => {
             padding: "20px",
             borderRadius: "8px"
           }}>
+            {/* Total de ofertas */}
             <div style={{ textAlign: "center" }}>
               <h3 style={{ margin: "0", color: "#6c757d", fontSize: "14px" }}>Total Ofertas</h3>
               <p style={{ margin: "5px 0 0 0", fontSize: "24px", fontWeight: "bold", color: "#007bff" }}>
                 {offers.length}
               </p>
             </div>
+            {/* Ofertas activas */}
             <div style={{ textAlign: "center" }}>
               <h3 style={{ margin: "0", color: "#6c757d", fontSize: "14px" }}>Ofertas Activas</h3>
               <p style={{ margin: "5px 0 0 0", fontSize: "24px", fontWeight: "bold", color: "#28a745" }}>
                 {offers.filter(offer => isOfferActive(offer)).length}
               </p>
             </div>
+            {/* Total de productos */}
             <div style={{ textAlign: "center" }}>
               <h3 style={{ margin: "0", color: "#6c757d", fontSize: "14px" }}>Total Productos</h3>
               <p style={{ margin: "5px 0 0 0", fontSize: "24px", fontWeight: "bold", color: "#6f42c1" }}>
@@ -330,15 +340,17 @@ const OfferManager = () => {
             </div>
           </div>
 
-          {/* Lista de ofertas */}
+          {/* Sección de lista de ofertas */}
           <div className="offers-section">
             <h2 className="offers-title">Ofertas Creadas ({offers.length})</h2>
             
             {offers.length > 0 ? (
+              // Grid de tarjetas de ofertas
               <div className="offers-grid">
                 {offers.map((offer) => (
                   <div key={offer._id} className="offer-card">
                     <div className="offer-content">
+                      {/* Encabezado de la tarjeta de oferta */}
                       <div className="offer-header">
                         <Tag className="offer-icon" />
                         <span className="offer-name">{offer.nombreOferta}</span>
@@ -353,6 +365,7 @@ const OfferManager = () => {
                         </span>
                       </div>
                       
+                      {/* Detalles de la oferta */}
                       <div className="offer-details">
                         <p className="offer-detail">
                           <strong>Descuento:</strong> {offer.DescuentoRealizado}%
@@ -379,6 +392,7 @@ const OfferManager = () => {
                       </div>
                     </div>
                     
+                    {/* Botón para eliminar oferta */}
                     <button
                       onClick={() => deleteOffer(offer._id, offer.nombreOferta)}
                       className="delete-offer"
@@ -391,6 +405,7 @@ const OfferManager = () => {
                 ))}
               </div>
             ) : (
+              // Mensaje cuando no hay ofertas
               <div style={{ 
                 textAlign: 'center', 
                 padding: '40px',
@@ -421,10 +436,11 @@ const OfferManager = () => {
         </div>
       </div>
 
-      {/* Modal para crear oferta */}
+      {/* Modal para crear nueva oferta */}
       {showAddModal && (
         <div className="modal-overlay">
           <div className="modal-content">
+            {/* Encabezado del modal */}
             <div className="modal-header">
               <h2 className="modal-title">Crear Nueva Oferta</h2>
               <button onClick={() => setShowAddModal(false)} className="modal-close">
@@ -432,8 +448,10 @@ const OfferManager = () => {
               </button>
             </div>
 
+            {/* Formulario del modal */}
             <form onSubmit={handleCreateOffer} className="modal-body">
-              {/* Información de la oferta */}
+              
+              {/* Campo: Nombre de la oferta */}
               <div className="form-group">
                 <label className="form-label">
                   <Tag className="label-icon" />
@@ -449,7 +467,9 @@ const OfferManager = () => {
                 />
               </div>
 
+              {/* Fila con dos campos: descuento y fecha */}
               <div className="form-row">
+                {/* Campo: Porcentaje de descuento */}
                 <div className="form-group">
                   <label className="form-label">
                     <Percent className="label-icon" />
@@ -467,6 +487,7 @@ const OfferManager = () => {
                   />
                 </div>
 
+                {/* Campo: Fecha de expiración */}
                 <div className="form-group">
                   <label className="form-label">
                     <Calendar className="label-icon" />
@@ -483,7 +504,7 @@ const OfferManager = () => {
                 </div>
               </div>
 
-              {/* Selección de productos */}
+              {/* Sección: Selección de productos */}
               <div className="form-group">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                   <label className="form-label">
@@ -491,6 +512,7 @@ const OfferManager = () => {
                     Seleccionar Productos ({selectedProducts.length} seleccionados)
                   </label>
                   <div>
+                    {/* Botón para seleccionar todos los productos */}
                     <button 
                       type="button" 
                       onClick={selectAllProducts}
@@ -507,6 +529,7 @@ const OfferManager = () => {
                     >
                       Seleccionar Todos
                     </button>
+                    {/* Botón para limpiar selección */}
                     <button 
                       type="button" 
                       onClick={clearSelection}
@@ -525,6 +548,7 @@ const OfferManager = () => {
                   </div>
                 </div>
                 
+                {/* Lista de productos seleccionables */}
                 <div className="product-selector" style={{ maxHeight: '300px', overflowY: 'auto' }}>
                   {products.length > 0 ? (
                     products.map((product) => (
@@ -534,6 +558,7 @@ const OfferManager = () => {
                         className={`product-option ${selectedProducts.includes(product._id) ? 'selected' : ''}`}
                         style={{ cursor: 'pointer' }}
                       >
+                        {/* Contenido de cada opción de producto */}
                         <div className="product-option-content">
                           <img 
                             src={product.images?.[0] || 'https://via.placeholder.com/60x60?text=Sin+Imagen'} 
@@ -549,6 +574,7 @@ const OfferManager = () => {
                             </p>
                           </div>
                         </div>
+                        {/* Indicador visual de selección */}
                         {selectedProducts.includes(product._id) && (
                           <div className="selected-indicator" style={{ 
                             width: '20px', 
@@ -567,6 +593,7 @@ const OfferManager = () => {
                       </div>
                     ))
                   ) : (
+                    // Mensaje cuando no hay productos disponibles
                     <div style={{ textAlign: 'center', padding: '20px', color: '#6c757d' }}>
                       <p>No hay productos disponibles</p>
                     </div>
@@ -574,7 +601,7 @@ const OfferManager = () => {
                 </div>
               </div>
 
-              {/* Botones de acción */}
+              {/* Botones de acción del modal */}
               <div className="modal-actions">
                 <button 
                   type="button" 
