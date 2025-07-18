@@ -110,6 +110,7 @@ export default function Providers() {
   });
   
   const [errores, setErrores] = useState({});
+  const [imagenPreview, setImagenPreview] = useState("");
   const panelDerechoRef = useRef(null);
 
   // Cargar proveedores al montar el componente
@@ -142,6 +143,7 @@ export default function Providers() {
           setActivo(null);
           setModoEdicion(false);
           setErrores({});
+          setImagenPreview("");
         }
       }
     }
@@ -156,6 +158,7 @@ export default function Providers() {
     setActivo(emp);
     setModoEdicion(false);
     setErrores({});
+    setImagenPreview("");
   }
 
   function agregarNuevo() {
@@ -171,6 +174,7 @@ export default function Providers() {
       activo: true
     });
     setErrores({});
+    setImagenPreview("");
   }
 
   function editarEmpleado() {
@@ -184,6 +188,7 @@ export default function Providers() {
       direccion: activo.direccion || "",
       activo: activo.activo !== undefined ? activo.activo : true
     });
+    setImagenPreview(activo.imgProvedor || "");
     setModoEdicion(true);
     setErrores({});
   }
@@ -210,9 +215,15 @@ export default function Providers() {
     try {
       setLoading(true);
       
+      // Usar la imagen en base64 si se subió una nueva, o mantener la existente
+      const datosParaGuardar = {
+        ...formData,
+        imgProvedor: imagenPreview || formData.imgProvedor
+      };
+      
       if (activo) {
         // Actualizar proveedor existente
-        const actualizado = await proveedoresAPI.update(activo._id, formData);
+        const actualizado = await proveedoresAPI.update(activo._id, datosParaGuardar);
         const nuevos = empleados.map(emp =>
           emp._id === activo._id ? actualizado : emp
         );
@@ -220,13 +231,14 @@ export default function Providers() {
         setActivo(actualizado);
       } else {
         // Crear nuevo proveedor
-        const nuevo = await proveedoresAPI.create(formData);
+        const nuevo = await proveedoresAPI.create(datosParaGuardar);
         setEmpleados([...empleados, nuevo]);
         setActivo(nuevo);
       }
 
       setModoEdicion(false);
       setErrores({});
+      setImagenPreview("");
     } catch (error) {
       setError('Error al guardar: ' + error.message);
       console.error('Error al guardar:', error);
@@ -239,6 +251,7 @@ export default function Providers() {
     setModoEdicion(false);
     setErrores({});
     setActivo(null);
+    setImagenPreview("");
   }
 
   async function eliminarEmpleado() {
@@ -251,6 +264,7 @@ export default function Providers() {
         setActivo(null);
         setModoEdicion(false);
         setErrores({});
+        setImagenPreview("");
       } catch (error) {
         setError('Error al eliminar: ' + error.message);
         console.error('Error al eliminar:', error);
@@ -260,12 +274,42 @@ export default function Providers() {
     }
   }
 
+  // Función para convertir archivo a Base64
+  const convertirArchivoABase64 = (archivo) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(archivo);
+    });
+  };
+
   // Manejo archivo de imagen para subir desde dispositivo
-  function manejarArchivoImagen(e) {
+  async function manejarArchivoImagen(e) {
     const archivo = e.target.files[0];
     if (archivo) {
-      const urlLocal = URL.createObjectURL(archivo);
-      setFormData(prev => ({ ...prev, imgProvedor: urlLocal }));
+      try {
+        // Validar tipo de archivo
+        if (!archivo.type.startsWith('image/')) {
+          setError('Por favor selecciona un archivo de imagen válido');
+          return;
+        }
+
+        // Validar tamaño (máximo 5MB)
+        if (archivo.size > 5 * 1024 * 1024) {
+          setError('La imagen debe ser menor a 5MB');
+          return;
+        }
+
+        // Convertir a base64
+        const base64 = await convertirArchivoABase64(archivo);
+        setImagenPreview(base64);
+        setFormData(prev => ({ ...prev, imgProvedor: base64 }));
+        setError(null);
+      } catch (error) {
+        console.error('Error al procesar imagen:', error);
+        setError('Error al procesar la imagen');
+      }
     }
   }
 
@@ -338,7 +382,10 @@ export default function Providers() {
                 <img 
                   src={activo.imgProvedor || "/default.jpg"} 
                   alt={activo.nombre} 
-                  className="avatar-grande" 
+                  className="avatar-grande"
+                  onError={(e) => {
+                    e.target.src = "/default.jpg";
+                  }}
                 />
                 <h2>{activo.nombre}</h2>
                 <p className="subtitulo">
@@ -414,20 +461,49 @@ export default function Providers() {
                     onChange={manejarArchivoImagen}
                     disabled={loading}
                   />
+                  <small style={{ color: '#666', fontSize: '12px' }}>
+                    Formatos permitidos: JPG, PNG, GIF. Máximo 5MB.
+                  </small>
                 </label>
 
-                {formData.imgProvedor && (
-                  <img
-                    src={formData.imgProvedor}
-                    alt="Preview"
-                    style={{ 
-                      width: "100px", 
-                      height: "100px", 
-                      objectFit: "cover", 
-                      marginTop: "10px", 
-                      borderRadius: "8px" 
-                    }}
-                  />
+                {(imagenPreview || formData.imgProvedor) && (
+                  <div style={{ marginTop: '10px' }}>
+                    <img
+                      src={imagenPreview || formData.imgProvedor}
+                      alt="Preview"
+                      style={{ 
+                        width: "100px", 
+                        height: "100px", 
+                        objectFit: "cover", 
+                        borderRadius: "8px",
+                        border: "2px solid #ddd"
+                      }}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                    {imagenPreview && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImagenPreview("");
+                          setFormData(prev => ({ ...prev, imgProvedor: "" }));
+                        }}
+                        style={{
+                          marginLeft: '10px',
+                          padding: '5px 10px',
+                          background: '#f44336',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                        disabled={loading}
+                      >
+                        Quitar imagen
+                      </button>
+                    )}
+                  </div>
                 )}
 
                 <label>

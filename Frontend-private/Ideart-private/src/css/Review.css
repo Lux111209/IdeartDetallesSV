@@ -14,21 +14,18 @@ body {
 .review-manager {
   display: left;
   height: 100vh;
-  background: linear-gradient(to bottom right, #dbeafe, #f3e8ff);
-
+  background: linear-gradient(to bottom right, #DDF0FF, #DDF0FF);
+  overflow: auto;
+  
 }
 
 /* Asegurar que el sidebar sea visible */
-.sidebar {
-  display: block !important;
-  flex-shrink: 0;
-}
+
 
 /* Contenido principal */
 .main-content {
-
   overflow-y: auto;
-
+ 
 }
 
 /* Header */
@@ -556,4 +553,4 @@ body {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-} 
+}

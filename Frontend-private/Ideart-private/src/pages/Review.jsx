@@ -130,7 +130,7 @@ const Review = () => {
       } else {
         setGeneralReviews(prev => prev.filter(r => r.id !== selectedReview.id));
       }
-      alert('🗑️ Reseña eliminada');
+      alert(' Reseña eliminada');
       setSelectedReview(null);
     } else {
       alert('Error al eliminar');
