@@ -12,9 +12,10 @@ body {
 
 /* Contenedor principal con sidebar */
 .review-manager {
-  display: flex;
+  display: left;
   height: 100vh;
   background: linear-gradient(to bottom right, #dbeafe, #f3e8ff);
+
 }
 
 /* Asegurar que el sidebar sea visible */
@@ -193,9 +194,8 @@ body {
   flex: 1;
   text-align: left;
   overflow: hidden;
-  display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+
 }
 
 .review-content small {

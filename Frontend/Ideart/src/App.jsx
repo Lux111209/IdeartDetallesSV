@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoutes";
 import PublicRoute from "./routes/PublicRoutes";
 
+// Importación de páginas
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -17,15 +18,9 @@ import CheckoutInfo from "./pages/Checkout";
 import CreditForm from "./pages/CreditForm";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
-
-import RecoverPassword from "./pages/RecoverPassword";
-import CheckNumber from "./pages/CheckNumber";
-import NewPassword from "./pages/NewPassword";
-
-
 import EmailVerification from "./pages/EmailVerification";
 
-
+// Componente principal de la aplicación
 function App() {
   return (
     <Routes>
@@ -34,10 +29,6 @@ function App() {
       {/* Solo si no hay sesión */}
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/recupassword" element={<RecoverPassword />} />
-        <Route path="/CheckNumber" element={<CheckNumber />} />
-        <Route path="/NewPassword" element={<NewPassword />} />
       </Route>
 
       {/* Rutas protegidas */}
