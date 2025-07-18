@@ -134,7 +134,7 @@ body {
   cursor: pointer;
   transition: all 0.15s ease-in-out;
   background: #ffffff;
-  color: #193255;
+  color: #4b5563;
 }
 
 .filter-button:hover {
@@ -142,7 +142,7 @@ body {
 }
 
 .filter-button.active {
-  background: #9c0d38;
+  background: #3b82f6;
   color: white;
 }
 
@@ -653,10 +653,6 @@ body {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  line-clamp: 2;
-  line-clamp: 2;
-  line-clamp: 2;
-
   line-height: 1.3;
   height: 2.6rem;
 }
@@ -1392,7 +1388,7 @@ body {
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-
+  -webkit-line-clamp: 2;
 }
 
 .truncate {

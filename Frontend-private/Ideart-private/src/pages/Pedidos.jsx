@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import Sidebar from "../components/Sidebar";
-import PedidoCard from "../components/PedidoCard";
 import DetallePedido from "../components/DetallePedido";
 import "react-toastify/dist/ReactToastify.css";
 import "../css/Pedidos.css";
@@ -65,11 +64,28 @@ export default function Pedidos() {
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
   const [accionPendiente, setAccionPendiente] = useState("");
   const [usingFallback, setUsingFallback] = useState(false);
+  
+  // Ref para la tarjeta activa
+  const cardRef = useRef(null);
 
-  // Cargar pedidos al montar el componente
   useEffect(() => {
     cargarPedidos();
-  }, []);
+
+    // Función para manejar clics fuera de la tarjeta
+    const handleClickOutside = (event) => {
+      if (cardRef.current && !cardRef.current.contains(event.target)) {
+        cerrarPanel();
+      }
+    };
+
+    // Agregar el event listener
+    document.addEventListener("mousedown", handleClickOutside);
+    
+    // Limpiar el event listener al desmontar el componente
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [seleccionado]); // Dependencia en seleccionado para actualizar el listener
 
   const cargarPedidos = async () => {
     try {
@@ -341,20 +357,20 @@ Generado el: ${new Date().toLocaleString()}
 
   const obtenerEstadoColor = (estado) => {
     switch (estado) {
-      case 'completado': return '#28a745';
-      case 'cancelado': return '#dc3545';
-      case 'en_proceso': return '#ffc107';
-      case 'pendiente': return '#6c757d';
-      default: return '#6c757d';
+      case 'completado': return '#9C0D38'; // Color actualizado
+      case 'cancelado': return '#CF5375'; // Color actualizado
+      case 'en_proceso': return '#DABBF5'; // Color actualizado
+      case 'pendiente': return '#DDF0FF'; // Color actualizado
+      default: return '#DDF0FF'; // Color actualizado
     }
   };
 
   const obtenerEstadoPagoColor = (estadoPago) => {
     switch (estadoPago) {
-      case 'pagado': return '#28a745';
-      case 'pendiente': return '#ffc107';
-      case 'rechazado': return '#dc3545';
-      default: return '#6c757d';
+      case 'pagado': return '#9C0D38'; // Color actualizado
+      case 'pendiente': return '#DABBF5'; // Color actualizado
+      case 'rechazado': return '#CF5375'; // Color actualizado
+      default: return '#DDF0FF'; // Color actualizado
     }
   };
 
@@ -459,13 +475,13 @@ Generado el: ${new Date().toLocaleString()}
               <div style={{ fontSize: '12px', color: '#666' }}>Pendientes</div>
             </div>
             <div style={{ background: '#e8f5e8', padding: '10px', borderRadius: '5px', textAlign: 'center' }}>
-              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#28a745' }}>
+              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#9C0D38' }}>
                 {pedidos.filter(p => p.estado === 'completado').length}
               </div>
               <div style={{ fontSize: '12px', color: '#666' }}>Completados</div>
             </div>
             <div style={{ background: '#fff3cd', padding: '10px', borderRadius: '5px', textAlign: 'center' }}>
-              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#856404' }}>
+              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#DABBF5' }}>
                 {pedidos.filter(p => p.estadoPago === 'pendiente').length}
               </div>
               <div style={{ fontSize: '12px', color: '#666' }}>Pagos Pendientes</div>
@@ -477,11 +493,11 @@ Generado el: ${new Date().toLocaleString()}
               pedidos.map((pedido) => (
                 <div
                   key={pedido.id}
+                  ref={seleccionado?.id === pedido.id ? cardRef : null} // Asigna el ref a la tarjeta activa
                   className={`card-pedido ${seleccionado?.id === pedido.id ? 'activa' : ''}`}
                   onClick={() => setSeleccionado(pedido)}
                   style={{ cursor: 'pointer' }}
                 >
-                  <div className="icono-cliente">👤</div>
                   <div className="info" style={{ flex: 1 }}>
                     <div className="nombre">{pedido.clienteNombre}</div>
                     <div style={{ fontSize: '14px', color: '#666' }}>
@@ -569,7 +585,7 @@ Generado el: ${new Date().toLocaleString()}
                   onClick={confirmarAccion}
                   disabled={loading}
                   style={{
-                    background: '#28a745',
+                    background: '#9C0D38', // Color actualizado
                     color: 'white',
                     padding: '10px 20px',
                     border: 'none',
