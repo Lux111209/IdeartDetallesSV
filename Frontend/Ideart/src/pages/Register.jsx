@@ -2,8 +2,6 @@
 import React from 'react';
 import registerImg from '../assets/Register.png';
 import RegistroForm from '../components/RegisterForm';
-
-import React from "react";
 import AuthRegister from "../components/AuthRegister";
 
 // Componente de la página de registro

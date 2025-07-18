@@ -1,4 +1,3 @@
-// App.jsx
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoutes";
 import PublicRoute from "./routes/PublicRoutes";
@@ -24,15 +23,9 @@ import EmailVerification from "./pages/EmailVerification";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Register />} />
-
-      {/* Solo si no hay sesión */}
-      <Route element={<PublicRoute />}>
-        <Route path="/login" element={<Login />} />
-      </Route>
-
-      {/* Rutas protegidas */}
+      {/* Cambiado: / ahora va a Home */}
       <Route element={<ProtectedRoute />}>
+        <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/products" element={<Product />} />
         <Route path="/products/:nombre" element={<ProductDetail />} />
@@ -43,6 +36,12 @@ function App() {
         <Route path="/creditform" element={<CreditForm />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/reviews" element={<Reviews />} />
+      </Route>
+
+      {/* Solo si no hay sesión */}
+      <Route element={<PublicRoute />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Route>
 
       {/* Accesibles sin sesión */}

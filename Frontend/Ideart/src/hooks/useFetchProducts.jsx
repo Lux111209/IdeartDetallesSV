@@ -15,7 +15,7 @@ const useFetchProducts = () => {
         return;
       }
       const data = await response.json();
-      setProducts(data);
+      setProducts(data.data);
       console.log('Productos recibidos:', data);
     } catch (error) {
       console.error('Error al obtener productos:', error);

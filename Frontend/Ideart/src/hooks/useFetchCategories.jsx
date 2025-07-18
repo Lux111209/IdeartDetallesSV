@@ -19,7 +19,7 @@ const useFetchCategories = () => {
       // Agrupar por productType y subType
       const map = {};
 
-      data.forEach((p) => {
+      data.data.forEach((p) => {
         if (!map[p.productType]) {
           map[p.productType] = {
             name: p.productType,

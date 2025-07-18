@@ -2,7 +2,6 @@ import { useState } from "react";
 
 const API_BASE_URL = "http://localhost:5000/api";
 
-
 const useAuth = () => {
   // Estado del formulario
   const [formData, setFormData] = useState({
@@ -37,33 +36,33 @@ const useAuth = () => {
 
   // Función para registrar usuario
   const registerUser = async () => {
-  setRegisterLoading(true);
-  setRegisterError(null);
-  setRegisterSuccess(false);
+    setRegisterLoading(true);
+    setRegisterError(null);
+    setRegisterSuccess(false);
 
-  try {
-    const res = await fetch(`${API_BASE_URL}/registerUser`, { // <-- Corregido aquí
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-      credentials: "include"
-    });
+    try {
+      const res = await fetch(`${API_BASE_URL}/registerUser`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+        credentials: "include"
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      throw new Error(data.message || "Ocurrió un error al registrar el usuario.");
+      if (!res.ok) {
+        throw new Error(data.message || "Ocurrió un error al registrar el usuario.");
+      }
+
+      setRegisterSuccess(true);
+      return data;
+    } catch (err) {
+      setRegisterError(err.message);
+      throw err;
+    } finally {
+      setRegisterLoading(false);
     }
-
-    setRegisterSuccess(true);
-    return data;
-  } catch (err) {
-    setRegisterError(err.message);
-    throw err;
-  } finally {
-    setRegisterLoading(false);
-  }
-};
+  };
 
   // Función para verificar el código enviado por correo
   const verifyCode = async () => {
@@ -71,20 +70,6 @@ const useAuth = () => {
     setVerifyError(null);
     setVerifySuccess(false);
 
-// Hook para manejar el registro de usuarios
-const useRegister = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState("");
-  const [success, setSuccess] = useState(false);
-
-  // Función para manejar el registro
-  const register = useCallback(async (userData) => {
-    setLoading(true);
-    setError("");
-    setSuccess(false);
-
-
-    // Validación básica del formulario
     try {
       const res = await fetch(`${API_BASE_URL}/registerUser/verifyCodeEmail`, {
         method: "POST",
@@ -93,7 +78,6 @@ const useRegister = () => {
         credentials: "include"
       });
 
-      // Verifica si la respuesta es exitosa
       const data = await res.json();
 
       if (!res.ok) {

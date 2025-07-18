@@ -16,6 +16,7 @@ const CreditForm = () => {
   const [name, setName] = useState("");
   const [isCvvFocused, setIsCvvFocused] = useState(false);
   const [errors, setErrors] = useState({});
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // Formatea el número de tarjeta como XXXX XXXX XXXX XXXX
   const formatCardNumber = (value) => {
@@ -50,7 +51,6 @@ const CreditForm = () => {
   const validateExpiry = (date) => /^(0[1-9]|1[0-2])\/\d{2}$/.test(date);
 
   const handlePay = () => {
-    // Creamos errores si los campos no cumplen
     const newErrors = {
       cardNumber: validateCardNumber(cardNumber) ? "" : "Número inválido (16 dígitos)",
       cvv: validateCVV(cvv) ? "" : "CVV inválido (3-4 dígitos)",
@@ -60,14 +60,16 @@ const CreditForm = () => {
 
     setErrors(newErrors);
 
-    // Si hay algún error, no seguimos
     const hasError = Object.values(newErrors).some((e) => e);
     if (hasError) return;
 
-    // Simulamos compra exitosa
-    alert("¡Tu compra fue exitosa!");
-    navigate("/");
+    // ✅ Mostrar toast y redirigir después
+    setShowSuccess(true);
+    setTimeout(() => {
+      navigate("/home"); // Cambiado de "/" a "/home"
+    }, 2000);
   };
+
 
   return (
     <>
@@ -82,6 +84,10 @@ const CreditForm = () => {
         <div className="form-card credit-form">
           {/* Lado izquierdo - formulario */}
           <div className="form-left">
+            {showSuccess && (
+              <InlineToast type="success" message="¡Compra realizada con éxito!" />
+            )}
+
             <label>Nombre en la Tarjeta</label>
             <input
               placeholder="Nombre Apellido"
@@ -124,7 +130,6 @@ const CreditForm = () => {
           {/* Lado derecho - vista previa de tarjeta */}
           <div className="form-right summary">
             <div className={`credit-card-wrapper ${isCvvFocused ? "flipped" : ""}`}>
-              {/* Vista frontal */}
               <div className="credit-card-preview front">
                 <div className="chip" />
                 <div className="card-number">{cardNumber || "1234 5678 9012 3456"}</div>
@@ -134,7 +139,6 @@ const CreditForm = () => {
                 </div>
               </div>
 
-              {/* Vista trasera */}
               <div className="credit-card-preview back">
                 <div className="cvv-label">CVV</div>
                 <div className="cvv-value">{cvv || "•••"}</div>
