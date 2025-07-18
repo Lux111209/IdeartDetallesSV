@@ -4,12 +4,12 @@ import EmpleadoCard from "../components/providersCart";
 import Sidebar from "../components/Sidebar"; 
 import "../css/Providers.css";
 
-// Configuración de la API
+// URL base para las peticiones a la API
 const API_BASE_URL = "http://localhost:5000/api";
 
-// Servicios de API
+// Objeto con todas las funciones para interactuar con la API de proveedores
 const proveedoresAPI = {
-  // Obtener todos los proveedores
+  // Obtener todos los proveedores desde el servidor
   getAll: async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/proveedores`, {
@@ -27,7 +27,7 @@ const proveedoresAPI = {
     }
   },
 
-  // Crear nuevo proveedor
+  // Crear un nuevo proveedor en el servidor
   create: async (proveedorData) => {
     try {
       const response = await fetch(`${API_BASE_URL}/proveedores`, {
@@ -50,7 +50,7 @@ const proveedoresAPI = {
     }
   },
 
-  // Actualizar proveedor
+  // Actualizar un proveedor existente
   update: async (id, proveedorData) => {
     try {
       const response = await fetch(`${API_BASE_URL}/proveedores/${id}`, {
@@ -73,7 +73,7 @@ const proveedoresAPI = {
     }
   },
 
-  // Eliminar proveedor
+  // Eliminar un proveedor del servidor
   delete: async (id) => {
     try {
       const response = await fetch(`${API_BASE_URL}/proveedores/${id}`, {
@@ -94,11 +94,14 @@ const proveedoresAPI = {
 };
 
 export default function Providers() {
-  const [empleados, setEmpleados] = useState([]);
-  const [activo, setActivo] = useState(null);
-  const [modoEdicion, setModoEdicion] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Estados principales del componente
+  const [empleados, setEmpleados] = useState([]); // Lista de proveedores
+  const [activo, setActivo] = useState(null); // Proveedor seleccionado actualmente
+  const [modoEdicion, setModoEdicion] = useState(false); // Si está en modo edición/creación
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [error, setError] = useState(null); // Mensajes de error
+  
+  // Estado del formulario para crear/editar proveedores
   const [formData, setFormData] = useState({
     nombre: "",
     correo: "",
@@ -109,15 +112,17 @@ export default function Providers() {
     activo: true
   });
   
-  const [errores, setErrores] = useState({});
-  const [imagenPreview, setImagenPreview] = useState("");
-  const panelDerechoRef = useRef(null);
+  // Estados para validación y manejo de imágenes
+  const [errores, setErrores] = useState({}); // Errores de validación del formulario
+  const [imagenPreview, setImagenPreview] = useState(""); // Preview de imagen seleccionada
+  const panelDerechoRef = useRef(null); // Referencia al panel derecho para detectar clicks
 
-  // Cargar proveedores al montar el componente
+  // Cargar la lista de proveedores cuando se monta el componente
   useEffect(() => {
     cargarProveedores();
   }, []);
 
+  // Función para obtener todos los proveedores desde la API
   const cargarProveedores = async () => {
     try {
       setLoading(true);
@@ -132,7 +137,7 @@ export default function Providers() {
     }
   };
 
-  // Efecto para manejar clicks fuera del panel
+  // Detectar clicks fuera del panel derecho para cerrar la edición
   useEffect(() => {
     function handleClickOutside(event) {
       if (
@@ -154,6 +159,7 @@ export default function Providers() {
     };
   }, [activo, modoEdicion]);
 
+  // Seleccionar un proveedor para ver sus detalles
   function seleccionarEmpleado(emp) {
     setActivo(emp);
     setModoEdicion(false);
@@ -161,9 +167,11 @@ export default function Providers() {
     setImagenPreview("");
   }
 
+  // Iniciar el modo de creación de un nuevo proveedor
   function agregarNuevo() {
     setActivo(null);
     setModoEdicion(true);
+    // Resetear el formulario con valores por defecto
     setFormData({
       nombre: "",
       correo: "",
@@ -177,8 +185,10 @@ export default function Providers() {
     setImagenPreview("");
   }
 
+  // Iniciar el modo de edición para el proveedor seleccionado
   function editarEmpleado() {
     if (!activo) return;
+    // Llenar el formulario con los datos del proveedor actual
     setFormData({
       nombre: activo.nombre || "",
       correo: activo.correo || "",
@@ -193,6 +203,7 @@ export default function Providers() {
     setErrores({});
   }
 
+  // Validar los datos del formulario antes de guardar
   function validar() {
     const errs = {};
     if (!formData.nombre.trim()) errs.nombre = "Nombre requerido";
@@ -203,9 +214,11 @@ export default function Providers() {
     return errs;
   }
 
+  // Guardar el proveedor (crear nuevo o actualizar existente)
   async function guardarEmpleado(e) {
     e.preventDefault();
 
+    // Validar los datos antes de enviar
     const errs = validar();
     if (Object.keys(errs).length > 0) {
       setErrores(errs);
@@ -215,7 +228,7 @@ export default function Providers() {
     try {
       setLoading(true);
       
-      // Usar la imagen en base64 si se subió una nueva, o mantener la existente
+      // Preparar los datos para enviar a la API
       const datosParaGuardar = {
         ...formData,
         imgProvedor: imagenPreview || formData.imgProvedor
@@ -236,6 +249,7 @@ export default function Providers() {
         setActivo(nuevo);
       }
 
+      // Salir del modo edición y limpiar errores
       setModoEdicion(false);
       setErrores({});
       setImagenPreview("");
@@ -247,6 +261,7 @@ export default function Providers() {
     }
   }
 
+  // Cancelar la edición y volver al estado anterior
   function cancelar() {
     setModoEdicion(false);
     setErrores({});
@@ -254,12 +269,15 @@ export default function Providers() {
     setImagenPreview("");
   }
 
+  // Eliminar el proveedor seleccionado
   async function eliminarEmpleado() {
     if (!activo) return;
+    // Confirmar antes de eliminar
     if (window.confirm(`¿Eliminar proveedor ${activo.nombre}?`)) {
       try {
         setLoading(true);
         await proveedoresAPI.delete(activo._id);
+        // Remover de la lista local
         setEmpleados(empleados.filter(emp => emp._id !== activo._id));
         setActivo(null);
         setModoEdicion(false);
@@ -274,7 +292,7 @@ export default function Providers() {
     }
   }
 
-  // Función para convertir archivo a Base64
+  // Convertir un archivo de imagen a formato Base64
   const convertirArchivoABase64 = (archivo) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -284,24 +302,24 @@ export default function Providers() {
     });
   };
 
-  // Manejo archivo de imagen para subir desde dispositivo
+  // Manejar la selección de una nueva imagen desde el dispositivo
   async function manejarArchivoImagen(e) {
     const archivo = e.target.files[0];
     if (archivo) {
       try {
-        // Validar tipo de archivo
+        // Validar que sea un archivo de imagen
         if (!archivo.type.startsWith('image/')) {
           setError('Por favor selecciona un archivo de imagen válido');
           return;
         }
 
-        // Validar tamaño (máximo 5MB)
+        // Validar el tamaño del archivo (máximo 5MB)
         if (archivo.size > 5 * 1024 * 1024) {
           setError('La imagen debe ser menor a 5MB');
           return;
         }
 
-        // Convertir a base64
+        // Convertir la imagen a base64 para mostrar preview
         const base64 = await convertirArchivoABase64(archivo);
         setImagenPreview(base64);
         setFormData(prev => ({ ...prev, imgProvedor: base64 }));
@@ -313,6 +331,7 @@ export default function Providers() {
     }
   }
 
+  // Mostrar pantalla de carga mientras se obtienen los datos iniciales
   if (loading && empleados.length === 0) {
     return (
       <div className="dashboard">
@@ -334,6 +353,7 @@ export default function Providers() {
       <main className="main">
         <h1 className="titulo">Proveedores</h1>
 
+        {/* Mostrar mensajes de error si existen */}
         {error && (
           <div style={{ 
             background: '#fee', 
@@ -353,6 +373,8 @@ export default function Providers() {
         )}
 
         <div className={`contenedor${!activo && !modoEdicion ? " sin-seleccion" : ""}`}>
+          
+          {/* Panel izquierdo - Lista de proveedores */}
           <div className="panel-izquierdo">
             {empleados.map(emp => (
               <EmpleadoCard 
@@ -369,14 +391,19 @@ export default function Providers() {
               />
             ))}
 
+            {/* Botón para agregar nuevo proveedor */}
             <button className="btn-agregar" onClick={agregarNuevo} disabled={loading}>
               {loading ? "Cargando..." : "+ Agregar nuevo proveedor"}
             </button>
           </div>
 
+          {/* Panel derecho - Detalles y formulario */}
           <div className="panel-derecho" ref={panelDerechoRef}>
+            
+            {/* Mensaje cuando no hay nada seleccionado */}
             {!activo && !modoEdicion && <p>Selecciona un proveedor o agrega uno nuevo.</p>}
 
+            {/* Vista de detalles del proveedor seleccionado */}
             {activo && !modoEdicion && (
               <>
                 <img 
@@ -397,6 +424,7 @@ export default function Providers() {
                 <p><strong>Email:</strong> {activo.correo}</p>
                 <p><strong>Estado:</strong> {activo.activo ? "Activo" : "Inactivo"}</p>
 
+                {/* Botones de acción para el proveedor seleccionado */}
                 <div className="botones-derecha">
                   <button onClick={editarEmpleado} className="btn-editar" disabled={loading}>
                     Editar
@@ -408,8 +436,11 @@ export default function Providers() {
               </>
             )}
 
+            {/* Formulario de edición/creación */}
             {modoEdicion && (
               <form onSubmit={guardarEmpleado} className="formulario" noValidate>
+                
+                {/* Campo de nombre */}
                 <label>
                   Nombre:
                   <input
@@ -421,6 +452,7 @@ export default function Providers() {
                   {errores.nombre && <span className="error">{errores.nombre}</span>}
                 </label>
 
+                {/* Campo de email */}
                 <label>
                   Email:
                   <input
@@ -432,6 +464,7 @@ export default function Providers() {
                   {errores.correo && <span className="error">{errores.correo}</span>}
                 </label>
 
+                {/* Campo de número de teléfono */}
                 <label>
                   Número:
                   <input
@@ -443,6 +476,7 @@ export default function Providers() {
                   {errores.numero && <span className="error">{errores.numero}</span>}
                 </label>
 
+                {/* Campo de dirección */}
                 <label>
                   Dirección:
                   <input
@@ -453,6 +487,7 @@ export default function Providers() {
                   />
                 </label>
 
+                {/* Campo para subir imagen */}
                 <label>
                   Foto:
                   <input
@@ -466,6 +501,7 @@ export default function Providers() {
                   </small>
                 </label>
 
+                {/* Preview de la imagen seleccionada */}
                 {(imagenPreview || formData.imgProvedor) && (
                   <div style={{ marginTop: '10px' }}>
                     <img
@@ -482,6 +518,7 @@ export default function Providers() {
                         e.target.style.display = 'none';
                       }}
                     />
+                    {/* Botón para quitar la imagen */}
                     {imagenPreview && (
                       <button
                         type="button"
@@ -506,6 +543,7 @@ export default function Providers() {
                   </div>
                 )}
 
+                {/* Campo de estado (activo/inactivo) */}
                 <label>
                   Estado:
                   <select
@@ -518,6 +556,7 @@ export default function Providers() {
                   </select>
                 </label>
 
+                {/* Botones del formulario */}
                 <div className="botones-formulario">
                   <button type="submit" className="btn-guardar" disabled={loading}>
                     {loading ? "Guardando..." : "Guardar"}

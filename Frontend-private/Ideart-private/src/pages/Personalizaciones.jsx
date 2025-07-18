@@ -126,7 +126,6 @@ export default function Personalizaciones() {
         if (pendientes.length > 0) {
           setUsingFallback(false);
           setSolicitudes(pendientes);
-          toast.success(`✅ ${pendientes.length} solicitudes cargadas desde el servidor`);
         } else {
           throw new Error('No hay solicitudes pendientes en el servidor');
         }
@@ -337,7 +336,7 @@ export default function Personalizaciones() {
                 opacity: loading ? 0.6 : 1
               }}
             >
-              {loading ? 'Cargando...' : '🔄 Actualizar'}
+              {loading ? 'Cargando...' : ' Actualizar'}
             </button>
           </div>
 

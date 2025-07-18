@@ -3,14 +3,16 @@ import '../css/Review.css';
 import Sidebar from "../components/Sidebar"; 
 
 const Review = () => {
+  // Estados para manejar las reseñas y la interfaz
   const [productReviews, setProductReviews] = useState([]);
   const [generalReviews, setGeneralReviews] = useState([]);
   const [selectedReview, setSelectedReview] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // URL base de la API
   const API_URL = 'http://localhost:5000/api';
 
-  // Función simple de fetch
+  // Función para obtener datos del servidor
   const fetchData = async (url) => {
     try {
       console.log('Fetching:', url); // Para debug
@@ -22,6 +24,7 @@ const Review = () => {
         credentials: 'include'
       });
       
+      // Verificar si la respuesta es exitosa
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -35,7 +38,7 @@ const Review = () => {
     }
   };
 
-  // Función simple para eliminar
+  // Función para eliminar una reseña
   const deleteReview = async (url) => {
     try {
       console.log('Deleting:', url); 
@@ -47,6 +50,7 @@ const Review = () => {
         credentials: 'include'
       });
       
+      // Verificar si la eliminación fue exitosa
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -60,11 +64,11 @@ const Review = () => {
     }
   };
 
-  // Cargar reseñas al inicio
+  // Función para cargar todas las reseñas desde el servidor
   const loadReviews = async () => {
     setLoading(true);
     
-    // Obtener reseñas de productos
+    // Obtener reseñas de productos desde la API
     const productos = await fetchData(`${API_URL}/resenasproducto`);
     const productosFormateados = productos.map(review => ({
       id: review._id,
@@ -77,7 +81,7 @@ const Review = () => {
       date: new Date(review.fechaResena).toLocaleDateString()
     }));
 
-    // Obtener reseñas generales
+    // Obtener reseñas generales desde la API
     const generales = await fetchData(`${API_URL}/resenasgeneral`);
     const generalesFormateados = generales.map(review => ({
       id: review._id,
@@ -90,20 +94,23 @@ const Review = () => {
       date: new Date(review.fechaResena).toLocaleDateString()
     }));
 
+    // Actualizar los estados con las reseñas formateadas
     setProductReviews(productosFormateados);
     setGeneralReviews(generalesFormateados);
     setLoading(false);
   };
 
-  // Cargar datos al inicio
+  // Cargar reseñas cuando el componente se monta
   useEffect(() => {
     loadReviews();
   }, []);
 
+  // Manejar el clic en una reseña para mostrarla en el modal
   const handleReviewClick = (review) => {
     setSelectedReview(review);
   };
 
+  // Manejar la aceptación de una reseña
   const handleAcceptReview = () => {
     if (selectedReview) {
       alert('✅ Reseña aceptada');
@@ -111,12 +118,15 @@ const Review = () => {
     }
   };
 
+  // Manejar el rechazo/eliminación de una reseña
   const handleRejectReview = async () => {
     if (!selectedReview) return;
 
+    // Confirmar antes de eliminar
     const confirmDelete = window.confirm('¿Eliminar esta reseña?');
     if (!confirmDelete) return;
 
+    // Determinar el endpoint según el tipo de reseña
     const endpoint = selectedReview.type === 'product' 
       ? `${API_URL}/resenasproducto/${selectedReview.id}`
       : `${API_URL}/resenasgeneral/${selectedReview.id}`;
@@ -124,23 +134,25 @@ const Review = () => {
     const success = await deleteReview(endpoint);
     
     if (success) {
-      // Remover de la lista local
+      // Remover la reseña de la lista local
       if (selectedReview.type === 'product') {
         setProductReviews(prev => prev.filter(r => r.id !== selectedReview.id));
       } else {
         setGeneralReviews(prev => prev.filter(r => r.id !== selectedReview.id));
       }
-      alert(' Reseña eliminada');
+      alert('Reseña eliminada');
       setSelectedReview(null);
     } else {
       alert('Error al eliminar');
     }
   };
 
+  // Cerrar el modal
   const closeModal = () => {
     setSelectedReview(null);
   };
 
+  // Función para renderizar las estrellas de calificación
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, index) => (
       <span key={index} className={index < rating ? 'star filled' : 'star'}>
@@ -149,6 +161,7 @@ const Review = () => {
     ));
   };
 
+  // Componente para mostrar cada tarjeta de reseña
   const ReviewCard = ({ review, onClick }) => (
     <div className="review-card" onClick={() => onClick(review)}>
       <div className="review-icon">{review.icon}</div>
@@ -163,6 +176,7 @@ const Review = () => {
     </div>
   );
 
+  // Mostrar pantalla de carga mientras se obtienen los datos
   if (loading) {
     return (
       <div className="review-manager">
@@ -176,11 +190,13 @@ const Review = () => {
     );
   }
 
+  // Renderizar la interfaz principal
   return (
     <div className="review-manager">
       <Sidebar />
       
       <div className="main-content">
+        {/* Encabezado de la página */}
         <header className="header">
           <h1>Gestor de Reseñas</h1>
         </header>
@@ -188,7 +204,7 @@ const Review = () => {
         <div className="content">
           <h2>Administrar Comentarios y Valoraciones</h2>
           
-          {/* Reseñas de Productos */}
+          {/* Sección de reseñas de productos */}
           <div className="reviews-section">
             <h3>Reseñas de Productos ({productReviews.length})</h3>
             {productReviews.length > 0 ? (
@@ -202,6 +218,7 @@ const Review = () => {
                 ))}
               </div>
             ) : (
+              // Mostrar mensaje cuando no hay reseñas de productos
               <div className="empty-reviews">
                 <div className="empty-icon">📦</div>
                 <h4>No hay reseñas de productos</h4>
@@ -209,7 +226,7 @@ const Review = () => {
             )}
           </div>
 
-          {/* Reseñas Generales */}
+          {/* Sección de reseñas generales */}
           <div className="reviews-section">
             <h3>Reseñas Generales ({generalReviews.length})</h3>
             {generalReviews.length > 0 ? (
@@ -223,6 +240,7 @@ const Review = () => {
                 ))}
               </div>
             ) : (
+              // Mostrar mensaje cuando no hay reseñas generales
               <div className="empty-reviews">
                 <div className="empty-icon">🏢</div>
                 <h4>No hay reseñas generales</h4>
@@ -230,12 +248,14 @@ const Review = () => {
             )}
           </div>
 
-          {/* Modal */}
+          {/* Modal para mostrar detalles de la reseña seleccionada */}
           {selectedReview && (
             <div className="modal-overlay" onClick={closeModal}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                {/* Botón para cerrar el modal */}
                 <button className="close-btn" onClick={closeModal}>×</button>
                 
+                {/* Encabezado del modal */}
                 <div className="modal-header">
                   <div className="modal-icon">{selectedReview.icon}</div>
                   <h3>{selectedReview.title}</h3>
@@ -244,6 +264,7 @@ const Review = () => {
                   </div>
                 </div>
                 
+                {/* Contenido del modal */}
                 <div className="modal-body">
                   <p>{selectedReview.content}</p>
                   <div className="review-meta">
@@ -254,6 +275,7 @@ const Review = () => {
                   </div>
                 </div>
                 
+                {/* Botones de acción del modal */}
                 <div className="modal-actions">
                   <button className="accept-btn" onClick={handleAcceptReview}>
                     ✅ Aceptar

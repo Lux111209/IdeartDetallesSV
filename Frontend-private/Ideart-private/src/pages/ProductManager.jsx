@@ -7,12 +7,12 @@ import "../css/ProductManager.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Configuración de la API
+// URL base para las peticiones a la API
 const API_BASE_URL = "http://localhost:5000/api";
 
-// Servicios de API para productos
+// Objeto con todas las funciones para interactuar con la API de productos
 const productsAPI = {
-  // Obtener todos los productos
+  // Obtener todos los productos desde el servidor
   getAll: async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/products`, {
@@ -30,7 +30,7 @@ const productsAPI = {
     }
   },
 
-  // Obtener producto por ID
+  // Obtener un producto específico por su ID
   getById: async (id) => {
     try {
       const response = await fetch(`${API_BASE_URL}/products/${id}`, {
@@ -48,19 +48,20 @@ const productsAPI = {
     }
   },
 
-  // Crear nuevo producto
+  // Crear un nuevo producto en el servidor
   create: async (productData) => {
     try {
+      // Crear FormData para manejar archivos de imagen
       const formData = new FormData();
       
-      // Agregar campos del producto
+      // Agregar todos los campos del producto excepto las imágenes
       Object.keys(productData).forEach(key => {
         if (key !== 'images') {
           formData.append(key, productData[key]);
         }
       });
       
-      // Agregar imágenes si existen
+      // Agregar las imágenes como archivos separados
       if (productData.images && productData.images.length > 0) {
         productData.images.forEach(image => {
           formData.append('images', image);
@@ -85,19 +86,20 @@ const productsAPI = {
     }
   },
 
-  // Actualizar producto
+  // Actualizar un producto existente
   update: async (id, productData) => {
     try {
+      // Crear FormData para manejar archivos de imagen
       const formData = new FormData();
       
-      // Agregar campos del producto
+      // Agregar todos los campos del producto excepto las imágenes
       Object.keys(productData).forEach(key => {
         if (key !== 'images') {
           formData.append(key, productData[key]);
         }
       });
       
-      // Agregar nuevas imágenes si existen
+      // Agregar solo las nuevas imágenes que son archivos
       if (productData.images && productData.images.length > 0) {
         productData.images.forEach(image => {
           if (image instanceof File) {
@@ -124,7 +126,7 @@ const productsAPI = {
     }
   },
 
-  // Eliminar producto
+  // Eliminar un producto del servidor
   delete: async (id) => {
     try {
       const response = await fetch(`${API_BASE_URL}/products/${id}`, {
@@ -146,18 +148,20 @@ const productsAPI = {
 };
 
 const ProductManager = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [search, setSearch] = useState("");
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showAddModal, setShowAddModal] = useState(false);
+  // Estados principales del componente
+  const [products, setProducts] = useState([]); // Lista de todos los productos
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [error, setError] = useState(null); // Mensajes de error
+  const [search, setSearch] = useState(""); // Término de búsqueda
+  const [selectedProduct, setSelectedProduct] = useState(null); // Producto seleccionado para ver/editar
+  const [showAddModal, setShowAddModal] = useState(false); // Mostrar modal de agregar producto
 
-  // Cargar productos al montar el componente
+  // Cargar productos cuando el componente se monta
   useEffect(() => {
     loadProducts();
   }, []);
 
+  // Función para obtener todos los productos desde la API
   const loadProducts = async () => {
     try {
       setLoading(true);
@@ -173,19 +177,22 @@ const ProductManager = () => {
     }
   };
 
+  // Manejar click en una tarjeta de producto para abrir el modal de detalles
   const handleCardClick = (product) => {
     setSelectedProduct(product);
   };
 
+  // Cerrar el modal de detalles del producto
   const handleCloseModal = () => {
     setSelectedProduct(null);
   };
 
+  // Guardar cambios en un producto existente
   const handleSave = async (updatedProduct) => {
     try {
       setLoading(true);
       
-      // Preparar datos para actualización
+      // Preparar los datos para la actualización
       const updateData = {
         name: updatedProduct.name,
         productType: updatedProduct.productType || updatedProduct.category,
@@ -198,14 +205,14 @@ const ProductManager = () => {
         tags: updatedProduct.tags || []
       };
 
-      // Si hay nuevas imágenes, agregarlas
+      // Agregar nuevas imágenes si las hay
       if (updatedProduct.newImages && updatedProduct.newImages.length > 0) {
         updateData.images = updatedProduct.newImages;
       }
 
       const result = await productsAPI.update(selectedProduct._id, updateData);
       
-      // Actualizar la lista local
+      // Actualizar la lista local con los datos actualizados
       setProducts(prevProducts =>
         prevProducts.map(p => p._id === result._id ? result : p)
       );
@@ -220,7 +227,9 @@ const ProductManager = () => {
     }
   };
 
+  // Eliminar un producto
   const handleDelete = async (id) => {
+    // Confirmar antes de eliminar
     if (!window.confirm('¿Estás seguro de que quieres eliminar este producto?')) {
       return;
     }
@@ -229,7 +238,7 @@ const ProductManager = () => {
       setLoading(true);
       await productsAPI.delete(id);
       
-      // Actualizar la lista local
+      // Remover el producto de la lista local
       setProducts(prevProducts => prevProducts.filter(p => p._id !== id));
       
       handleCloseModal();
@@ -242,11 +251,12 @@ const ProductManager = () => {
     }
   };
 
+  // Agregar un nuevo producto
   const handleAdd = async (newProductData) => {
     try {
       setLoading(true);
       
-      // Preparar datos para creación
+      // Preparar los datos para la creación
       const createData = {
         name: newProductData.name,
         productType: newProductData.productType || newProductData.category || 'General',
@@ -259,14 +269,14 @@ const ProductManager = () => {
         tags: newProductData.tags || []
       };
 
-      // Agregar imágenes si existen
+      // Agregar imágenes si las hay
       if (newProductData.images && newProductData.images.length > 0) {
         createData.images = newProductData.images;
       }
 
       const result = await productsAPI.create(createData);
       
-      // Agregar a la lista local
+      // Agregar el nuevo producto a la lista local
       setProducts(prevProducts => [...prevProducts, result]);
       
       setShowAddModal(false);
@@ -279,13 +289,14 @@ const ProductManager = () => {
     }
   };
 
-  // Filtrar productos por búsqueda
+  // Filtrar productos según el término de búsqueda
   const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
     p.productType?.toLowerCase().includes(search.toLowerCase()) ||
     p.description?.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Mostrar pantalla de carga inicial
   if (loading && products.length === 0) {
     return (
       <div className="product-manager-layout" style={{ display: "flex", minHeight: "100vh" }}>
@@ -305,7 +316,8 @@ const ProductManager = () => {
       <Sidebar />
 
       <div className="product-manager-content" style={{ flex: 1, padding: "20px" }}>
-        {/* Mostrar error si existe */}
+        
+        {/* Mostrar mensajes de error si existen */}
         {error && (
           <div style={{ 
             background: '#fee', 
@@ -327,6 +339,7 @@ const ProductManager = () => {
           </div>
         )}
 
+        {/* Barra superior con título, botón de agregar y búsqueda */}
         <div className="top-bar" style={{ 
           display: "flex", 
           justifyContent: "space-between", 
@@ -337,6 +350,7 @@ const ProductManager = () => {
           <h1>Gestor de Productos</h1>
           
           <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+            {/* Botón para agregar nuevo producto */}
             <button 
               className="add-btn" 
               onClick={() => setShowAddModal(true)}
@@ -345,6 +359,7 @@ const ProductManager = () => {
               {loading ? "Cargando..." : "+ Agregar producto"}
             </button>
             
+            {/* Campo de búsqueda */}
             <input
               className="search-input"
               type="text"
@@ -356,7 +371,7 @@ const ProductManager = () => {
           </div>
         </div>
 
-        {/* Mostrar estadísticas */}
+        {/* Panel de estadísticas del inventario */}
         <div style={{ 
           display: "flex", 
           gap: "20px", 
@@ -365,24 +380,28 @@ const ProductManager = () => {
           padding: "15px",
           borderRadius: "8px"
         }}>
+          {/* Total de productos */}
           <div style={{ textAlign: "center" }}>
             <h3 style={{ margin: "0", color: "#6c757d", fontSize: "14px" }}>Total Productos</h3>
             <p style={{ margin: "5px 0 0 0", fontSize: "24px", fontWeight: "bold", color: "#007bff" }}>
               {products.length}
             </p>
           </div>
+          {/* Productos mostrados (después del filtro) */}
           <div style={{ textAlign: "center" }}>
             <h3 style={{ margin: "0", color: "#6c757d", fontSize: "14px" }}>Mostrando</h3>
             <p style={{ margin: "5px 0 0 0", fontSize: "24px", fontWeight: "bold", color: "#28a745" }}>
               {filteredProducts.length}
             </p>
           </div>
+          {/* Productos sin stock */}
           <div style={{ textAlign: "center" }}>
             <h3 style={{ margin: "0", color: "#6c757d", fontSize: "14px" }}>Sin Stock</h3>
             <p style={{ margin: "5px 0 0 0", fontSize: "24px", fontWeight: "bold", color: "#dc3545" }}>
               {products.filter(p => p.stock === 0).length}
             </p>
           </div>
+          {/* Productos con stock bajo */}
           <div style={{ textAlign: "center" }}>
             <h3 style={{ margin: "0", color: "#6c757d", fontSize: "14px" }}>Stock Bajo (&lt;5)</h3>
             <p style={{ margin: "5px 0 0 0", fontSize: "24px", fontWeight: "bold", color: "#ffc107" }}>
@@ -391,6 +410,7 @@ const ProductManager = () => {
           </div>
         </div>
 
+        {/* Grid de productos */}
         <div
           className="product-grid"
           style={{
@@ -400,6 +420,7 @@ const ProductManager = () => {
           }}
         >
           {filteredProducts.length ? (
+            // Mostrar las tarjetas de productos filtrados
             filteredProducts.map((product) => (
               <div
                 key={product._id}
@@ -418,6 +439,7 @@ const ProductManager = () => {
               </div>
             ))
           ) : (
+            // Mensaje cuando no hay productos para mostrar
             <div style={{ 
               gridColumn: "1 / -1", 
               textAlign: "center", 
@@ -427,6 +449,7 @@ const ProductManager = () => {
               border: "2px dashed #dee2e6"
             }}>
               {search ? (
+                // Mensaje cuando la búsqueda no encuentra resultados
                 <>
                   <h3>No se encontraron productos</h3>
                   <p>No hay productos que coincidan con "{search}"</p>
@@ -445,6 +468,7 @@ const ProductManager = () => {
                   </button>
                 </>
               ) : (
+                // Mensaje cuando no hay productos en absoluto
                 <>
                   <h3>No hay productos disponibles</h3>
                   <p>Comienza agregando tu primer producto</p>
@@ -467,7 +491,7 @@ const ProductManager = () => {
           )}
         </div>
 
-        {/* Indicador de carga para operaciones */}
+        {/* Indicador de carga para operaciones en progreso */}
         {loading && products.length > 0 && (
           <div style={{
             position: "fixed",
@@ -484,7 +508,7 @@ const ProductManager = () => {
         )}
       </div>
 
-      {/* Modal para ver/editar producto */}
+      {/* Modal para ver y editar detalles del producto seleccionado */}
       {selectedProduct && (
         <ProductModal
           product={{
@@ -499,7 +523,7 @@ const ProductManager = () => {
         />
       )}
 
-      {/* Modal para agregar producto */}
+      {/* Modal para agregar un nuevo producto */}
       {showAddModal && (
         <AddProductModal
           onClose={() => setShowAddModal(false)}
@@ -508,7 +532,7 @@ const ProductManager = () => {
         />
       )}
 
-      {/* Estilos para el spinner de carga */}
+      {/* Estilos CSS en línea */}
       <style jsx>{`
         .loading-spinner {
           border: 4px solid #f3f3f3;
