@@ -151,6 +151,50 @@ export default function Pedidos() {
     setAccionPendiente("");
   };
 
+  // Función genérica para actualizar estado de venta
+  const actualizarVenta = async (id, updateData) => {
+    try {
+      console.log('Actualizando venta:', id, 'con datos:', updateData);
+      
+      const response = await fetch(`${API_BASE_URL}/ventas/${id}`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(updateData)
+      });
+      
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        
+        let errorMessage = 'Error en el servidor';
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.message || errorMessage;
+        } catch (error) {
+          // Si no es JSON válido, usar el texto tal como está
+          console.warn('No se pudo parsear el error como JSON:'+ error);
+         
+        }
+        
+        throw new Error(errorMessage);
+      }
+      
+      const responseData = await response.json();
+      console.log('Respuesta exitosa:', responseData);
+      
+      return responseData;
+      
+    } catch (error) {
+      console.error('Error en actualizarVenta:', error);
+      throw error;
+    }
+  };
+
   const completarPedido = async () => {
     if (!seleccionado) return;
 
@@ -158,16 +202,10 @@ export default function Pedidos() {
       setLoading(true);
       
       if (!usingFallback) {
-        // Intentar actualizar en el API
-        const response = await fetch(`${API_BASE_URL}/ventas/${seleccionado.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ statusTransaccion: 'completado' })
+        // Actualizar en el API
+        await actualizarVenta(seleccionado.id, { 
+          statusTransaccion: 'completado' 
         });
-        
-        if (!response.ok) {
-          throw new Error('Error en el servidor');
-        }
       }
       
       // Actualizar estado local
@@ -198,16 +236,10 @@ export default function Pedidos() {
       setLoading(true);
       
       if (!usingFallback) {
-        // Intentar actualizar en el API
-        const response = await fetch(`${API_BASE_URL}/ventas/${seleccionado.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ statusTransaccion: 'cancelado' })
+        // Actualizar en el API
+        await actualizarVenta(seleccionado.id, { 
+          statusTransaccion: 'cancelado' 
         });
-        
-        if (!response.ok) {
-          throw new Error('Error en el servidor');
-        }
       }
       
       // Actualizar estado local
@@ -238,16 +270,10 @@ export default function Pedidos() {
       setLoading(true);
       
       if (!usingFallback) {
-        // Intentar actualizar en el API
-        const response = await fetch(`${API_BASE_URL}/ventas/${seleccionado.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ statusPago: 'pagado' })
+        // Actualizar en el API
+        await actualizarVenta(seleccionado.id, { 
+          statusPago: 'pagado' 
         });
-        
-        if (!response.ok) {
-          throw new Error('Error en el servidor');
-        }
       }
       
       // Actualizar estado local
