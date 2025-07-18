@@ -1,182 +1,148 @@
-/* Fondo semitransparente para el modal */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(120, 140, 138, 0.85);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  padding: 1rem;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* Estilos generales del modal */
+.popup-fullscreen {
+  position: fixed; /* Posiciona el modal de manera fija */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+  display: flex; /* Utiliza flexbox para centrar el contenido */
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
+  z-index: 9999; /* Asegura que el modal esté por encima de otros elementos */
 }
 
-/* Caja blanca del modal con bordes redondeados y sombra */
-.modal-content {
-  background: #fff;
-  width: 450px;
-  max-height: 90vh;
-  border-radius: 20px;
-  padding: 2rem 2.5rem 2.5rem 2.5rem;
-
-  display: flex;
-  flex-direction: column;
-  overflow: hidden; /* para que el scroll no se escape */
+/* Contenedor del modal */
+.popup-container {
+  background: #ffffff; /* Fondo blanco para el modal */
+  border-radius: 20px; /* Bordes redondeados */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Sombra para dar profundidad */
+  padding: 20px; /* Espaciado interno */
+  max-width: 800px; /* Ancho máximo */
+  max-height: 90vh; /* Altura máxima */
+  overflow-y: auto; /* Permite desplazamiento si el contenido es demasiado alto */
+  position: relative; /* Para posicionar el botón de cerrar */
 }
 
-/* Título centrado */
-.modal-content h2 {
-  text-align: center;
-  font-weight: 700;
-  font-size: 1.8rem;
-  color: #204c3c;
-  margin-bottom: 1.5rem;
+/* Botón de cerrar */
+.popup-close {
+  background: transparent; /* Sin fondo */
+  border: none; /* Sin borde */
+  font-size: 24px; /* Tamaño de fuente grande */
+  color: #dc3545; /* Color rojo para el botón de cerrar */
+  cursor: pointer; /* Cambia el cursor al pasar por encima */
+  position: absolute; /* Posiciona el botón en la esquina superior derecha */
+  top: 20px;
+  right: 20px;
 }
 
-/* Contenedor scrollable para los inputs */
-.modal-form-content {
-  overflow-y: auto;
-  max-height: calc(90vh - 150px); /* espacio para título y botones */
-  padding-right: 10px; /* evita cortar contenido al hacer scroll */
-
-  border-radius: 16px;
-  padding: 1.2rem 1.5rem;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+/* Títulos */
+h2 {
+  color: #343a40; /* Color gris oscuro para títulos */
+  margin-bottom: 20px; /* Espacio inferior */
 }
 
-/* Inputs estilo general */
-.modal-form-content input[type="text"],
-.modal-form-content input[type="number"],
-.modal-form-content input[type="color"],
-.modal-form-content input[type="file"] {
-  width: 100%;
-  padding: 12px 14px;
-  border: 2px solid #ccc;
-  border-radius: 12px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-  outline-offset: 2px;
-  box-sizing: border-box;
-  cursor: text;
+
+
+/* Estilos para los inputs y selects */
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  width: 100%; /* Ancho completo */
+  padding: 10px; /* Espaciado interno */
+  border: 1.8px solid #ced4da; /* Borde gris claro */
+  border-radius: 8px; /* Bordes redondeados */
+  background-color: #f8f9fa; /* Fondo gris claro */
+  transition: border-color 0.3s ease; /* Transición suave para el borde */
 }
 
-/* Focus en inputs */
-.modal-form-content input[type="text"]:focus,
-.modal-form-content input[type="number"]:focus,
-.modal-form-content input[type="color"]:focus,
-.modal-form-content input[type="file"]:focus {
-  border-color: #9C0D38;
-  outline: none;
+/* Estilos para los inputs en foco */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #007bff; /* Borde azul en foco */
+  outline: none; /* Sin contorno */
 }
 
-/* Label para input file con margen arriba */
-.modal-form-content label {
-  font-weight: 600;
-  color: #204c3c;
-  cursor: pointer;
-  display: block;
-  margin-top: 0.8rem;
+/* Estilo para los botones */
+.popup-actions {
+  display: flex; /* Utiliza flexbox para alinear los botones */
+  gap: 10px; /* Espacio entre botones */
 }
 
-/* Preview imagen centrada */
-.image-preview {
-  margin-top: 10px;
-  text-align: center;
+/* Estilo para el botón guardar */
+.popup-actions .save {
+  background-color: #ff69b4; /* Rosa para guardar */
+  color: white; /* Texto blanco */
+  padding: 10px 20px; /* Espaciado interno */
+  border: none; /* Sin borde */
+  border-radius: 8px; /* Bordes redondeados */
+  cursor: pointer; /* Cambia el cursor al pasar por encima */
+  transition: background-color 0.3s ease; /* Transición suave para el fondo */
 }
 
-/* Imagen preview con tamaño fijo, borde redondeado y sombra */
-.image-preview img {
-  width: 140px;
-  height: auto;
-  border-radius: 14px;
-  box-shadow: 0 4px 10px rgba(32, 76, 60, 0.3);
-  object-fit: contain;
+.popup-actions .save:hover {
+  background-color: #ff1493; /* Rosa más oscuro al pasar el mouse */
 }
 
-/* Botones con espacio y diseño */
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid #ddd;
-  gap: 1rem;
+/* Estilo para el botón cancelar */
+.popup-actions .cancel {
+  background-color: white; /* Fondo blanco para cancelar */
+  color: #ff69b4; /* Texto rosa */
+  padding: 10px 20px; /* Espaciado interno */
+  border: 2px solid #ff69b4; /* Borde rosa */
+  border-radius: 8px; /* Bordes redondeados */
+  cursor: pointer; /* Cambia el cursor al pasar por encima */
+  transition: background-color 0.3s ease; /* Transición suave para el fondo */
 }
 
-/* Botón guardar principal */
-.modal-buttons .save {
-  background-color: #9C0D38;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 12px 30px;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 1rem;
-  flex: 1;
-  transition: background-color 0.3s ease;
-}
-
-/* Hover guardar */
-.modal-buttons .save:hover {
-  background-color: #700927;
-}
-
-/* Botones cancelar y eliminar */
-.modal-buttons .cancel {
-  background-color: #ccc;
-  color: #333;
-  border: none;
-  border-radius: 20px;
-  padding: 12px 20px;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 1rem;
-  flex: 1;
-  transition: background-color 0.3s ease;
-}
-
-/* Hover cancelar */
-.modal-buttons .cancel:hover {
-  background-color: #b3b3b3;
+.popup-actions .cancel:hover {
+  background-color: #ff69b4; /* Fondo rosa al pasar el mouse */
+  color: white; /* Texto blanco al pasar el mouse */
 }
 
 /* Estilo para mensajes de error */
 .error {
-  color: #d93025;
-  font-size: 0.85rem;
-  margin-top: 0;
-  margin-bottom: 8px;
-  font-weight: 600;
+  color: #d93025; /* Rojo para mensajes de error */
+  font-size: 0.85rem; /* Tamaño de fuente más pequeño */
+  margin-top: 5px; /* Espacio superior */
 }
 
-/* Responsive para móviles */
+/* Estilo para la previsualización de imágenes */
+.img-preview {
+  display: grid; /* Utiliza grid para la disposición de imágenes */
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Columnas responsivas */
+  gap: 10px; /* Espacio entre imágenes */
+  margin-bottom: 20px; /* Espacio inferior */
+}
+
+.img-preview img {
+  width: 100%; /* Ancho completo */
+  height: 150px; /* Altura fija */
+  object-fit: cover; /* Mantiene la relación de aspecto */
+  border-radius: 8px; /* Bordes redondeados */
+  border: 2px solid #007bff; /* Borde azul para las imágenes */
+}
+
+/* Estilo para el botón de eliminar imagen */
+.img-preview button {
+  position: absolute; /* Posiciona el botón sobre la imagen */
+  top: 5px; /* Espacio superior */
+  right: 5px; /* Espacio derecho */
+  background: rgba(255, 0, 0, 0.8); /* Fondo rojo semitransparente */
+  color: white; /* Texto blanco */
+  border: none; /* Sin borde */
+  border-radius: 50%; /* Bordes redondeados */
+  width: 24px; /* Ancho fijo */
+  height: 24px; /* Altura fija */
+  cursor: pointer; /* Cambia el cursor al pasar por encima */
+}
+
+/* Estilos responsivos */
 @media (max-width: 768px) {
-  .modal-content {
-    width: 90%;
-    padding: 1.5rem 1.8rem 2rem 1.8rem;
-  }
-
-  .modal-form-content {
-    max-height: calc(90vh - 130px);
-    padding: 1rem 1.2rem;
-  }
-
-  .image-preview img {
-    width: 110px;
-  }
-
-  .modal-buttons {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .modal-buttons button {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
+  .popup-container {
+    width: 90%; /* Ancho del modal en pantallas pequeñas */
+    padding: 15px; /* Espaciado interno reducido */
   }
 }

@@ -12,20 +12,20 @@ const DetallePedido = ({
 
   const obtenerEstadoColor = (estado) => {
     switch (estado) {
-      case 'completado': return '#28a745';
-      case 'cancelado': return '#dc3545';
-      case 'en_proceso': return '#ffc107';
-      case 'pendiente': return '#6c757d';
-      default: return '#6c757d';
+      case 'completado': return '#9C0D38'; // Color actualizado
+      case 'cancelado': return '#CF5375'; // Color actualizado
+      case 'en_proceso': return '#DABBF5'; // Color actualizado
+      case 'pendiente': return '#DDF0FF'; // Color actualizado
+      default: return '#DDF0FF'; // Color actualizado
     }
   };
 
   const obtenerEstadoPagoColor = (estadoPago) => {
     switch (estadoPago) {
-      case 'pagado': return '#28a745';
-      case 'pendiente': return '#ffc107';
-      case 'rechazado': return '#dc3545';
-      default: return '#6c757d';
+      case 'pagado': return '#9C0D38'; // Color actualizado
+      case 'pendiente': return '#DABBF5'; // Color actualizado
+      case 'rechazado': return '#CF5375'; // Color actualizado
+      default: return '#DDF0FF'; // Color actualizado
     }
   };
 
@@ -51,7 +51,7 @@ const DetallePedido = ({
           <div>
             <p><strong>Método de pago:</strong> {pedido.metodoPago}</p>
             <p><strong>Dirección:</strong> {pedido.direccion}</p>
-            <p><strong>Total:</strong> <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#9c0d38' }}>${pedido.total.toFixed(2)}</span></p>
+            <p><strong>Total:</strong> <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#9C0D38' }}>${pedido.total.toFixed(2)}</span></p>
           </div>
         </div>
         
@@ -196,7 +196,7 @@ const DetallePedido = ({
               fontWeight: 'bold',
               cursor: loading ? 'not-allowed' : 'pointer',
               opacity: loading ? 0.6 : 1,
-              background: '#28a745',
+              background: '#9C0D38', // Color actualizado
               color: 'white',
               transition: 'all 0.3s ease'
             }}
@@ -218,7 +218,7 @@ const DetallePedido = ({
               fontWeight: 'bold',
               cursor: loading ? 'not-allowed' : 'pointer',
               opacity: loading ? 0.6 : 1,
-              background: '#dc3545',
+              background: '#CF5375', // Color actualizado
               color: 'white',
               transition: 'all 0.3s ease'
             }}
@@ -240,7 +240,7 @@ const DetallePedido = ({
               fontWeight: 'bold',
               cursor: loading ? 'not-allowed' : 'pointer',
               opacity: loading ? 0.6 : 1,
-              background: '#ffc107',
+              background: '#DABBF5', // Color actualizado
               color: '#212529',
               transition: 'all 0.3s ease'
             }}
@@ -261,7 +261,7 @@ const DetallePedido = ({
             fontWeight: 'bold',
             cursor: loading ? 'not-allowed' : 'pointer',
             opacity: loading ? 0.6 : 1,
-            background: '#9c0d38',
+            background: '#9C0D38', // Color actualizado
             color: 'white',
             transition: 'all 0.3s ease'
           }}
@@ -289,10 +289,10 @@ const DetallePedido = ({
             )}
             <li>Descargar comprobante en cualquier momento</li>
             {pedido.estado === 'completado' && (
-              <li style={{ color: '#28a745' }}>✅ Pedido completado - Solo descarga disponible</li>
+              <li style={{ color: '#9C0D38' }}>✅ Pedido completado - Solo descarga disponible</li>
             )}
             {pedido.estado === 'cancelado' && (
-              <li style={{ color: '#dc3545' }}>❌ Pedido cancelado - Solo descarga disponible</li>
+              <li style={{ color: '#CF5375' }}>❌ Pedido cancelado - Solo descarga disponible</li>
             )}
           </ul>
         </div>

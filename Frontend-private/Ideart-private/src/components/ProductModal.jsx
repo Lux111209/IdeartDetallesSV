@@ -188,7 +188,7 @@ const ProductModal = ({ product, onClose, onSave, onDelete, loading = false }) =
 
   return (
     <div className="popup-fullscreen">
-      <div className="popup-container" style={{ maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto' }}>
+      <div className="popup-container" style={{ maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', borderRadius: '20px', boxShadow: '0 8px 20px rgba(0, 0, 0, 0.2)', backgroundColor: '#fff', padding: '20px' }}>
         <button className="popup-close" onClick={handleClose} disabled={loading}>
           ✕
         </button>
@@ -297,7 +297,7 @@ const ProductModal = ({ product, onClose, onSave, onDelete, loading = false }) =
                 className="cancel" 
                 onClick={handleDelete}
                 disabled={loading}
-                style={{ background: '#dc3545' }}
+                style={{ background: '#dc3545', color: 'white', padding: '10px 20px', borderRadius: '8px', border: 'none' }}
               >
                 {loading ? 'Eliminando...' : 'Eliminar'}
               </button>
@@ -305,6 +305,7 @@ const ProductModal = ({ product, onClose, onSave, onDelete, loading = false }) =
                 className="save" 
                 onClick={() => setIsEditing(true)}
                 disabled={loading}
+                style={{ background: '#007bff', color: 'white', padding: '10px 20px', borderRadius: '8px', border: 'none' }}
               >
                 Editar
               </button>
@@ -330,7 +331,7 @@ const ProductModal = ({ product, onClose, onSave, onDelete, loading = false }) =
                     value={formData.name}
                     onChange={handleInputChange}
                     disabled={loading}
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', padding: '10px', border: '1.8px solid #ccc', borderRadius: '8px' }}
                   />
                   {errors.name && <span className="error">{errors.name}</span>}
                 </div>
@@ -368,7 +369,7 @@ const ProductModal = ({ product, onClose, onSave, onDelete, loading = false }) =
                     min="0"
                     step="0.01"
                     disabled={loading}
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', padding: '10px', border: '1.8px solid #ccc', borderRadius: '8px' }}
                   />
                   {errors.price && <span className="error">{errors.price}</span>}
                 </div>
@@ -384,7 +385,7 @@ const ProductModal = ({ product, onClose, onSave, onDelete, loading = false }) =
                     onChange={handleInputChange}
                     min="0"
                     disabled={loading}
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', padding: '10px', border: '1.8px solid #ccc', borderRadius: '8px' }}
                   />
                   {errors.stock && <span className="error">{errors.stock}</span>}
                 </div>
@@ -429,7 +430,7 @@ const ProductModal = ({ product, onClose, onSave, onDelete, loading = false }) =
                     value={formData.subType}
                     onChange={handleInputChange}
                     disabled={loading}
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', padding: '10px', border: '1.8px solid #ccc', borderRadius: '8px' }}
                   />
                 </div>
                 
@@ -443,7 +444,7 @@ const ProductModal = ({ product, onClose, onSave, onDelete, loading = false }) =
                     value={formData.color}
                     onChange={handleInputChange}
                     disabled={loading}
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', padding: '10px', border: '1.8px solid #ccc', borderRadius: '8px' }}
                   />
                 </div>
                 
@@ -457,7 +458,7 @@ const ProductModal = ({ product, onClose, onSave, onDelete, loading = false }) =
                     value={formData.size}
                     onChange={handleInputChange}
                     disabled={loading}
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', padding: '10px', border: '1.8px solid #ccc', borderRadius: '8px' }}
                   />
                 </div>
               </div>
@@ -473,7 +474,7 @@ const ProductModal = ({ product, onClose, onSave, onDelete, loading = false }) =
                     value={formData.material}
                     onChange={handleInputChange}
                     disabled={loading}
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', padding: '10px', border: '1.8px solid #ccc', borderRadius: '8px' }}
                   />
                 </div>
                 
@@ -487,7 +488,7 @@ const ProductModal = ({ product, onClose, onSave, onDelete, loading = false }) =
                     value={formData.usageCategory}
                     onChange={handleInputChange}
                     disabled={loading}
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', padding: '10px', border: '1.8px solid #ccc', borderRadius: '8px' }}
                   />
                 </div>
               </div>
@@ -503,7 +504,7 @@ const ProductModal = ({ product, onClose, onSave, onDelete, loading = false }) =
                   onChange={handleInputChange}
                   placeholder="Separados por comas"
                   disabled={loading}
-                  style={{ width: '100%' }}
+                  style={{ width: '100%', padding: '10px', border: '1.8px solid #ccc', borderRadius: '8px' }}
                 />
               </div>
             </div>
@@ -590,6 +591,7 @@ const ProductModal = ({ product, onClose, onSave, onDelete, loading = false }) =
                 className="cancel" 
                 onClick={() => setIsEditing(false)}
                 disabled={loading}
+                style={{ background: '#dc3545', color: 'white', padding: '10px 20px', borderRadius: '8px', border: 'none' }}
               >
                 Cancelar
               </button>
@@ -597,6 +599,7 @@ const ProductModal = ({ product, onClose, onSave, onDelete, loading = false }) =
                 type="submit" 
                 className="save"
                 disabled={loading}
+                style={{ background: '#007bff', color: 'white', padding: '10px 20px', borderRadius: '8px', border: 'none' }}
               >
                 {loading ? 'Guardando...' : 'Guardar Cambios'}
               </button>
