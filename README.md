@@ -26,8 +26,17 @@ Ser un negocio que esté a la vanguardia de la industria de artículos personali
 
 ---
 
-## 🚀 Tecnologías Utilizadas
 
+
+## ✍️ Uso de Nomenclaturas para Nombramiento
+
+En este proyecto se utiliza la convención **PascalCase** para el nombramiento de archivos, funciones y variables, con el objetivo de mantener un estilo consistente, legible y profesional en todo el código fuente.
+
+Se especifica en este documento que la nomenclatura oficial adoptada para la aplicación es **PascalCase**, por lo tanto, debe ser utilizada en todo el proyecto para nombrar componentes, archivos, funciones y variables.
+
+
+
+## 🚀 Tecnologías Utilizadas:
 Este proyecto fue desarrollado utilizando el **Stack MERN** con **Vite** como herramienta de desarrollo, incluyendo las siguientes tecnologías y dependencias:
 
 ### Backend (Node.js + Express + MongoDB)
