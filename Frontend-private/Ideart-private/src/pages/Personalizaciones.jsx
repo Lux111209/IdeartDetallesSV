@@ -94,7 +94,7 @@ export default function Personalizaciones() {
         }
         
         const data = await response.json();
-        console.log('✅ Datos del API:', data);
+        console.log('Datos del API:', data);
         
         let productos = [];
         if (data.success && Array.isArray(data.data)) {
@@ -131,17 +131,17 @@ export default function Personalizaciones() {
         }
         
       } catch (apiError) {
-        console.warn('⚠️ Usando datos de prueba:', apiError.message);
+        console.warn('Usando datos de prueba:', apiError.message);
         setUsingFallback(true);
         setSolicitudes(solicitudesDePrueba);
-        toast.info('📝 Mostrando solicitudes de ejemplo');
+        toast.info('Mostrando solicitudes de ejemplo');
       }
       
     } catch (error) {
-      console.error('❌ Error:', error);
+      console.error('Error:', error);
       setUsingFallback(true);
       setSolicitudes(solicitudesDePrueba);
-      toast.warning('⚠️ Error de conexión - Mostrando datos de ejemplo');
+      toast.warning('Error de conexión - Mostrando datos de ejemplo');
     } finally {
       setLoading(false);
     }
@@ -217,17 +217,17 @@ export default function Personalizaciones() {
   const aceptarSolicitud = () => {
     if (!seleccionado) return;
     
-    const precio = prompt(`💰 Ingresa el precio para la solicitud de ${seleccionado.clienteNombre}:\n\nProducto: ${seleccionado.productType}\nCantidad: ${seleccionado.cantidad}`);
+    const precio = prompt(`Ingresa el precio para la solicitud de ${seleccionado.clienteNombre}:\n\nProducto: ${seleccionado.productType}\nCantidad: ${seleccionado.cantidad}`);
     
     if (precio === null) return; // Usuario canceló
     
     if (!precio || isNaN(precio) || Number(precio) <= 0) {
-      alert('❌ Por favor ingresa un precio válido mayor a 0');
+      alert('Por favor ingresa un precio válido mayor a 0');
       return;
     }
 
     // Confirmar acción
-    const confirmar = confirm(`✅ ¿Confirmas aceptar la solicitud de ${seleccionado.clienteNombre} con precio $${precio}?`);
+    const confirmar = confirm(`¿Confirmas aceptar la solicitud de ${seleccionado.clienteNombre} con precio $${precio}?`);
     
     if (!confirmar) return;
 
@@ -238,17 +238,17 @@ export default function Personalizaciones() {
   const rechazarSolicitud = () => {
     if (!seleccionado) return;
     
-    const motivo = prompt(`❌ Motivo del rechazo para ${seleccionado.clienteNombre}:\n\n(Este mensaje será enviado al cliente)`);
+    const motivo = prompt(`Motivo del rechazo para ${seleccionado.clienteNombre}:\n\n(Este mensaje será enviado al cliente)`);
     
     if (motivo === null) return; // Usuario canceló
     
     if (!motivo.trim()) {
-      alert('❌ Debes escribir un motivo para rechazar la solicitud');
+      alert('Debes escribir un motivo para rechazar la solicitud');
       return;
     }
 
     // Confirmar acción
-    const confirmar = confirm(`❌ ¿Confirmas rechazar la solicitud de ${seleccionado.clienteNombre}?\n\nMotivo: ${motivo}`);
+    const confirmar = confirm(`¿Confirmas rechazar la solicitud de ${seleccionado.clienteNombre}?\n\nMotivo: ${motivo}`);
     
     if (!confirmar) return;
 
@@ -270,15 +270,15 @@ export default function Personalizaciones() {
       );
       
       const mensaje = accion === 'aceptado' 
-        ? `✅ Solicitud de ${seleccionado.clienteNombre} ACEPTADA con precio $${datosAdicionales.precioOfertado}`
-        : `❌ Solicitud de ${seleccionado.clienteNombre} RECHAZADA`;
+        ? `Solicitud de ${seleccionado.clienteNombre} ACEPTADA con precio $${datosAdicionales.precioOfertado}`
+        : `Solicitud de ${seleccionado.clienteNombre} RECHAZADA`;
       
       toast.success(mensaje);
       alert(mensaje);
       cerrarPanel();
       
     } catch (error) {
-      console.error('❌ Error:', error);
+      console.error('Error:', error);
       const mensajeError = `Error al ${accion === 'aceptado' ? 'aceptar' : 'rechazar'} solicitud: ${error.message}`;
       toast.error(mensajeError);
       alert(mensajeError);
@@ -322,7 +322,7 @@ export default function Personalizaciones() {
         {/* Lista de solicitudes */}
         <div className="lista-solicitudes">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h2>🎨 Solicitudes de personalización ({solicitudes.length})</h2>
+            <h2>Solicitudes de personalización ({solicitudes.length})</h2>
             <button 
               onClick={cargarSolicitudes}
               disabled={loading}
@@ -350,7 +350,7 @@ export default function Personalizaciones() {
               marginBottom: '20px',
               border: '1px solid #ffeaa7'
             }}>
-              ⚠️ <strong>Modo demo:</strong> Mostrando solicitudes de ejemplo. Conecta la base de datos para ver datos reales.
+              <strong>Modo demo:</strong> Mostrando solicitudes de ejemplo. Conecta la base de datos para ver datos reales.
             </div>
           )}
 
@@ -410,13 +410,13 @@ export default function Personalizaciones() {
             <p className="rol">Cliente</p>
             
             <div style={{ background: '#f8f9fa', padding: '15px', borderRadius: '8px', marginBottom: '10px' }}>
-              <p><strong>📦 Producto:</strong> {seleccionado.productType}</p>
-              <p><strong>📝 Personalización:</strong> {seleccionado.textPersonalized}</p>
-              <p><strong>🔢 Cantidad:</strong> {seleccionado.cantidad} unidades</p>
-              <p><strong>✉️ Email:</strong> {seleccionado.clienteEmail}</p>
-              {seleccionado.color && <p><strong>🎨 Color:</strong> {seleccionado.color}</p>}
-              {seleccionado.size && <p><strong>📏 Tamaño:</strong> {seleccionado.size}</p>}
-              {seleccionado.price && <p><strong>💵 Precio base:</strong> ${seleccionado.price}</p>}
+              <p><strong>Producto:</strong> {seleccionado.productType}</p>
+              <p><strong>Personalización:</strong> {seleccionado.textPersonalized}</p>
+              <p><strong>Cantidad:</strong> {seleccionado.cantidad} unidades</p>
+              <p><strong>Email:</strong> {seleccionado.clienteEmail}</p>
+              {seleccionado.color && <p><strong>Color:</strong> {seleccionado.color}</p>}
+              {seleccionado.size && <p><strong>Tamaño:</strong> {seleccionado.size}</p>}
+              {seleccionado.price && <p><strong>Precio base:</strong> ${seleccionado.price}</p>}
             </div>
             
             {seleccionado.descripcion && (
@@ -437,7 +437,7 @@ export default function Personalizaciones() {
                   cursor: procesando ? 'not-allowed' : 'pointer'
                 }}
               >
-                {procesando ? '⏳ Procesando...' : ' Aceptar'}
+                {procesando ? 'Procesando...' : ' Aceptar'}
               </button>
               
               <button 
@@ -457,7 +457,7 @@ export default function Personalizaciones() {
                   cursor: procesando ? 'not-allowed' : 'pointer'
                 }}
               >
-                {procesando ? '⏳ Procesando...' : ' Rechazar'}
+                {procesando ? 'Procesando...' : ' Rechazar'}
               </button>
             </div>
           </div>

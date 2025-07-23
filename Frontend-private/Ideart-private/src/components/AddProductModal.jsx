@@ -16,6 +16,7 @@ const AddProductModal = ({ onClose, onAdd }) => {
     imagePreview: null,
   });
 
+  // Estado para manejar errores de validación
   const [errors, setErrors] = useState({});
 
   const validate = () => {
@@ -33,6 +34,7 @@ const AddProductModal = ({ onClose, onAdd }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Maneja los cambios en los campos del formulario
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));

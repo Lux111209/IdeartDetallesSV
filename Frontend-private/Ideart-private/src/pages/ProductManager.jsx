@@ -476,7 +476,7 @@ const ProductManager = () => {
                     onClick={() => setShowAddModal(true)}
                     style={{
                       padding: "10px 20px",
-                      background: "#28a745",
+                      background: "#2b703bff",
                       color: "white",
                       border: "none",
                       borderRadius: "4px",

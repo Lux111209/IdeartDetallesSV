@@ -453,6 +453,7 @@ export default function Providers() {
                 </label>
 
                 {/* Campo de email */}
+                // Campo de correo electrónico
                 <label>
                   Email:
                   <input

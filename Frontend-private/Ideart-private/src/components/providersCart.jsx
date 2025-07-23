@@ -1,5 +1,6 @@
 import React from "react";
 
+// Componente EmpleadoCard para mostrar una tarjeta de empleado
 export default function EmpleadoCard({ empleado, onSelect }) {
   return (
     <div className="card" onClick={() => onSelect(empleado)}>

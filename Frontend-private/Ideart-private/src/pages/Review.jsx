@@ -113,7 +113,7 @@ const Review = () => {
   // Manejar la aceptación de una reseña
   const handleAcceptReview = () => {
     if (selectedReview) {
-      alert('✅ Reseña aceptada');
+      alert('Reseña aceptada');
       setSelectedReview(null);
     }
   };
@@ -220,7 +220,7 @@ const Review = () => {
             ) : (
               // Mostrar mensaje cuando no hay reseñas de productos
               <div className="empty-reviews">
-                <div className="empty-icon">📦</div>
+                <div className="empty-icon"></div>
                 <h4>No hay reseñas de productos</h4>
               </div>
             )}
@@ -242,7 +242,7 @@ const Review = () => {
             ) : (
               // Mostrar mensaje cuando no hay reseñas generales
               <div className="empty-reviews">
-                <div className="empty-icon">🏢</div>
+                <div className="empty-icon"></div>
                 <h4>No hay reseñas generales</h4>
               </div>
             )}
@@ -268,9 +268,9 @@ const Review = () => {
                 <div className="modal-body">
                   <p>{selectedReview.content}</p>
                   <div className="review-meta">
-                    <strong>👤 Autor:</strong> {selectedReview.author}<br/>
-                    <strong>📅 Fecha:</strong> {selectedReview.date}<br/>
-                    <strong>🏷️ Tipo:</strong> {selectedReview.type === 'product' ? 'Producto' : 'General'}<br/>
+                    <strong>Autor:</strong> {selectedReview.author}<br/>
+                    <strong>Fecha:</strong> {selectedReview.date}<br/>
+                    <strong>Tipo:</strong> {selectedReview.type === 'product' ? 'Producto' : 'General'}<br/>
                     <strong>⭐ Calificación:</strong> {selectedReview.rating}/5 estrellas
                   </div>
                 </div>
@@ -278,10 +278,10 @@ const Review = () => {
                 {/* Botones de acción del modal */}
                 <div className="modal-actions">
                   <button className="accept-btn" onClick={handleAcceptReview}>
-                    ✅ Aceptar
+                    Aceptar
                   </button>
                   <button className="reject-btn" onClick={handleRejectReview}>
-                    🗑️ Eliminar
+                    Eliminar
                   </button>
                 </div>
               </div>
