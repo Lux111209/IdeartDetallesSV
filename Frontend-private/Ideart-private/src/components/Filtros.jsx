@@ -1,6 +1,7 @@
 import React from "react";
 
 
+// Componente Filtros para filtrar productos por categoría, precio y color
 const Filtros = ({ category, setCategory, minPrice, setMinPrice, maxPrice, setMaxPrice, color, setColor }) => {
   return (
     <div className="filters-panel">

@@ -9,7 +9,7 @@ import Review from "./pages/Review";
 import Personalizaciones from "./pages/Personalizaciones"; // Importa el componente Personalizaciones
 import Pedidos from "./pages/Pedidos.jsx"; // Importa el componente Pedidos
 
-
+// Importa los componentes necesarios
 
 function App() {
   

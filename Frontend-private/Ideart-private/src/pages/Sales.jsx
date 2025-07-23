@@ -59,13 +59,13 @@ const pedidosDePrueba = [
 
 export default function Pedidos() {
   // Estados principales del componente
-  const [pedidos, setPedidos] = useState([]); // Lista de todos los pedidos
-  const [loading, setLoading] = useState(true); // Estado de carga
-  const [error, setError] = useState(null); // Mensajes de error
-  const [seleccionado, setSeleccionado] = useState(null); // Pedido seleccionado actualmente
-  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false); // Mostrar modal de confirmación
-  const [accionPendiente, setAccionPendiente] = useState(""); // Qué acción se va a ejecutar
-  const [usingFallback, setUsingFallback] = useState(false); // Si está usando datos de prueba
+  const [pedidos, setPedidos] = useState([]); 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); 
+  const [seleccionado, setSeleccionado] = useState(null); 
+  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false); 
+  const [accionPendiente, setAccionPendiente] = useState(""); 
+  const [usingFallback, setUsingFallback] = useState(false); 
 
   // Cargar pedidos cuando el componente se monta
   useEffect(() => {
@@ -223,7 +223,7 @@ export default function Pedidos() {
 
       // Actualizar el pedido seleccionado
       setSeleccionado(prev => ({ ...prev, estado: 'completado' }));
-      toast.success("✅ Pedido marcado como completado");
+      toast.success("Pedido marcado como completado");
       cerrarPanel();
       
     } catch (error) {
@@ -259,7 +259,7 @@ export default function Pedidos() {
 
       // Actualizar el pedido seleccionado
       setSeleccionado(prev => ({ ...prev, estado: 'cancelado' }));
-      toast.info("❌ Pedido cancelado");
+      toast.info("Pedido cancelado");
       cerrarPanel();
       
     } catch (error) {
@@ -295,7 +295,7 @@ export default function Pedidos() {
 
       // Actualizar el pedido seleccionado
       setSeleccionado(prev => ({ ...prev, estadoPago: 'pagado' }));
-      toast.success("💰 Pago confirmado");
+      toast.success("Pago confirmado");
       
     } catch (error) {
       console.error('Error marcando como pagado:', error);
@@ -465,7 +465,7 @@ Generado el: ${new Date().toLocaleString()}
               marginBottom: '20px',
               border: '1px solid #ffeaa7'
             }}>
-              ⚠️ <strong>Modo de prueba:</strong> API no disponible. Mostrando datos de ejemplo.
+              <strong>Modo de prueba:</strong> API no disponible. Mostrando datos de ejemplo.
             </div>
           )}
 

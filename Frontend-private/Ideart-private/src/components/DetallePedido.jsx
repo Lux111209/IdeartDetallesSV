@@ -14,8 +14,8 @@ const DetallePedido = ({
     switch (estado) {
       case 'completado': return '#9C0D38'; // Color actualizado
       case 'cancelado': return '#CF5375'; // Color actualizado
-      case 'en_proceso': return '#DABBF5'; // Color actualizado
-      case 'pendiente': return '#DDF0FF'; // Color actualizado
+      case 'en_proceso': return '#993d55ff'; // Color actualizado
+      case 'pendiente': return '#af224cff'; // Color actualizado
       default: return '#DDF0FF'; // Color actualizado
     }
   };
@@ -25,7 +25,7 @@ const DetallePedido = ({
       case 'pagado': return '#9C0D38'; // Color actualizado
       case 'pendiente': return '#DABBF5'; // Color actualizado
       case 'rechazado': return '#CF5375'; // Color actualizado
-      default: return '#DDF0FF'; // Color actualizado
+      default: return '#2a455aff'; // Color actualizado
     }
   };
 
@@ -201,7 +201,7 @@ const DetallePedido = ({
               transition: 'all 0.3s ease'
             }}
           >
-            {loading ? '⏳ Procesando...' : '✅ Completar Pedido'}
+            {loading ? 'Procesando...' : 'Completar Pedido'}
           </button>
         )}
 
@@ -223,7 +223,7 @@ const DetallePedido = ({
               transition: 'all 0.3s ease'
             }}
           >
-            {loading ? '⏳ Procesando...' : '❌ Cancelar Pedido'}
+            {loading ? 'Procesando...' : 'Cancelar Pedido'}
           </button>
         )}
 
@@ -245,7 +245,7 @@ const DetallePedido = ({
               transition: 'all 0.3s ease'
             }}
           >
-            {loading ? '⏳ Procesando...' : '💰 Marcar como Pagado'}
+            {loading ? 'Procesando...' : 'Marcar como Pagado'}
           </button>
         )}
 
@@ -266,7 +266,7 @@ const DetallePedido = ({
             transition: 'all 0.3s ease'
           }}
         >
-          {loading ? '⏳ Generando...' : '📥 Descargar Comprobante'}
+          {loading ? '⏳ Generando...' : 'Descargar Comprobante'}
         </button>
 
         {/* Información del estado actual */}
@@ -289,10 +289,10 @@ const DetallePedido = ({
             )}
             <li>Descargar comprobante en cualquier momento</li>
             {pedido.estado === 'completado' && (
-              <li style={{ color: '#9C0D38' }}>✅ Pedido completado - Solo descarga disponible</li>
+              <li style={{ color: '#9C0D38' }}> Pedido completado - Solo descarga disponible</li>
             )}
             {pedido.estado === 'cancelado' && (
-              <li style={{ color: '#CF5375' }}>❌ Pedido cancelado - Solo descarga disponible</li>
+              <li style={{ color: '#CF5375' }}> Pedido cancelado - Solo descarga disponible</li>
             )}
           </ul>
         </div>

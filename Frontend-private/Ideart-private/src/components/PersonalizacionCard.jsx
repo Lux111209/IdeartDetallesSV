@@ -1,5 +1,6 @@
 import "../css/Personalizaciones.css";
 
+// Componente PersonalizacionCard para mostrar una tarjeta de personalización
 export default function PersonalizacionCard({ item, onClick, activo }) {
   return (
     <div

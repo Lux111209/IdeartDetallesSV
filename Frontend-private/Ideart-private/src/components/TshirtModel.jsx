@@ -4,6 +4,7 @@ import { Canvas, useLoader } from "@react-three/fiber";
 import { OrbitControls, Stage, Html } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
+// Componente para cargar y mostrar el modelo 3D de la camiseta
 const Model = ({ color }) => {
   const gltf = useLoader(GLTFLoader, "/models/tshirt.glb");
 
@@ -18,6 +19,7 @@ const Model = ({ color }) => {
   return <primitive object={gltf.scene} scale={1.5} />;
 };
 
+// Componente principal que renderiza el modelo de camiseta
 const TshirtModel = ({ color }) => {
   return (
     <div className="model-canvas-container">
