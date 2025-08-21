@@ -1,6 +1,6 @@
 .reviews-page {
   padding: 2rem;
-  background-color: #e6f0e6;
+  background-color: #ffffff;
   min-height: 100vh;
   box-sizing: border-box;
 }
@@ -8,7 +8,7 @@
 /* Contenedor de cada sección */
 .review-section h2 {
   font-weight: bold;
-  color: #2f4932;
+  color: #000000;
   font-size: 1.5rem;
   text-align: left;
   align-self: flex-start;
@@ -17,7 +17,7 @@
 
 .review-section p {
   margin-bottom: 1.5rem;
-  color: #e3e3e3;
+  color: #000000;
   font-family: 'Segoe UI', sans-serif;
 }
 
@@ -45,8 +45,8 @@
 
 /* TARJETAS DE RESEÑA */
 .review-card {
-  background-color: #40684d;
-  color: white;
+  background-color: #FFCCDA;
+  color: #000000;
   padding: 1rem;
   border-radius: 8px;
   margin: 30px 0 1rem;
@@ -79,7 +79,7 @@
 
 .review-date {
   font-size: 0.85rem;
-  color: #ccc;
+  color: #313131;
 }
 
 .review-rating {
@@ -109,11 +109,6 @@
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
-.review-footer span:hover {
-  transform: scale(1.15);
-  color: #ffd700;
-}
-
 /* Modal */
 .review-modal {
   position: fixed;
@@ -132,8 +127,8 @@
 
 /* Formulario */
 .review-form {
-  background-color: #40684d;
-  color: white;
+  background-color: #DDF0FF;
+  color: rgb(0, 0, 0);
   padding: 2rem;
   border-radius: 12px;
   width: 100%;
@@ -164,8 +159,8 @@
 
 .review-form input:focus,
 .review-form textarea:focus {
-  outline: 2px solid #7bc48f;
-  background-color: #f7fff9;
+  outline: 2px solid #c7e7ff;
+  background-color: #f0f5ff;
   color: #333;
 }
 
@@ -186,7 +181,7 @@
   border-radius: 6px;
   border: none;
   cursor: pointer;
-  background-color: #5da574;
+  background-color: #DABBF6;
   color: white;
   font-weight: bold;
   transition: background-color 0.3s ease;
@@ -195,7 +190,7 @@
 }
 
 .form-buttons button:hover {
-  background-color: #4b8c62;
+  background-color: #9169b4;
 }
 
 .form-buttons button:disabled {
@@ -224,7 +219,7 @@ button {
   border-radius: 6px;
   border: none;
   cursor: pointer;
-  background-color: #5da574;
+  background-color: #DABBF6;
   color: white;
   font-weight: bold;
   font-family: 'Segoe UI', sans-serif;
@@ -233,7 +228,7 @@ button {
 }
 
 button:hover {
-  background-color: #4b8c62;
+  background-color: #9169b4;
 }
 
 .toast-container {

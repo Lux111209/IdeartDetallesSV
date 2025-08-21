@@ -3,7 +3,8 @@
 }
 
 .contact-banner {
-    background-color: #a3cfb3;
+    margin-top: 20px;
+    background-color: #A93A60;
     text-align: center;
     padding: 30px 60px;
     color: white;
@@ -22,7 +23,7 @@
 }
 
 .contact-banner .underline {
-    width: 60px;
+    width: 100px;
     height: 4px;
     background: white;
     margin: 10px auto;
@@ -43,7 +44,8 @@
     flex-direction: column;
     gap: 15px;
     font-family: 'Segoe UI', sans-serif;
-
+    margin-left: 30px;
+    color: black;
 }
 
 .form-row {
@@ -56,9 +58,10 @@
     padding: 12px;
     border: none;
     border-radius: 25px;
-    background-color: #a3cfb3;
-    color: white;
+    background-color: #DDF0FF;
+    color: black;
     transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    font-size: 15px;
     font-family: 'Segoe UI', sans-serif;
 
 }
@@ -68,20 +71,19 @@
 .contact-form input:focus,
 .contact-form textarea:focus {
     transform: scale(1.02);
-    background-color: #92be9f;
     outline: none;
 }
 
 .contact-form button {
     align-self: flex-start;
-    background-color: #a3cfb3;
+    background-color: #DDF0FF;
     border: none;
     padding: 10px 20px;
     border-radius: 20px;
-    color: white;
+    color: rgb(0, 0, 0);
     cursor: pointer;
     font-family: 'Segoe UI', sans-serif;
-
+    font-size: 15px;
     transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
 }
 
@@ -98,8 +100,8 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background-color: #7dac83;
-    color: white;
+    background-color: rgba(218, 187, 246, 0.4);
+    color: rgb(0, 0, 0);
     padding: 20px;
     border-radius: 16px;
     margin-bottom: 15px;
@@ -111,6 +113,7 @@
     line-height: 1.2;
     font-size: 1.2rem;
     font-family: 'Segoe UI', sans-serif;
+    margin-right: 20px;
 
 }
 

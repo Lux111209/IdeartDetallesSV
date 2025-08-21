@@ -22,7 +22,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #e8f5e9;
+  background-color: rgba(221, 240, 255, 0.4);
   border-radius: 12px;
   padding: 1rem;
   margin-bottom: 2rem;
@@ -56,7 +56,7 @@
 
 .cart-item {
   display: flex;
-  background: #e6f4ea;
+  background-color: rgba(221, 240, 255, 0.4);
   border-radius: 12px;
   padding: 1rem;
   align-items: center;
@@ -190,7 +190,7 @@
 }
 
 .order-summary {
-  background-color: #eaf3ec;
+  background-color: rgba(221, 240, 255, 0.4);
   padding: 1.5rem;
   border-radius: 10px;
   border: 1px solid #cfdacf;

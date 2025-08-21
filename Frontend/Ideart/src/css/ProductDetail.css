@@ -4,16 +4,21 @@ body {
 
 .product-detail-container {
   padding: 2rem;
-  background-color: #f0f9f4;
+  background-color: #f9f3ff;
 }
 
 .back-button {
   margin-bottom: 1rem;
-  background: none;
-  border: none;
   font-size: 1rem;
   cursor: pointer;
-  color: #333;
+  color: #000000;
+  background-color: #DABBF6;
+}
+
+.back-button:hover {
+  color: white;
+  background-color: #9169b4;
+  transition: background-color 0.3s ease;
 }
 
 .product-detail-card {

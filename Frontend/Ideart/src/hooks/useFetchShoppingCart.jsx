@@ -1,120 +1,137 @@
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
+import useFetchShoppingCart from "../hooks/useFetchShoppingCart";
+import "../css/ShoppingCart.css";
 
-const API_URL = "http://localhost:5000/api/carrito";
+const ShoppingCart = () => {
+  const { carritos, loading, error, getAll, update, remove, setCarritos } =
+    useFetchShoppingCart();
 
-// Hook para obtener y manejar el carrito de compras
-const useFetchShoppingCart = () => {
-  const [carritos, setCarritos] = useState([]);
-  const [carrito, setCarrito] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [total, setTotal] = useState(0);
 
-  // Obtener todos los carritos
-  const getAll = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(API_URL);
-      if (!res.ok) throw new Error("Error al obtener los carritos");
-      const data = await res.json();
-      setCarritos(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Obtener un carrito por ID
-  const getById = useCallback(async (id) => {
-    if (!id) return;
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/${id}`);
-      if (!res.ok) throw new Error("Error al obtener el carrito");
-      const data = await res.json();
-      setCarrito(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Crear un carrito
-  const create = useCallback(async (carritoData) => {
-    setLoading(true);
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(carritoData),
-      });
-      if (!res.ok) throw new Error("Error al crear el carrito");
-      const data = await res.json();
-      return data;
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Actualizar un carrito
-  const update = useCallback(async (id, carritoData) => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(carritoData),
-      });
-      if (!res.ok) throw new Error("Error al actualizar el carrito");
-      const data = await res.json();
-      return data;
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Eliminar un carrito
-  const remove = useCallback(async (id) => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Error al eliminar el carrito");
-      const data = await res.json();
-      return data;
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
+  // Cargar carrito desde el backend
   useEffect(() => {
     getAll();
   }, [getAll]);
 
-  return {
-    carritos,
-    carrito,
-    loading,
-    error,
-    getAll,
-    getById,
-    create,
-    update,
-    remove,
-    setCarritos,
+  // Calcular total
+  useEffect(() => {
+    if (carritos.length > 0) {
+      let suma = 0;
+      carritos.forEach((cart) => {
+        cart.products.forEach((p) => {
+          suma += (p.idProducts?.price || 0) * p.cantidad;
+        });
+      });
+      setTotal(suma);
+    } else {
+      setTotal(0);
+    }
+  }, [carritos]);
+
+  const handleRemoveItem = async (cartId, prodId) => {
+    // Actualizar el carrito en la BD
+    const cart = carritos.find((c) => c._id === cartId);
+    const newProducts = cart.products.filter(
+      (p) => p.idProducts?._id !== prodId
+    );
+
+    await update(cartId, { products: newProducts });
+    getAll();
   };
+
+  const handleClearCart = async (cartId) => {
+    await update(cartId, { products: [] });
+    getAll();
+  };
+
+  if (loading) return <p>Cargando carrito...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+  return (
+    <div className="cart-page">
+      <h2 className="cart-title">🛒 Mi Carrito</h2>
+
+      {carritos.length === 0 || carritos[0].products.length === 0 ? (
+        <p className="empty-cart">Tu carrito está vacío</p>
+      ) : (
+        <>
+          {/* Resumen de carrito */}
+          <div className="cart-summary">
+            <span>Total de artículos: {carritos[0].products.length}</span>
+            <span>
+              Total a pagar: <strong>${total}</strong>
+            </span>
+            <button
+              className="clear-cart-btn"
+              onClick={() => handleClearCart(carritos[0]._id)}
+            >
+              Vaciar carrito
+            </button>
+          </div>
+
+          {/* Lista de productos */}
+          <div className="cart-list">
+            {carritos[0].products.map((p, i) => (
+              <div key={i} className="cart-item">
+                <div className="product-image">
+                  <img
+                    src={p.idProducts?.image || "/placeholder.png"}
+                    alt={p.idProducts?.name || "Producto"}
+                  />
+                </div>
+
+                <div className="product-details">
+                  <h3>{p.idProducts?.name || "Producto sin nombre"}</h3>
+                  <div className="price-stock">
+                    Precio: ${p.idProducts?.price || 0}
+                    <span className="stock">
+                      Stock: {p.idProducts?.stock || 0}
+                    </span>
+                  </div>
+                  <div className="quantity-control">
+                    <button className="quantity-btn">-</button>
+                    <span>{p.cantidad}</span>
+                    <button className="quantity-btn">+</button>
+                  </div>
+                </div>
+
+                <div className="product-actions">
+                  <div className="action-buttons">
+                    <button
+                      className="remove-btn"
+                      onClick={() =>
+                        handleRemoveItem(carritos[0]._id, p.idProducts?._id)
+                      }
+                    >
+                      ❌ Eliminar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Order summary */}
+          <div className="order-summary">
+            <h3>Resumen de compra</h3>
+            <div className="summary-line">
+              <span>Subtotal</span>
+              <span>${total}</span>
+            </div>
+            <div className="summary-line">
+              <span>Envío</span>
+              <span>Gratis</span>
+            </div>
+            <div className="summary-line">
+              <strong>Total</strong>
+              <strong>${total}</strong>
+            </div>
+            <button className="buy-now">Comprar Ahora</button>
+          </div>
+        </>
+      )}
+    </div>
+  );
 };
 
-export default useFetchShoppingCart;
+export default ShoppingCart;

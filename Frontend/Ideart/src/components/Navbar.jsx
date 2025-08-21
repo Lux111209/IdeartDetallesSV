@@ -17,11 +17,11 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <ul className="nav-links">
-        <li className={path === '/category' ? 'active' : ''}>
-          <Link to="/category" className="nav-item">Categorías</Link>
-        </li>
         <li className={path === '/home' ? 'active' : ''}>
           <Link to="/home" className="nav-item">Inicio</Link>
+        </li>
+         <li className={path === '/category' ? 'active' : ''}>
+          <Link to="/category" className="nav-item">Categorías</Link>
         </li>
         <li className={path === '/products' ? 'active' : ''}>
           <Link to="/products" className="nav-item">Productos</Link>

@@ -30,7 +30,7 @@
 
 
 .promotions {
-  background-color: #4f7351;
+  background-color: #A93A60;
   padding: 30px;
   border-radius: 12px;
   margin: 20px;
@@ -61,7 +61,7 @@
   width: 220px;
   height: 300px;
   background: white;
-  color: #2f4932;
+  color: #69233B;
   border-radius: 12px;
   padding: 10px;
   flex-shrink: 0;
@@ -140,7 +140,7 @@
 
 
 .trust {
-  background-color: #d5efe0;
+  background-color: #facfdd;
   padding: 30px;
   border-radius: 12px;
   margin: 20px;

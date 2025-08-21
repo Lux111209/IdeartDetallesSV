@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #4b6c53;
+  background-color: #A93A60;
   padding: 0.8rem 2rem;
   color: white;
   font-family: 'Segoe UI', sans-serif;
@@ -38,7 +38,7 @@
 
 .nav-links li:hover {
   transform: scale(1.1);
-  color: #c9dbc8;
+  color: #f1ddf1;
 }
 
 .nav-links li .nav-item {

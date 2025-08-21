@@ -1,51 +1,43 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import '../css/Profile.css';
 
-// Este componente es un modal (ventana emergente) para cambiar la contraseña
 const ChangePasswordModal = ({ user, setUser, onClose }) => {
-  const [current, setCurrent] = useState('');  // Contraseña actual que escribe el usuario
-  const [newPass, setNewPass] = useState('');  // Nueva contraseña que quiere poner
-  const [error, setError] = useState('');      // Mensaje de error si algo sale mal
+  const { t } = useTranslation();
+  const [current, setCurrent] = useState('');
+  const [newPass, setNewPass] = useState('');
+  const [error, setError] = useState('');
 
-  // Función que se ejecuta cuando el usuario le da clic a "Actualizar"
   const handleChange = () => {
-    if (current !== '12345678') { // Simulamos la contraseña actual (esto luego será dinámico con backend)
-      setError('Contraseña actual incorrecta.');
+    if (current !== '12345678') {
+      setError(t('currentPasswordIncorrect'));
       return;
     }
 
-    // Si todo está bien, actualizamos (por ahora solo ocultamos la contraseña con asteriscos)
     setUser({ ...user, password: '********' });
-    onClose(); // Cerramos el modal
+    onClose();
   };
 
   return (
-    <div className="modal-overlay"> {/* Fondo semitransparente */}
-      <div className="modal-box">   {/* Caja blanca del modal */}
-        <h3>Cambiar Contraseña</h3>
-
-        {/* Input para la contraseña actual */}
+    <div className="modal-overlay">
+      <div className="modal-box">
+        <h3>{t('changePassword')}</h3>
         <input
           type="password"
-          placeholder="Actual"
+          placeholder={t('current')}
           value={current}
           onChange={(e) => setCurrent(e.target.value)}
         />
-
-        {/* Input para la nueva contraseña */}
         <input
           type="password"
-          placeholder="Nueva"
+          placeholder={t('new')}
           value={newPass}
           onChange={(e) => setNewPass(e.target.value)}
         />
-
-        {/* Si hay error, lo mostramos */}
         {error && <p className="error">{error}</p>}
-
         <div className="modal-actions">
-          <button onClick={handleChange}>Actualizar</button>
-          <button onClick={onClose}>Cancelar</button>
+          <button onClick={handleChange}>{t('update')}</button>
+          <button onClick={onClose}>{t('cancel')}</button>
         </div>
       </div>
     </div>

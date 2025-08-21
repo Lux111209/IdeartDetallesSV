@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoutes";
 import PublicRoute from "./routes/PublicRoutes";
 
-// Importación de páginas
+// Páginas
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -17,13 +17,16 @@ import CheckoutInfo from "./pages/Checkout";
 import CreditForm from "./pages/CreditForm";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import Language from "./pages/Language";
 import EmailVerification from "./pages/EmailVerification";
-import RecoverPassword from "./pages/RecoverPassword"; // <-- Importa la página de recuperación
+import RecoverPassword from "./pages/RecoverPassword";
+import Favorites from "./pages/Favorites";
+import Promotions from "./pages/Promotions";
 
 function App() {
   return (
     <Routes>
-      {/* Ruta raíz pública que redirige al registro */}
+      {/* Redirección inicial */}
       <Route path="/" element={<Navigate to="/register" replace />} />
 
       {/* Rutas protegidas */}
@@ -37,22 +40,25 @@ function App() {
         <Route path="/checkout" element={<CheckoutInfo />} />
         <Route path="/creditform" element={<CreditForm />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/language" element={<Language />} />
         <Route path="/reviews" element={<Reviews />} />
+        <Route path="/favorites" element={<Favorites />} />
+        <Route path="/promotions" element={<Promotions />} />
       </Route>
 
       {/* Rutas públicas */}
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/recover-password" element={<RecoverPassword />} /> {/* <-- Aquí */}
+        <Route path="/recover-password" element={<RecoverPassword />} />
       </Route>
 
-      {/* Rutas accesibles sin sesión */}
+      {/* Rutas accesibles a todos */}
       <Route path="/contactus" element={<ContactUs />} />
-      <Route path="/terminos" element={<TermsAndConditions />} />
+      <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
       <Route path="/verificar-email" element={<EmailVerification />} />
 
-      {/* Ruta catch-all */}
+      {/* Ruta por defecto */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

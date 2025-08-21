@@ -17,7 +17,7 @@ const StarRating = ({ rating, onChange }) => {
           style={{
             cursor: 'pointer',
             color: star <= (hovered || rating) ? '#FFD700' : '#ccc',
-            fill: star <= (hovered || rating) ? '#FFD700' : 'none',
+            fill: star <= (hovered || rating) ? '#ffc400ff' : 'none',
             transition: 'transform 0.2s, color 0.2s',
             transform: star === hovered ? 'scale(1.2)' : 'scale(1)'
           }}

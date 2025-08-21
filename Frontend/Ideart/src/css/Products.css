@@ -1,6 +1,6 @@
 .product-page,
 .category-page {
-  background-color: #e8f3ec;
+  background-color: #ffffff;
   padding: 20px;
 }
 
@@ -15,7 +15,7 @@
 .categories h3,
 .products h3 {
   font-weight: bold;
-  color: #2f4932;
+  color: #000000;
   font-size: 1.5rem;
   text-align: left;
   align-self: flex-start;
@@ -82,7 +82,7 @@
 .product-card p {
   margin: 0;
   font-weight: 500;
-  color: #2f4932;
+  color: #000000;
   font-size: 0.95rem;
   line-height: 1.4;
   text-align: center;

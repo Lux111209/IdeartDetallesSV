@@ -7,18 +7,39 @@ import {
   Tag,
   ChevronRight,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import TopBar from "../components/TopBar";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../css/Setting.css";
 
 const Settings = () => {
-  // Estado para controlar si las notificaciones están activadas o no
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const navigate = useNavigate();
 
-  // Función para activar o desactivar las notificaciones
+  // Activa/desactiva notificaciones y reproduce un beep
   const toggleNotifications = () => {
     setNotificationsEnabled(!notificationsEnabled);
+
+    if (!notificationsEnabled) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(600, ctx.currentTime); // Frecuencia del beep
+        gainNode.gain.setValueAtTime(0.1, ctx.currentTime); // Volumen bajo
+
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        oscillator.start();
+        oscillator.stop(ctx.currentTime + 0.2); // Duración del beep
+      } catch (error) {
+        console.error("Error reproduciendo sonido:", error);
+      }
+    }
   };
 
   return (
@@ -26,12 +47,12 @@ const Settings = () => {
       <TopBar />
       <Navbar />
 
-      {/* Contenedor principal de la página de configuración */}
+      {/* Contenedor principal */}
       <div className="settings-page">
         <div className="settings-box">
           <h2 className="settings-header">Configuración</h2>
 
-          {/* Opción para activar/desactivar notificaciones */}
+          {/* Activar notificaciones */}
           <div className="settings-item">
             <div className="icon-label">
               <Bell size={24} />
@@ -43,20 +64,27 @@ const Settings = () => {
                 checked={notificationsEnabled}
                 onChange={toggleNotifications}
               />
-              <span className="slider"></span> {/* Estilo del switch */}
+              <span className="slider"></span>
             </label>
           </div>
 
-          {/* Opciones navegables (solo visuales aquí, sin funcionalidad) */}
-          <div className="settings-item clickable">
+          {/* Idioma → Language.jsx */}
+          <div
+            className="settings-item clickable"
+            onClick={() => navigate("/language")}
+          >
             <div className="icon-label">
               <Globe size={24} />
               <span>Idioma</span>
             </div>
-            <ChevronRight size={20} /> {/* Icono flecha para indicar navegación */}
+            <ChevronRight size={20} />
           </div>
 
-          <div className="settings-item clickable">
+          {/* Privacidad y Seguridad */}
+          <div
+            className="settings-item clickable"
+            onClick={() => navigate("/terms-and-conditions")}
+          >
             <div className="icon-label">
               <ShieldCheck size={24} />
               <span>Privacidad y Seguridad</span>
@@ -64,7 +92,11 @@ const Settings = () => {
             <ChevronRight size={20} />
           </div>
 
-          <div className="settings-item clickable">
+          {/* Favoritos */}
+          <div
+            className="settings-item clickable"
+            onClick={() => navigate("/favorites")}
+          >
             <div className="icon-label">
               <Star size={24} />
               <span>Favoritos</span>
@@ -72,7 +104,11 @@ const Settings = () => {
             <ChevronRight size={20} />
           </div>
 
-          <div className="settings-item clickable">
+          {/* Promociones */}
+          <div
+            className="settings-item clickable"
+            onClick={() => navigate("/promotions")}
+          >
             <div className="icon-label">
               <Tag size={24} />
               <span>Promociones y Ofertas</span>

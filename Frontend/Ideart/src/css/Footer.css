@@ -1,5 +1,5 @@
 .footer {
-  background-color: #c2ded1;
+  background-color: #A93A60;
   text-align: center;
   padding: 2rem 1rem;
   font-family: 'Segoe UI', sans-serif;
@@ -10,6 +10,7 @@
   font-weight: bold;
   font-size: 1.2rem;
   margin-bottom: 0.5rem;
+  color: #fff;
 }
 
 .footer p {
@@ -18,6 +19,7 @@
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  color: #fff;
 }
 
 .footer .social-icons {
@@ -29,7 +31,7 @@
 }
 
 .footer .social-icons a {
-  color: #333;
+  color: #ffffff;
   transition: transform 0.2s ease;
 }
 

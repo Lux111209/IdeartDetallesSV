@@ -31,7 +31,7 @@ const ReviewCard = ({ resena, onUpdate }) => {
 
       <div className="review-rating">
         {[...Array(5)].map((_, i) => (
-          <Star key={i} size={16} fill={i < resena.ranking ? '#ffc107' : 'none'} color="#ffc107" />
+          <Star key={i} size={16} fill={i < resena.ranking ? '#ffc400ff' : 'none'} color="#ffc400ff" />
         ))}
       </div>
 
@@ -39,7 +39,7 @@ const ReviewCard = ({ resena, onUpdate }) => {
 
       <div className="review-footer">
         <span onClick={handleUtil} style={{ cursor: 'pointer' }}>
-          <ThumbsUp size={16} fill={clicked ? '#ffd700' : 'none'} color={clicked ? '#ffd700' : 'white'} />
+          <ThumbsUp size={16} fill={clicked ? '#ffc400ff' : 'none'} color={clicked ? '#ffc400ff' : 'black'} />
           {util}
         </span>
       </div>

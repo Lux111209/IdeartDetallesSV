@@ -1,0 +1,73 @@
+.language-page {
+  background-color: #e3f2fd;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+}
+
+.language-box {
+  background: #fff;
+  width: 100%;
+  max-width: 700px;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+}
+
+.language-header {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* GRID para tarjetas */
+.language-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Tarjeta de idioma */
+.language-card {
+  background: #fafafa;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.language-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.language-card.selected {
+  border-color: #b23b5c;
+  background: #fff0f5;
+}
+
+/* Icono bandera */
+.language-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Nombre del idioma */
+.language-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.language-card.selected .language-text {
+  font-weight: bold;
+  color: #b23b5c;
+}

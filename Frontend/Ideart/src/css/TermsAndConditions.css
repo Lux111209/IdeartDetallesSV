@@ -1,6 +1,6 @@
 .terms-main {
   padding: 2rem;
-  background-color: #e9f5eb;
+  background-color: #ffffff;
   min-height: 100vh;
   box-sizing: border-box;
 }
@@ -8,8 +8,8 @@
 .terms-container {
   max-width: 900px;
   margin: 0 auto;
-  background-color: #375f45;
-  color: #f1f5f9;
+  background-color: #DDF0FF;
+  color: #000000;
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -19,7 +19,7 @@
 .terms-title {
   font-size: 2rem;
   font-weight: bold;
-  color: #d1fae5;
+  color: #000000;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -27,18 +27,18 @@
 }
 
 .icon {
-  color: #86efac;
+  color: #000000;
   flex-shrink: 0;
 }
 
 .terms-text {
   font-size: 1rem;
   line-height: 1.6;
-  color: #e0f2f1;
+  color: #000000;
 }
 
 .terms-link {
-  color: #93c5fd;
+  color: #003b7e;
   text-decoration: underline;
   cursor: pointer;
 }
