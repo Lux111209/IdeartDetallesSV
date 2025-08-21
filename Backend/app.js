@@ -1,3 +1,4 @@
+// server.js
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -18,13 +19,14 @@ import userRoutes from "./src/routes/User.js";
 import ventasRoutes from "./src/routes/venta.js";
 import personalizedProducts from "./src/routes/personalizedProducts.js";
 import passwordRecovery from "./src/routes/passswordRecovery.js";
+import dashboardRoutes from "./src/routes/dashboardRoutes.js"; // NUEVO
 
 // Crear instancia de Express
 const app = express();
 
-// Configuración CORS global
+// Configuración CORS
 app.use(cors({
-  origin: config.FRONTEND_URL || "http://localhost:5173", // Ajusta según frontend real
+  origin: config.FRONTEND_URL || "http://localhost:5173",
   credentials: true,
 }));
 
@@ -57,53 +59,30 @@ app.use("/api/users", userRoutes);
 app.use("/api/ventas", ventasRoutes);
 app.use("/api/personalized-products", personalizedProducts);
 
-// Ruta para verificar autenticación (ejemplo de ruta protegida)
+// NUEVA RUTA PARA DASHBOARD
+app.use("/api/dashboard", dashboardRoutes);
+
+// Ruta de verificación de token
 app.get("/api/auth/verify", (req, res) => {
   try {
     const { authToken } = req.cookies;
-    if (!authToken) {
-      return res.status(401).json({
-        success: false,
-        message: "No token found",
-      });
-    }
+    if (!authToken) return res.status(401).json({ success: false, message: "No token found" });
 
     const decoded = jsonwebtoken.verify(authToken, config.JWT.SECRET);
-
-    res.json({
-      success: true,
-      user: {
-        id: decoded.id,
-        userType: decoded.userType,
-      },
-    });
+    res.json({ success: true, user: { id: decoded.id, userType: decoded.userType } });
   } catch (error) {
-    res.status(401).json({
-      success: false,
-      message: "Invalid token",
-    });
+    res.status(401).json({ success: false, message: "Invalid token" });
   }
 });
 
-// Ruta de prueba para saber que la API está viva
-app.get("/", (req, res) => {
-  res.send("API funcionando");
-});
-
+app.get("/", (req, res) => res.send("API funcionando"));
 app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "OK",
-    message: "Servidor funcionando correctamente",
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-  });
+  res.status(200).json({ status: "OK", message: "Servidor funcionando correctamente", timestamp: new Date().toISOString(), uptime: process.uptime() });
 });
 
 // ------------------ INICIO DEL SERVIDOR ------------------ //
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`Servidor escuchando en http://localhost:${PORT}`));
 
 export default app;
