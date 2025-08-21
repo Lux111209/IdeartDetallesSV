@@ -5,25 +5,10 @@ import Footer from "../components/Footer";
 import "../css/Favorites.css";
 
 const Favorites = () => {
-  // Simulación de productos guardados desde el carrito
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
-    // Simulamos obtener los productos guardados
-    const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [
-      {
-        id: 1,
-        nombre: "Caja de Regalo Personalizada",
-        precio: "$15.99",
-        imagen: "https://via.placeholder.com/150",
-      },
-      {
-        id: 2,
-        nombre: "Ramo de Flores Artesanales",
-        precio: "$22.50",
-        imagen: "https://via.placeholder.com/150",
-      },
-    ];
+    const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setFavorites(savedFavorites);
   }, []);
 
@@ -37,11 +22,11 @@ const Favorites = () => {
 
           {favorites.length > 0 ? (
             <div className="favorites-grid">
-              {favorites.map((item) => (
-                <div key={item.id} className="favorite-card">
-                  <img src={item.imagen} alt={item.nombre} />
-                  <h3>{item.nombre}</h3>
-                  <p>{item.precio}</p>
+              {favorites.map((item, i) => (
+                <div key={i} className="favorite-card">
+                  <img src={item.image} alt={item.title} />
+                  <h3>{item.title}</h3>
+                  <p>${Number(item.price).toFixed(2)}</p>
                   <button className="btn-buy">Comprar Ahora</button>
                 </div>
               ))}

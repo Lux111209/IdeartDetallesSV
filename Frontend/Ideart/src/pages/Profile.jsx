@@ -9,15 +9,13 @@ import "../css/Profile.css";
 
 // Componente para mostrar el perfil del usuario
 const Profile = () => {
-  const userId = localStorage.getItem("userId");
-
-  const { user, setUser, loading, error, updateUser } = useUser(userId);
+  // ✅ Ahora ya no leemos localStorage manualmente
+  const { user, setUser, loading, error, updateUser } = useUser();
 
   if (loading) return <p>Cargando...</p>;
   if (error) return <p>Error: {error}</p>;
   if (!user) return <p>No se encontró usuario</p>;
 
-  // Renderiza la página de perfils
   return (
     <>
       <TopBar />

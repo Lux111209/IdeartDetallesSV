@@ -1,137 +1,105 @@
-import React, { useEffect, useState } from "react";
-import useFetchShoppingCart from "../hooks/useFetchShoppingCart";
-import "../css/ShoppingCart.css";
+import { useState, useCallback } from "react";
 
-const ShoppingCart = () => {
-  const { carritos, loading, error, getAll, update, remove, setCarritos } =
-    useFetchShoppingCart();
+const API_URL = "http://localhost:5000/api/carrito";
 
-  const [total, setTotal] = useState(0);
+const useFetchShoppingCart = () => {
+  const [carritos, setCarritos] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Cargar carrito desde el backend
-  useEffect(() => {
-    getAll();
-  }, [getAll]);
-
-  // Calcular total
-  useEffect(() => {
-    if (carritos.length > 0) {
-      let suma = 0;
-      carritos.forEach((cart) => {
-        cart.products.forEach((p) => {
-          suma += (p.idProducts?.price || 0) * p.cantidad;
-        });
-      });
-      setTotal(suma);
-    } else {
-      setTotal(0);
+  // ===== OBTENER TODOS LOS CARRITOS =====
+  const getAll = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetch(API_URL, { credentials: "include" });
+      if (!res.ok) throw new Error(`Error al obtener carritos (${res.status})`);
+      const data = await res.json();
+      setCarritos(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-  }, [carritos]);
+  }, []);
 
-  const handleRemoveItem = async (cartId, prodId) => {
-    // Actualizar el carrito en la BD
-    const cart = carritos.find((c) => c._id === cartId);
-    const newProducts = cart.products.filter(
-      (p) => p.idProducts?._id !== prodId
-    );
-
-    await update(cartId, { products: newProducts });
-    getAll();
+  // ===== CREAR UN NUEVO CARRITO =====
+  const create = async (newCarrito) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCarrito),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const errMsg = await res.json();
+        throw new Error(errMsg.message || "Error al crear carrito");
+      }
+      await getAll();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleClearCart = async (cartId) => {
-    await update(cartId, { products: [] });
-    getAll();
+  // ===== ACTUALIZAR UN CARRITO =====
+  const update = async (id, updatedCarrito) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedCarrito),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const errMsg = await res.json();
+        throw new Error(errMsg.message || "Error al actualizar carrito");
+      }
+      await getAll();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (loading) return <p>Cargando carrito...</p>;
-  if (error) return <p>Error: {error}</p>;
+  // ===== ELIMINAR UN CARRITO =====
+  const remove = async (id) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetch(`${API_URL}/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const errMsg = await res.json();
+        throw new Error(errMsg.message || "Error al eliminar carrito");
+      }
+      await getAll();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  return (
-    <div className="cart-page">
-      <h2 className="cart-title">🛒 Mi Carrito</h2>
-
-      {carritos.length === 0 || carritos[0].products.length === 0 ? (
-        <p className="empty-cart">Tu carrito está vacío</p>
-      ) : (
-        <>
-          {/* Resumen de carrito */}
-          <div className="cart-summary">
-            <span>Total de artículos: {carritos[0].products.length}</span>
-            <span>
-              Total a pagar: <strong>${total}</strong>
-            </span>
-            <button
-              className="clear-cart-btn"
-              onClick={() => handleClearCart(carritos[0]._id)}
-            >
-              Vaciar carrito
-            </button>
-          </div>
-
-          {/* Lista de productos */}
-          <div className="cart-list">
-            {carritos[0].products.map((p, i) => (
-              <div key={i} className="cart-item">
-                <div className="product-image">
-                  <img
-                    src={p.idProducts?.image || "/placeholder.png"}
-                    alt={p.idProducts?.name || "Producto"}
-                  />
-                </div>
-
-                <div className="product-details">
-                  <h3>{p.idProducts?.name || "Producto sin nombre"}</h3>
-                  <div className="price-stock">
-                    Precio: ${p.idProducts?.price || 0}
-                    <span className="stock">
-                      Stock: {p.idProducts?.stock || 0}
-                    </span>
-                  </div>
-                  <div className="quantity-control">
-                    <button className="quantity-btn">-</button>
-                    <span>{p.cantidad}</span>
-                    <button className="quantity-btn">+</button>
-                  </div>
-                </div>
-
-                <div className="product-actions">
-                  <div className="action-buttons">
-                    <button
-                      className="remove-btn"
-                      onClick={() =>
-                        handleRemoveItem(carritos[0]._id, p.idProducts?._id)
-                      }
-                    >
-                      ❌ Eliminar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Order summary */}
-          <div className="order-summary">
-            <h3>Resumen de compra</h3>
-            <div className="summary-line">
-              <span>Subtotal</span>
-              <span>${total}</span>
-            </div>
-            <div className="summary-line">
-              <span>Envío</span>
-              <span>Gratis</span>
-            </div>
-            <div className="summary-line">
-              <strong>Total</strong>
-              <strong>${total}</strong>
-            </div>
-            <button className="buy-now">Comprar Ahora</button>
-          </div>
-        </>
-      )}
-    </div>
-  );
+  return {
+    carritos,
+    loading,
+    error,
+    getAll,
+    create,
+    update,
+    remove,
+    setCarritos,
+  };
 };
 
-export default ShoppingCart;
+export default useFetchShoppingCart;

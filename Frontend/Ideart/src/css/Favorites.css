@@ -2,54 +2,70 @@
   background: #fdf6f9;
   min-height: 100vh;
   padding: 2rem;
-}
-
-.favorites-box {
-  max-width: 900px;
-  margin: auto;
-  background: #ffffff;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.favorites-header {
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  font-weight: bold;
-  text-align: center;
-}
-
-.favorites-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* ajusta cantidad de cards según espacio */
+  gap: 2rem; /* espacio entre cards */
+  justify-items: center;
 }
 
 .favorite-card {
+  position: relative;
   background: #ffe9f3;
-  padding: 1rem;
+  padding: 1rem 1rem 1.5rem 1rem;
   border-radius: 1rem;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%; /* para que el grid controle el ancho */
+  max-width: 220px; /* para que no se estire demasiado */
 }
 
 .favorite-card img {
   width: 100%;
-  border-radius: 0.5rem;
+  max-height: 180px;
+  object-fit: contain;
+  border-radius: 0.75rem;
   margin-bottom: 1rem;
+  background: #fff;
 }
 
 .favorite-card h3 {
   font-size: 1.2rem;
   margin: 0.5rem 0;
+  color: #333;
+}
+
+.favorite-card p {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #d63384;
+  margin-bottom: 1rem;
 }
 
 .btn-buy {
   background: #d63384;
   color: #fff;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 0.5rem;
   cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn-buy:hover {
+  background: #b12b6a;
+  transform: translateY(-2px);
+}
+
+.favorite-card::before {
+  content: "❤";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.2rem;
+  color: #d63384;
 }

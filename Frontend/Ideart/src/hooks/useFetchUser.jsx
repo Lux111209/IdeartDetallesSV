@@ -3,26 +3,44 @@ import { useState, useEffect } from "react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/users";
 
-// Hook para manejar el usuario
-const useUser = (userId) => {
+const useUser = (userId = null) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!userId) {
-      setLoading(false);
-      setError("No hay ID de usuario");
-      return;
-    }
-    // Función para obtener el usuario por ID
     const fetchUser = async () => {
       setLoading(true);
+      setError("");
+
       try {
-        const res = await fetch(`${API_URL}/${userId}`);
+        let id = userId;
+
+        // ✅ Si no hay userId, lo pedimos al backend con /auth/verify
+        if (!id) {
+          const verifyRes = await fetch("http://localhost:5000/api/auth/verify", {
+            credentials: "include", // importante para cookies
+          });
+          const verifyData = await verifyRes.json();
+
+          if (!verifyRes.ok || !verifyData.success) {
+            throw new Error(verifyData.message || "Usuario no autenticado");
+          }
+
+          id = verifyData.user.id;
+          localStorage.setItem("userId", id); // guardar para futuras sesiones
+        }
+
+        // ✅ Ahora pedimos el usuario
+        const res = await fetch(`${API_URL}/${id}`, {
+          credentials: "include",
+        });
         const data = await res.json();
+
         if (!res.ok) throw new Error(data.message || "Error al obtener usuario");
-        setUser(data.user);
+
+        // Algunos controladores devuelven { user: {...} }, otros {...}
+        setUser(data.user || data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -30,13 +48,10 @@ const useUser = (userId) => {
       }
     };
 
-    // Llamar a la función para obtener el usuario
     fetchUser();
   }, [userId]);
 
-  const updateUser = (updatedUser) => {
-    setUser(updatedUser);
-  };
+  const updateUser = (updatedUser) => setUser(updatedUser);
 
   return { user, setUser, loading, error, updateUser };
 };

@@ -1,25 +1,18 @@
 import User from "../models/User.js";
 import mongoose from "mongoose";
 
-// Objeto que agrupa los métodos del controlador
 const userController = {};
 
 // ===== OBTENER TODOS LOS USUARIOS =====
 userController.getUsers = async (req, res) => {
   try {
-    // Buscar todos los usuarios en la base de datos
-    const users = await User.find();
-    
-    // Respuesta exitosa con la lista de usuarios
-    res.status(200).json(users);
+    const users = await User.find().select("-password"); // nunca devolver password
+    res.status(200).json({ users });
   } catch (err) {
-    // Log del error para debugging
     console.error("Error al obtener usuarios:", err);
-    
-    // Error del servidor
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Error del servidor al obtener usuarios",
-      error: err.message 
+      error: err.message,
     });
   }
 };
@@ -27,29 +20,24 @@ userController.getUsers = async (req, res) => {
 // ===== OBTENER USUARIO POR ID =====
 userController.getUserById = async (req, res) => {
   try {
-    // Validar que el ID sea un ObjectId válido de MongoDB
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "ID de usuario inválido" });
     }
 
-    // Buscar el usuario por ID en la base de datos
-    const user = await User.findById(req.params.id);
-    
-    // Verificar si el usuario existe
+    const user = await User.findById(id).select("-password");
+
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
-    
-    // Respuesta exitosa con el usuario encontrado
+
     res.status(200).json({ user });
   } catch (err) {
-    // Log del error para debugging
     console.error("Error al buscar usuario:", err);
-    
-    // Error del servidor
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Error del servidor al buscar usuario",
-      error: err.message 
+      error: err.message,
     });
   }
 };
@@ -57,105 +45,92 @@ userController.getUserById = async (req, res) => {
 // ===== ACTUALIZAR USUARIO =====
 userController.updateUser = async (req, res) => {
   try {
+    const { id } = req.params;
     const { correo, nombre, fechaNacimiento, favoritos } = req.body;
 
-    // Validar que el ID del usuario sea un ObjectId válido
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "ID de usuario inválido" });
     }
 
-    // Crear objeto de actualización solo con campos enviados
     const updateData = {};
 
-    // Validar y agregar nombre si se envía
-    if (nombre) {
-      // Verificar que el nombre no esté vacío después de quitar espacios
-      if (nombre.trim().length === 0) {
+    // Nombre
+    if (nombre !== undefined) {
+      if (typeof nombre !== "string" || nombre.trim().length === 0) {
         return res.status(400).json({ message: "El nombre no puede estar vacío" });
       }
       updateData.nombre = nombre.trim();
     }
 
-    // Validar y agregar correo si se envía
-    if (correo) {
-      // Validar formato básico de email con regex
+    // Correo
+    if (correo !== undefined) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(correo.trim())) {
         return res.status(400).json({ message: "Formato de correo inválido" });
       }
-      
-      // Verificar que no exista otro usuario con el mismo correo
-      const existeCorreo = await User.findOne({ 
+
+      const existeCorreo = await User.findOne({
         correo: correo.trim().toLowerCase(),
-        _id: { $ne: req.params.id } // Excluir el usuario actual de la búsqueda
+        _id: { $ne: id },
       });
+
       if (existeCorreo) {
         return res.status(409).json({ message: "Ya existe otro usuario con este correo" });
       }
-      
-      // Normalizar correo: minúsculas y sin espacios
+
       updateData.correo = correo.trim().toLowerCase();
     }
 
-    // Validar y agregar fecha de nacimiento si se envía
-    if (fechaNacimiento) {
+    // Fecha de nacimiento
+    if (fechaNacimiento !== undefined) {
       const fecha = new Date(fechaNacimiento);
-      
-      // Verificar que la fecha sea válida
+
       if (isNaN(fecha.getTime())) {
         return res.status(400).json({ message: "Fecha de nacimiento inválida" });
       }
-      
-      // Verificar que la fecha no sea futura
+
       if (fecha > new Date()) {
         return res.status(400).json({ message: "La fecha de nacimiento no puede ser futura" });
       }
-      
+
       updateData.fechaNacimiento = fecha;
     }
 
-    // Validar y agregar favoritos si se envían
+    // Favoritos
     if (favoritos !== undefined) {
-      // Verificar que favoritos sea un array
       if (!Array.isArray(favoritos)) {
         return res.status(400).json({ message: "Los favoritos deben ser un array" });
       }
-      
-      // Validar que cada favorito sea un ObjectId válido
-      for (let favorito of favoritos) {
+
+      for (const favorito of favoritos) {
         if (!mongoose.Types.ObjectId.isValid(favorito)) {
           return res.status(400).json({ message: "ID de favorito inválido" });
         }
       }
-      
+
       updateData.favoritos = favoritos;
     }
 
-    // Actualizar el usuario en la base de datos
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true } // Retornar el documento actualizado
-    );
+    // Actualizar usuario
+    const updatedUser = await User.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+      select: "-password",
+    });
 
-    // Verificar si el usuario existe
     if (!updatedUser) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
-    // Respuesta exitosa con el usuario actualizado
-    res.status(200).json({ 
+    res.status(200).json({
       message: "Usuario actualizado exitosamente",
-      user: updatedUser 
+      user: updatedUser,
     });
   } catch (err) {
-    // Log del error para debugging
     console.error("Error al actualizar usuario:", err);
-    
-    // Error del servidor
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Error del servidor al actualizar usuario",
-      error: err.message 
+      error: err.message,
     });
   }
 };
@@ -163,29 +138,24 @@ userController.updateUser = async (req, res) => {
 // ===== ELIMINAR USUARIO =====
 userController.deleteUser = async (req, res) => {
   try {
-    // Validar que el ID sea un ObjectId válido de MongoDB
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "ID de usuario inválido" });
     }
 
-    // Eliminar el usuario de la base de datos
-    const deletedUser = await User.findByIdAndDelete(req.params.id);
-    
-    // Verificar si el usuario existía
+    const deletedUser = await User.findByIdAndDelete(id);
+
     if (!deletedUser) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
-    
-    // Respuesta exitosa confirmando la eliminación
+
     res.status(200).json({ message: "Usuario eliminado exitosamente" });
   } catch (err) {
-    // Log del error para debugging
     console.error("Error al eliminar usuario:", err);
-    
-    // Error del servidor
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Error del servidor al eliminar usuario",
-      error: err.message 
+      error: err.message,
     });
   }
 };

@@ -3,9 +3,10 @@ import userController from "../controllers/userController.js";
 
 const router = express.Router();
 
-router.get("/", userController.getUsers);
-router.get("/:id", userController.getUserById);
-router.put("/:id", userController.updateUser);
-router.delete("/:id", userController.deleteUser);
+// CRUD de usuarios
+router.get("/", userController.getUsers);        // Obtener todos
+router.get("/:id", userController.getUserById);  // Obtener por ID
+router.put("/:id", userController.updateUser);   // Actualizar
+router.delete("/:id", userController.deleteUser); // Eliminar
 
 export default router;

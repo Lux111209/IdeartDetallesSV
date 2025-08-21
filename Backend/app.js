@@ -19,28 +19,31 @@ import ventasRoutes from "./src/routes/venta.js";
 import personalizedProducts from "./src/routes/personalizedProducts.js";
 import passwordRecovery from "./src/routes/passswordRecovery.js";
 
-// Crear instancia de Express
 const app = express();
 
-// Configuración CORS global
+// ==================== CORS ====================
+const allowedOrigins = [config.FRONTEND_URL || "http://localhost:5173"];
+
 app.use(cors({
-  origin: config.FRONTEND_URL || "http://localhost:5173", // Ajusta según frontend real
-  credentials: true,
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // permitir requests sin origin (ej: Postman)
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = `La política de CORS bloqueó la solicitud desde: ${origin}`;
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true, // ✅ permitir cookies
 }));
 
-// Middleware para analizar JSON y datos URL-encoded
+// ==================== MIDDLEWARES ====================
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-
-// Middleware para parsear cookies
 app.use(cookieParser());
+app.use("/uploads", express.static("uploads")); // servir imágenes/archivos
 
-// Servir archivos estáticos (por ejemplo, imágenes subidas)
-app.use("/uploads", express.static("uploads"));
-
-// ------------------ RUTAS ------------------ //
-
-// Rutas públicas
+// ==================== RUTAS ====================
+// Públicas
 app.use("/api/login", loginRoutes);
 app.use("/api/logout", logoutRoutes);
 app.use("/api/registerUser", registerUserRoutes);
@@ -48,7 +51,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/ofertas", ofertasRoutes);
 app.use("/api/passwordRecovery", passwordRecovery);
 
-// Rutas protegidas
+// Protegidas (requieren token/cookie en el futuro si aplicas middleware)
 app.use("/api/carrito", carritoRoutes);
 app.use("/api/proveedores", provedoresRoutes);
 app.use("/api/resenasgeneral", resenasGeneralRoutes);
@@ -57,53 +60,27 @@ app.use("/api/users", userRoutes);
 app.use("/api/ventas", ventasRoutes);
 app.use("/api/personalized-products", personalizedProducts);
 
-// Ruta para verificar autenticación (ejemplo de ruta protegida)
+// ==================== AUTH CHECK ====================
 app.get("/api/auth/verify", (req, res) => {
   try {
     const { authToken } = req.cookies;
-    if (!authToken) {
-      return res.status(401).json({
-        success: false,
-        message: "No token found",
-      });
-    }
+    if (!authToken) return res.status(401).json({ success: false, message: "No token found" });
 
     const decoded = jsonwebtoken.verify(authToken, config.JWT.SECRET);
-
-    res.json({
-      success: true,
-      user: {
-        id: decoded.id,
-        userType: decoded.userType,
-      },
-    });
+    res.json({ success: true, user: { id: decoded.id, userType: decoded.userType } });
   } catch (error) {
-    res.status(401).json({
-      success: false,
-      message: "Invalid token",
-    });
+    res.status(401).json({ success: false, message: "Invalid token" });
   }
 });
 
-// Ruta de prueba para saber que la API está viva
-app.get("/", (req, res) => {
-  res.send("API funcionando");
-});
+// ==================== SALUD ====================
+app.get("/", (req, res) => res.send("API funcionando 🚀"));
+app.get("/health", (req, res) =>
+  res.status(200).json({ status: "OK", timestamp: new Date().toISOString() })
+);
 
-app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "OK",
-    message: "Servidor funcionando correctamente",
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-  });
-});
-
-// ------------------ INICIO DEL SERVIDOR ------------------ //
-
+// ==================== SERVIDOR ====================
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`✅ Servidor escuchando en http://localhost:${PORT}`));
 
 export default app;
