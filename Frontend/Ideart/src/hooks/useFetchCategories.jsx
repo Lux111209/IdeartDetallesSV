@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 
 // Hook para obtener y construir las categorías de productos
-const API_URL = "http://localhost:5000/api/products";
+const API_URL = "https://ideartdetallessv-1.onrender.com/api/products";
 
 const useFetchCategories = () => {
   const [categories, setCategories] = useState([]);

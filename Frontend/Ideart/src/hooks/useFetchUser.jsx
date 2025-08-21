@@ -1,7 +1,7 @@
 // hooks/useFetchUser.jsx
 import { useState, useEffect } from "react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/users";
+const API_URL = import.meta.env.VITE_API_URL || "https://ideartdetallessv-1.onrender.com/api/users";
 
 const useUser = (userId = null) => {
   const [user, setUser] = useState(null);
@@ -18,7 +18,7 @@ const useUser = (userId = null) => {
 
         // ✅ Si no hay userId, lo pedimos al backend con /auth/verify
         if (!id) {
-          const verifyRes = await fetch("http://localhost:5000/api/auth/verify", {
+          const verifyRes = await fetch("https://ideartdetallessv-1.onrender.com/api/auth/verify", {
             credentials: "include", // importante para cookies
           });
           const verifyData = await verifyRes.json();

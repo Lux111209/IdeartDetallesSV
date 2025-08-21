@@ -10,7 +10,7 @@ const Review = () => {
   const [loading, setLoading] = useState(true);
 
   // URL base de la API
-  const API_URL = 'http://localhost:5000/api';
+  const API_URL = 'https://ideartdetallessv-1.onrender.com/api';
 
   // Función para obtener datos del servidor
   const fetchData = async (url) => {

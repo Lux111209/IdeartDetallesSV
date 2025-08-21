@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 
-const API_URL = 'http://localhost:5000/api/productPersonalized';
+const API_URL = 'https://ideartdetallessv-1.onrender.com/api/productPersonalized';
 
 const useFetchPersonalizedProducts = () => {
   const [items, setItems] = useState([]);    // Lista de productos personalizados

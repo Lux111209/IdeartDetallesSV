@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 // Hook para obtener y manejar las reseñas generales
-const API_URL = 'http://localhost:5000/api/resenasgeneral';
+const API_URL = 'https://ideartdetallessv-1.onrender.com/api/resenasgeneral';
 
 export const useFetchGeneralReview = () => {
   const [resenas, setResenas] = useState([]);

@@ -92,7 +92,7 @@ const CheckNumberForm = () => {
     setSuccessMessage(null);
 
     try {
-      const url = 'http://localhost:5000/api/passwordRecovery/verifyCode';
+      const url = 'https://ideartdetallessv-1.onrender.com/api/passwordRecovery/verifyCode';
 
       const response = await fetch(url, {
         method: 'POST',

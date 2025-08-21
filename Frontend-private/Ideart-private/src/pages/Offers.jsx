@@ -23,7 +23,7 @@ const OfferManager = () => {
   });
 
   // URL base para las peticiones a la API
-  const API_URL = 'http://localhost:5000/api';
+  const API_URL = 'https://ideartdetallessv-1.onrender.com/api';
 
   // Cargar datos cuando el componente se monta
   useEffect(() => {
