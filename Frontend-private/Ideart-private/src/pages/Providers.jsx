@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import EmpleadoCard from "../components/providersCart";
 import Sidebar from "../components/Sidebar"; 
-import "../css/Providers.css";
+import "../css/providers.css";
 
 // URL base para las peticiones a la API
 const API_BASE_URL = "http://localhost:5000/api";
