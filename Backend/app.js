@@ -1,3 +1,4 @@
+// server.js
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -18,12 +19,14 @@ import userRoutes from "./src/routes/User.js";
 import ventasRoutes from "./src/routes/venta.js";
 import personalizedProducts from "./src/routes/personalizedProducts.js";
 import passwordRecovery from "./src/routes/passswordRecovery.js";
+import dashboardRoutes from "./src/routes/dashboardRoutes.js"; // NUEVO
 
 const app = express();
 
 // ==================== CORS ====================
 const allowedOrigins = [config.FRONTEND_URL || "http://localhost:5173"];
 
+// Configuración CORS
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true); // permitir requests sin origin (ej: Postman)
@@ -37,6 +40,11 @@ app.use(cors({
 }));
 
 // ==================== MIDDLEWARES ====================
+  origin: config.FRONTEND_URL || "http://localhost:5173",
+  credentials: true,
+}));
+
+// Middleware para analizar JSON y datos URL-encoded
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
@@ -61,14 +69,21 @@ app.use("/api/ventas", ventasRoutes);
 app.use("/api/personalized-products", personalizedProducts);
 
 // ==================== AUTH CHECK ====================
+// NUEVA RUTA PARA DASHBOARD
+app.use("/api/dashboard", dashboardRoutes);
+
+// Ruta de verificación de token
 app.get("/api/auth/verify", (req, res) => {
   try {
     const { authToken } = req.cookies;
     if (!authToken) return res.status(401).json({ success: false, message: "No token found" });
+    if (!authToken) return res.status(401).json({ success: false, message: "No token found" });
 
     const decoded = jsonwebtoken.verify(authToken, config.JWT.SECRET);
     res.json({ success: true, user: { id: decoded.id, userType: decoded.userType } });
+    res.json({ success: true, user: { id: decoded.id, userType: decoded.userType } });
   } catch (error) {
+    res.status(401).json({ success: false, message: "Invalid token" });
     res.status(401).json({ success: false, message: "Invalid token" });
   }
 });
@@ -78,9 +93,14 @@ app.get("/", (req, res) => res.send("API funcionando 🚀"));
 app.get("/health", (req, res) =>
   res.status(200).json({ status: "OK", timestamp: new Date().toISOString() })
 );
+app.get("/", (req, res) => res.send("API funcionando"));
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK", message: "Servidor funcionando correctamente", timestamp: new Date().toISOString(), uptime: process.uptime() });
+});
 
 // ==================== SERVIDOR ====================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Servidor escuchando en http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Servidor escuchando en http://localhost:${PORT}`));
 
 export default app;

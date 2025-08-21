@@ -4,11 +4,19 @@ import { Canvas, useLoader } from "@react-three/fiber";
 import { OrbitControls, Stage, Html } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
+// Función simple para validar un color hexadecimal o string CSS
+const isValidColor = (color) => {
+  if (!color) return false;
+  const s = new Option().style;
+  s.color = color;
+  return s.color !== '';
+};
+
 // Componente para cargar y mostrar el modelo 3D de la camiseta
 const Model = ({ color }) => {
   const gltf = useLoader(GLTFLoader, "/models/tshirt.glb");
 
-  if (color) {
+  if (color && isValidColor(color)) {
     gltf.scene.traverse((child) => {
       if (child.isMesh && child.material) {
         child.material.color.set(color);
