@@ -1,6 +1,6 @@
 // src/routes/Ofertas.js
 import express from "express";
-import OfertasController from "../controllers/ofertasController.js";
+import OfertasController from "../controllers/OfertasController.js";
 
 const router = express.Router();
 

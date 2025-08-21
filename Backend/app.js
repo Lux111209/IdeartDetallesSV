@@ -36,13 +36,11 @@ app.use(cors({
     }
     return callback(null, true);
   },
-  credentials: true, // ✅ permitir cookies
+  credentials: true, 
 }));
 
 // ==================== MIDDLEWARES ====================
-  origin: config.FRONTEND_URL || "http://localhost:5173",
-  credentials: true,
-}));
+// (Eliminado bloque inválido)
 
 // Middleware para analizar JSON y datos URL-encoded
 app.use(express.json({ limit: "10mb" }));
