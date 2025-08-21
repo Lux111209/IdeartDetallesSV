@@ -1,26 +1,52 @@
-import mongoose from "mongoose";
+import app from "./app.js";
+import "./database.js";
 import { config } from "./config.js";
 
-// Conectar a la base de datos
-mongoose.connect(config.DB.URI);
+async function main() {
+  try {
+    const port = config.PORT || 5000;
 
-// -------- Comprobar que todo funciona ----------
+    app.listen(port, () => {
+      console.log(`🚀 Servidor activo en puerto ${port}`);
+      console.log(`🌐 URL local: http://localhost:${port}`);
+      console.log(`❤️ IdeArts check: http://localhost:${port}/idearts`);
+      console.log(`📊 Entorno: ${config.NODE_ENV}`);
+      console.log(`🔗 Frontend URL configurado: ${config.FRONTEND_URL}`);
 
-const connection = mongoose.connection;
+      if (config.CLOUDINARY.CLOUD_NAME) {
+        console.log(`☁️ Cloudinary: ${config.CLOUDINARY.CLOUD_NAME}`);
+      }
 
-// Ver si funciona la conexión
-connection.once("open", () => {
-  console.log("✅ Base de datos conectada exitosamente");
+      console.log("===================================");
+      console.log("🎯 ¡Servidor listo para recibir peticiones!");
+      console.log("===================================");
+    });
+
+  } catch (error) {
+    console.error("❌ Error al iniciar el servidor:", error);
+    process.exit(1);
+  }
+}
+
+// Manejo de errores globales
+process.on("uncaughtException", (error) => {
+  console.error("❌ Excepción no capturada:", error);
+  process.exit(1);
 });
 
-// Ver si se desconectó
-connection.on("disconnected", () => {
-  console.log("❌ Base de datos desconectada");
+process.on("unhandledRejection", (reason) => {
+  console.error("❌ Promesa rechazada no manejada:", reason);
+  process.exit(1);
 });
 
-// Ver si hay un error
-connection.on("error", (error) => {
-  console.log("❌ Error en la conexión a la base de datos:", error.message);
+process.on("SIGTERM", () => {
+  console.log("📴 Recibida señal SIGTERM, cerrando servidor...");
+  process.exit(0);
 });
 
-export default mongoose;
+process.on("SIGINT", () => {
+  console.log("\n📴 Recibida señal SIGINT, cerrando servidor...");
+  process.exit(0);
+});
+
+main();
