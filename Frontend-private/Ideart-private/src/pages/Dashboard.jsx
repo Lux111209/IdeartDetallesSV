@@ -14,7 +14,7 @@ const Dashboard = () => {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/dashboard") // Endpoint único
+    axios.get("https://ideartdetallessv-1.onrender.com/api/dashboard") // Endpoint único
       .then(res => setStats(res.data))
       .catch(err => console.error(err));
   }, []);

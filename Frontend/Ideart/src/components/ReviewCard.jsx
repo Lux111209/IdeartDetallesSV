@@ -10,7 +10,7 @@ const ReviewCard = ({ resena, onUpdate }) => {
   const handleUtil = async () => {
     if (clicked) return;
     try {
-      await fetch(`http://localhost:5000/api/resenasgeneral/${resena._id}/util`, {
+      await fetch(`https://ideartdetallessv-1.onrender.com/api/resenasgeneral/${resena._id}/util`, {
         method: 'PATCH',
       });
       setUtil(prev => prev + 1);

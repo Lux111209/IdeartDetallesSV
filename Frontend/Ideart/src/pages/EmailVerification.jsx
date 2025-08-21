@@ -23,7 +23,7 @@ const EmailVerification = () => {
 
     try {
       // Envía el código al backend para validar
-      const response = await fetch("http://localhost:5000/api/registerUser/verify", {
+      const response = await fetch("https://ideartdetallessv-1.onrender.com/api/registerUser/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include", // incluye cookies si las hay

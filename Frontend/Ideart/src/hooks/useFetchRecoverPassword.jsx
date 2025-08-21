@@ -34,7 +34,7 @@ export const useFetchRecoverPassword = () => {
     setSuccessMessage(null);
 
     try {
-      const response = await fetch("http://localhost:5000/api/passwordRecovery/requestCode", {
+      const response = await fetch("https://ideartdetallessv-1.onrender.com/api/passwordRecovery/requestCode", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -67,7 +67,7 @@ export const useFetchRecoverPassword = () => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/api/passwordRecovery/verifyCode", {
+      const response = await fetch("https://ideartdetallessv-1.onrender.com/api/passwordRecovery/verifyCode", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -110,7 +110,7 @@ export const useFetchRecoverPassword = () => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/api/passwordRecovery/newPassword", {
+      const response = await fetch("https://ideartdetallessv-1.onrender.com/api/passwordRecovery/newPassword", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
