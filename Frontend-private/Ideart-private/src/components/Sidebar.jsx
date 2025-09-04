@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom"; // 👈 usamos navigate
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Importo estilos globales para toast
+import "react-toastify/dist/ReactToastify.css";
 import "../css/Sidebar.css";
 
 const Sidebar = ({ children }) => {
@@ -10,27 +10,26 @@ const Sidebar = ({ children }) => {
 
   // Estado para detectar si estamos en móvil (pantallas <600px)
   const [isMobile, setIsMobile] = useState(false);
+  const navigate = useNavigate();
 
-  // Detecta cambios en el tamaño de la ventana para activar modo móvil o escritorio
+  // Detectar tamaño pantalla
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 600) {
         setIsMobile(true);
-        setOpen(false); // En móvil, sidebar inicia cerrado
+        setOpen(false);
       } else {
         setIsMobile(false);
-        setOpen(true); // En escritorio, sidebar inicia abierto
+        setOpen(true);
       }
     };
 
     window.addEventListener("resize", handleResize);
-    handleResize(); // Llamo inmediatamente para estado inicial
-
-    // Limpieza para evitar memory leaks
+    handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Alternar apertura/cierre del sidebar en móvil y mostrar toast informativo
+  // Toggle sidebar en móvil
   const toggleSidebar = () => {
     setOpen(!open);
     toast.info(`Menú ${!open ? "abierto" : "cerrado"}`, {
@@ -43,42 +42,64 @@ const Sidebar = ({ children }) => {
     });
   };
 
-  // Maneja el logout con un toast confirmando la acción
-  const handleLogout = () => {
-    // Aquí se pondría la lógica real para cerrar sesión
+  // 🔒 Cerrar sesión (logout)
+  const handleLogout = async () => {
+    try {
+      // 🔹 Llamada opcional al backend para cerrar sesión y limpiar cookies
+      await fetch("http://localhost:5000/api/logout", {
+        method: "POST",
+        credentials: "include", // 👈 asegura borrar cookies HttpOnly en backend
+      });
+    } catch (err) {
+      console.warn("Error al cerrar sesión en el servidor", err);
+    }
+
+    // 🔹 Borrar token y expiración del localStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("expiry");
+
+    // 🔹 Borrar cookies manualmente (si el backend no las borra)
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+
+    // 🔹 Notificar con toast
     toast.success("Sesión cerrada correctamente", {
       position: "bottom-left",
-      autoClose: 2500,
+      autoClose: 2000,
       hideProgressBar: false,
       pauseOnHover: true,
       closeOnClick: true,
       draggable: true,
     });
+
+    // 🔹 Redirigir al login tras un corto delay
+    setTimeout(() => {
+      navigate("/login");
+    }, 1000);
   };
 
   return (
     <>
-      {/* Botón toggle para abrir/cerrar menú visible solo en móvil */}
+      {/* Botón toggle visible en móvil */}
       {isMobile && (
-        <button
-          className="toggle-btn"
-          onClick={toggleSidebar}
-          aria-label="Abrir/cerrar menú"
-        >
+        <button className="toggle-btn" onClick={toggleSidebar} aria-label="Abrir/cerrar menú">
           ☰
         </button>
       )}
 
       {/* Sidebar con clases según esté abierto o cerrado */}
       <aside className={`sidebar ${open ? "open" : "closed"}`}>
-        {/* Sección perfil usuario */}
+        {/* Perfil */}
         <div className="profile">
           <img src="/icono.jpg" alt="Usuario" className="avatar" />
           <h3>Luz Gazpario</h3>
           <p>20210404@alumnos.edu.sv</p>
         </div>
 
-        {/* Menú de navegación */}
+        {/* Menú */}
         <nav className="menu">
           {[
             { to: "/Dashboard", label: "Dashboard" },
@@ -92,7 +113,7 @@ const Sidebar = ({ children }) => {
             <NavLink
               key={to}
               to={to}
-              onClick={() => isMobile && setOpen(false)} // Cierra menú en móvil al seleccionar
+              onClick={() => isMobile && setOpen(false)}
               className={({ isActive }) => (isActive ? "active" : "")}
             >
               {label}
@@ -100,7 +121,7 @@ const Sidebar = ({ children }) => {
           ))}
         </nav>
 
-        {/* Botón para cerrar sesión */}
+        {/* Logout */}
         <button className="logout" onClick={handleLogout}>
           ⏻ Salir
         </button>
@@ -110,8 +131,7 @@ const Sidebar = ({ children }) => {
       <main className={`main-content ${open ? "sidebar-open" : "sidebar-closed"}`}>
         {children}
       </main>
-
-      {/* Contenedor de los toasts */}
+          
       <ToastContainer />
     </>
   );
