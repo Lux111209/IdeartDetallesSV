@@ -1,0 +1,2238 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "IdeartDetalles",
+    "description": "API para la gestión de ventas, productos, usuarios y reseñas.",
+    "contact": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html",
+      "email": "ideartdetallessv3@gmail.com"
+    },
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api",
+      "description": "Servidor de desarrollo"
+    },
+    {
+      "url": "https://virtserver.swaggerhub.com/ideartdetalles/IdeartDetalles/1.0.0",
+      "description": "SwaggerHub API Auto Mocking"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Autenticación",
+      "description": "Operaciones para el registro, login, logout y verificación de usuarios"
+    },
+    {
+      "name": "Recuperación de Contraseña",
+      "description": "Flujo para la recuperación de contraseñas de usuario"
+    },
+    {
+      "name": "Usuarios",
+      "description": "Operaciones relacionadas con los usuarios"
+    },
+    {
+      "name": "Productos",
+      "description": "Operaciones para gestionar los productos del inventario"
+    },
+    {
+      "name": "Ofertas",
+      "description": "Operaciones para gestionar ofertas y descuentos de productos"
+    },
+    {
+      "name": "Carrito de Compras",
+      "description": "Operaciones para gestionar los carritos de compra de los usuarios"
+    },
+    {
+      "name": "Ventas",
+      "description": "Operaciones relacionadas con las ventas"
+    },
+    {
+      "name": "Proveedores",
+      "description": "Operaciones para gestionar los proveedores"
+    },
+    {
+      "name": "Reseñas de Productos",
+      "description": "Operaciones para gestionar las reseñas detalladas de los productos"
+    },
+    {
+      "name": "Reseñas Generales",
+      "description": "Operaciones para gestionar las reseñas generales y de experiencia"
+    }
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "tags": [
+          "Autenticación"
+        ],
+        "summary": "Iniciar sesión de usuario o administrador",
+        "operationId": "loginUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Inicio de sesión exitoso."
+          },
+          "400": {
+            "description": "Faltan campos requeridos."
+          },
+          "401": {
+            "description": "Credenciales incorrectas."
+          },
+          "404": {
+            "description": "Usuario no encontrado."
+          },
+          "500": {
+            "description": "Error del servidor."
+          }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "tags": [
+          "Autenticación"
+        ],
+        "summary": "Cerrar sesión del usuario",
+        "operationId": "logoutUser",
+        "responses": {
+          "200": {
+            "description": "Cierre de sesión exitoso."
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "tags": [
+          "Autenticación"
+        ],
+        "summary": "Registrar un nuevo usuario",
+        "description": "Crea un nuevo usuario en el sistema y envía un código de verificación por correo electrónico.",
+        "operationId": "registerUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegisterInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Usuario registrado exitosamente. Se ha enviado un código de verificación a su correo."
+          },
+          "400": {
+            "description": "Datos de entrada no válidos. Faltan campos requeridos."
+          },
+          "409": {
+            "description": "El correo electrónico proporcionado ya está en uso."
+          },
+          "500": {
+            "description": "Error interno del servidor."
+          }
+        }
+      }
+    },
+    "/verify-email": {
+      "post": {
+        "tags": [
+          "Autenticación"
+        ],
+        "summary": "Verificar el correo electrónico del usuario",
+        "description": "Verifica el correo electrónico de un usuario utilizando el código enviado tras el registro.",
+        "operationId": "verifyEmail",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerificationCodeInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Correo electrónico verificado exitosamente."
+          },
+          "400": {
+            "description": "El código de verificación es incorrecto."
+          },
+          "401": {
+            "description": "No se proporcionó un token de verificación o ha expirado."
+          },
+          "404": {
+            "description": "Usuario no encontrado."
+          },
+          "500": {
+            "description": "Error interno del servidor."
+          }
+        }
+      }
+    },
+    "/password-recovery/request-code": {
+      "post": {
+        "tags": [
+          "Recuperación de Contraseña"
+        ],
+        "summary": "Solicitar código de recuperación de contraseña",
+        "description": "Envía un código de recuperación al correo electrónico del usuario si este existe en el sistema.",
+        "operationId": "requestPasswordRecoveryCode",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/passwordrecovery_requestcode_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Código de verificación enviado al correo electrónico."
+          },
+          "404": {
+            "description": "Usuario no encontrado."
+          }
+        }
+      }
+    },
+    "/password-recovery/verify-code": {
+      "post": {
+        "tags": [
+          "Recuperación de Contraseña"
+        ],
+        "summary": "Verificar código de recuperación",
+        "description": "Comprueba si el código proporcionado por el usuario es válido.",
+        "operationId": "verifyPasswordRecoveryCode",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerificationCodeInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Código verificado exitosamente."
+          },
+          "400": {
+            "description": "Código no válido o el token ha expirado."
+          }
+        }
+      }
+    },
+    "/password-recovery/new-password": {
+      "post": {
+        "tags": [
+          "Recuperación de Contraseña"
+        ],
+        "summary": "Establecer una nueva contraseña",
+        "description": "Actualiza la contraseña del usuario después de una verificación de código exitosa.",
+        "operationId": "setNewPassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/passwordrecovery_newpassword_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Contraseña actualizada exitosamente."
+          },
+          "400": {
+            "description": "El código no ha sido verificado."
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": [
+          "Productos"
+        ],
+        "summary": "Obtener todos los productos",
+        "operationId": "getAllProducts",
+        "responses": {
+          "200": {
+            "description": "Lista de productos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Products"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error del servidor."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Productos"
+        ],
+        "summary": "Crear un nuevo producto",
+        "operationId": "insertProduct",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Producto creado exitosamente."
+          },
+          "500": {
+            "description": "Error del servidor."
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "tags": [
+          "Productos"
+        ],
+        "summary": "Obtener un producto por ID",
+        "operationId": "getProductById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Datos del producto."
+          },
+          "404": {
+            "description": "Producto no encontrado."
+          },
+          "500": {
+            "description": "Error del servidor."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Productos"
+        ],
+        "summary": "Actualizar un producto por ID",
+        "operationId": "updateProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Producto actualizado."
+          },
+          "404": {
+            "description": "Producto no encontrado."
+          },
+          "500": {
+            "description": "Error del servidor."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Productos"
+        ],
+        "summary": "Eliminar un producto por ID",
+        "operationId": "deleteProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Producto eliminado."
+          },
+          "404": {
+            "description": "Producto no encontrado."
+          },
+          "500": {
+            "description": "Error del servidor."
+          }
+        }
+      }
+    },
+    "/ofertas": {
+      "get": {
+        "tags": [
+          "Ofertas"
+        ],
+        "summary": "Obtener todas las ofertas",
+        "operationId": "getOfertas",
+        "responses": {
+          "200": {
+            "description": "Lista de ofertas."
+          },
+          "500": {
+            "description": "Error del servidor."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Ofertas"
+        ],
+        "summary": "Crear una nueva oferta",
+        "operationId": "createOferta",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfertaInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Oferta creada."
+          },
+          "400": {
+            "description": "Datos de entrada no válidos."
+          },
+          "500": {
+            "description": "Error del servidor."
+          }
+        }
+      }
+    },
+    "/ofertas/activas": {
+      "get": {
+        "tags": [
+          "Ofertas"
+        ],
+        "summary": "Obtener ofertas activas",
+        "operationId": "getOfertasActivas",
+        "responses": {
+          "200": {
+            "description": "Lista de ofertas activas."
+          },
+          "500": {
+            "description": "Error del servidor."
+          }
+        }
+      }
+    },
+    "/ofertas/{id}": {
+      "get": {
+        "tags": [
+          "Ofertas"
+        ],
+        "summary": "Obtener una oferta por ID",
+        "operationId": "getOfertaById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Datos de la oferta."
+          },
+          "400": {
+            "description": "ID de oferta no válido."
+          },
+          "404": {
+            "description": "Oferta no encontrada."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Ofertas"
+        ],
+        "summary": "Actualizar una oferta por ID",
+        "operationId": "updateOferta",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfertaUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Oferta actualizada."
+          },
+          "400": {
+            "description": "ID no válido o datos incorrectos."
+          },
+          "404": {
+            "description": "Oferta no encontrada."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Ofertas"
+        ],
+        "summary": "Eliminar una oferta por ID",
+        "operationId": "deleteOferta",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Oferta eliminada."
+          },
+          "400": {
+            "description": "ID no válido."
+          },
+          "404": {
+            "description": "Oferta no encontrada."
+          }
+        }
+      }
+    },
+    "/carrito": {
+      "get": {
+        "tags": [
+          "Carrito de Compras"
+        ],
+        "summary": "Obtener todos los carritos de compra",
+        "operationId": "getCarritoCompra",
+        "responses": {
+          "200": {
+            "description": "Lista de carritos de compra."
+          },
+          "500": {
+            "description": "Error del servidor."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Carrito de Compras"
+        ],
+        "summary": "Crear un nuevo carrito de compra",
+        "operationId": "createCarritoCompra",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CarritoCompraInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Carrito creado exitosamente."
+          },
+          "400": {
+            "description": "Error al crear el carrito."
+          }
+        }
+      }
+    },
+    "/carrito/{id}": {
+      "get": {
+        "tags": [
+          "Carrito de Compras"
+        ],
+        "summary": "Obtener un carrito por ID",
+        "operationId": "getCarritoCompraById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Datos del carrito."
+          },
+          "400": {
+            "description": "Error buscando el carrito."
+          },
+          "404": {
+            "description": "Carrito no encontrado."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Carrito de Compras"
+        ],
+        "summary": "Actualizar un carrito por ID",
+        "operationId": "updateCarrito",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CarritoCompraUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Carrito actualizado con éxito."
+          },
+          "400": {
+            "description": "Error actualizando el carrito."
+          },
+          "404": {
+            "description": "Carrito no encontrado."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Carrito de Compras"
+        ],
+        "summary": "Eliminar un carrito por ID",
+        "operationId": "deleteCarrito",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Carrito eliminado con éxito."
+          },
+          "400": {
+            "description": "Error eliminando el carrito."
+          },
+          "404": {
+            "description": "Carrito no encontrado."
+          }
+        }
+      }
+    },
+    "/provedores": {
+      "get": {
+        "tags": [
+          "Proveedores"
+        ],
+        "summary": "Obtener todos los proveedores",
+        "operationId": "getProvedores",
+        "responses": {
+          "200": {
+            "description": "Lista de proveedores obtenida exitosamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Provedores"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error del servidor."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Proveedores"
+        ],
+        "summary": "Crear un nuevo proveedor",
+        "operationId": "createProvedor",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProvedorInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Proveedor creado exitosamente."
+          },
+          "400": {
+            "description": "Datos de entrada no válidos o el correo ya existe."
+          },
+          "500": {
+            "description": "Error del servidor."
+          }
+        }
+      }
+    },
+    "/provedores/activos": {
+      "get": {
+        "tags": [
+          "Proveedores"
+        ],
+        "summary": "Obtener proveedores activos",
+        "operationId": "getProvedoresActivos",
+        "responses": {
+          "200": {
+            "description": "Lista de proveedores activos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Provedores"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error del servidor."
+          }
+        }
+      }
+    },
+    "/provedores/{id}": {
+      "get": {
+        "tags": [
+          "Proveedores"
+        ],
+        "summary": "Obtener un proveedor por ID",
+        "operationId": "getProvedorById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proveedor encontrado."
+          },
+          "400": {
+            "description": "ID de proveedor no válido."
+          },
+          "404": {
+            "description": "Proveedor no encontrado."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Proveedores"
+        ],
+        "summary": "Actualizar un proveedor por ID",
+        "operationId": "updateProvedor",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProvedorUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Proveedor actualizado exitosamente."
+          },
+          "400": {
+            "description": "ID no válido o correo duplicado."
+          },
+          "404": {
+            "description": "Proveedor no encontrado."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Proveedores"
+        ],
+        "summary": "Eliminar un proveedor por ID",
+        "operationId": "deleteProvedor",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proveedor eliminado exitosamente."
+          },
+          "400": {
+            "description": "ID de proveedor no válido."
+          },
+          "404": {
+            "description": "Proveedor no encontrado."
+          }
+        }
+      }
+    },
+    "/provedores/{id}/agregar-producto": {
+      "put": {
+        "tags": [
+          "Proveedores"
+        ],
+        "summary": "Agregar un producto a un proveedor",
+        "operationId": "agregarProductoToProvedor",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/id_agregarproducto_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Producto agregado exitosamente."
+          },
+          "400": {
+            "description": "El nombre del producto es obligatorio."
+          },
+          "404": {
+            "description": "Proveedor no encontrado."
+          }
+        }
+      }
+    },
+    "/provedores/{id}/remover-producto": {
+      "put": {
+        "tags": [
+          "Proveedores"
+        ],
+        "summary": "Remover un producto de un proveedor",
+        "operationId": "removerProductoFromProvedor",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/id_removerproducto_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Producto removido exitosamente."
+          },
+          "400": {
+            "description": "El nombre del producto es obligatorio."
+          },
+          "404": {
+            "description": "Proveedor no encontrado."
+          }
+        }
+      }
+    },
+    "/venta": {
+      "get": {
+        "tags": [
+          "Ventas"
+        ],
+        "summary": "Obtener todas las ventas",
+        "description": "Recupera una lista completa de todas las ventas registradas.",
+        "operationId": "getallVenta",
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ventas"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/venta/{id}": {
+      "get": {
+        "tags": [
+          "Ventas"
+        ],
+        "summary": "Obtener una venta por ID",
+        "operationId": "getVentaById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Venta encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ventas"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Venta no encontrada."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Ventas"
+        ],
+        "summary": "Actualizar una venta por ID",
+        "operationId": "updateVentaById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VentaInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Venta actualizada."
+          },
+          "404": {
+            "description": "Venta no encontrada."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Ventas"
+        ],
+        "summary": "Eliminar una venta por ID",
+        "operationId": "deleteVentaById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Venta eliminada."
+          },
+          "404": {
+            "description": "Venta no encontrada."
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "Usuarios"
+        ],
+        "summary": "Obtener todos los usuarios",
+        "description": "Recupera una lista de todos los usuarios.",
+        "operationId": "getUsers",
+        "responses": {
+          "200": {
+            "description": "Lista de usuarios.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "put": {
+        "tags": [
+          "Usuarios"
+        ],
+        "summary": "Actualizar un usuario por ID",
+        "operationId": "updateUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuario actualizado."
+          },
+          "404": {
+            "description": "Usuario no encontrado."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Usuarios"
+        ],
+        "summary": "Eliminar un usuario por ID",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuario eliminado."
+          },
+          "404": {
+            "description": "Usuario no encontrado."
+          }
+        }
+      }
+    },
+    "/resenas-producto": {
+      "get": {
+        "tags": [
+          "Reseñas de Productos"
+        ],
+        "summary": "Obtener todas las reseñas de productos",
+        "operationId": "getResenasProducto",
+        "responses": {
+          "200": {
+            "description": "Lista de reseñas de productos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResenaProducto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Reseñas de Productos"
+        ],
+        "summary": "Crear una nueva reseña de producto",
+        "operationId": "createResenaProducto",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ResenaProductoInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Reseña creada."
+          },
+          "400": {
+            "description": "Datos de entrada no válidos."
+          }
+        }
+      }
+    },
+    "/resenas-producto/{id}": {
+      "get": {
+        "tags": [
+          "Reseñas de Productos"
+        ],
+        "summary": "Obtener una reseña de producto por ID",
+        "operationId": "getResenaProductoById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reseña encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResenaProducto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Reseña no encontrada."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Reseñas de Productos"
+        ],
+        "summary": "Actualizar una reseña de producto por ID",
+        "operationId": "updateResenaProducto",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ResenaProductoUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reseña actualizada."
+          },
+          "404": {
+            "description": "Reseña no encontrada."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Reseñas de Productos"
+        ],
+        "summary": "Eliminar una reseña de producto por ID",
+        "operationId": "deleteResenaProducto",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reseña eliminada."
+          },
+          "404": {
+            "description": "Reseña no encontrada."
+          }
+        }
+      }
+    },
+    "/resenas-generales": {
+      "get": {
+        "tags": [
+          "Reseñas Generales"
+        ],
+        "summary": "Obtener todas las reseñas generales",
+        "operationId": "getResenasGenerales",
+        "responses": {
+          "200": {
+            "description": "Lista de reseñas generales activas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResenaGeneral"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error del servidor."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Reseñas Generales"
+        ],
+        "summary": "Crear una nueva reseña general",
+        "operationId": "createResenaGeneral",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResenaGeneralInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Reseña creada exitosamente."
+          },
+          "400": {
+            "description": "Datos inválidos o reseña duplicada."
+          },
+          "500": {
+            "description": "Error del servidor."
+          }
+        }
+      }
+    },
+    "/resenas-generales/{id}": {
+      "get": {
+        "tags": [
+          "Reseñas Generales"
+        ],
+        "summary": "Obtener una reseña general por ID",
+        "operationId": "getResenaGeneralById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Datos de la reseña.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResenaGeneral"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID no válido."
+          },
+          "404": {
+            "description": "Reseña no encontrada."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Reseñas Generales"
+        ],
+        "summary": "Actualizar una reseña general",
+        "operationId": "updateResenaGeneral",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResenaGeneralUpdateInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Reseña actualizada."
+          },
+          "400": {
+            "description": "ID no válido."
+          },
+          "404": {
+            "description": "Reseña no encontrada."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Reseñas Generales"
+        ],
+        "summary": "Eliminar una reseña general",
+        "operationId": "deleteResenaGeneral",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reseña eliminada."
+          },
+          "400": {
+            "description": "ID no válido."
+          },
+          "404": {
+            "description": "Reseña no encontrada."
+          }
+        }
+      }
+    },
+    "/resenas-generales/producto/{id_producto}": {
+      "get": {
+        "tags": [
+          "Reseñas Generales"
+        ],
+        "summary": "Obtener reseñas generales por producto",
+        "operationId": "getResenasGeneralesByProducto",
+        "parameters": [
+          {
+            "name": "id_producto",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de reseñas y estadísticas para un producto."
+          },
+          "400": {
+            "description": "ID de producto no válido."
+          }
+        }
+      }
+    },
+    "/resenas-generales/usuario/{id_user}": {
+      "get": {
+        "tags": [
+          "Reseñas Generales"
+        ],
+        "summary": "Obtener reseñas generales por usuario",
+        "operationId": "getResenasGeneralesByUsuario",
+        "parameters": [
+          {
+            "name": "id_user",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de reseñas de un usuario."
+          },
+          "400": {
+            "description": "ID de usuario no válido."
+          }
+        }
+      }
+    },
+    "/resenas-generales/{id}/util": {
+      "put": {
+        "tags": [
+          "Reseñas Generales"
+        ],
+        "summary": "Marcar una reseña general como útil",
+        "operationId": "marcarResenaGeneralUtil",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reseña marcada como útil."
+          },
+          "400": {
+            "description": "ID no válido."
+          },
+          "404": {
+            "description": "Reseña no encontrada."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Ventas": {
+        "type": "object"
+      },
+      "VentaInput": {
+        "type": "object"
+      },
+      "Error": {
+        "type": "object"
+      },
+      "User": {
+        "type": "object"
+      },
+      "UserInput": {
+        "type": "object"
+      },
+      "LoginInput": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          }
+        }
+      },
+      "UserRegisterInput": {
+        "required": [
+          "correo",
+          "favoritos",
+          "fechaNacimiento",
+          "nombre",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "correo": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "fechaNacimiento": {
+            "type": "string",
+            "format": "date"
+          },
+          "favoritos": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "VerificationCodeInput": {
+        "required": [
+          "verificationCode"
+        ],
+        "type": "object",
+        "properties": {
+          "verificationCode": {
+            "type": "string"
+          }
+        }
+      },
+      "Products": {
+        "title": "Products",
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "productType": {
+            "type": "string"
+          },
+          "subType": {
+            "type": "string"
+          },
+          "usageCategory": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "size": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "stock": {
+            "type": "integer"
+          },
+          "price": {
+            "type": "number"
+          },
+          "material": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        }
+      },
+      "ProductInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "productType": {
+            "type": "string"
+          },
+          "subType": {
+            "type": "string"
+          },
+          "usageCategory": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "size": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "stock": {
+            "type": "integer"
+          },
+          "price": {
+            "type": "number"
+          },
+          "material": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        }
+      },
+      "ProductUpdateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "productType": {
+            "type": "string"
+          },
+          "subType": {
+            "type": "string"
+          },
+          "usageCategory": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "size": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "stock": {
+            "type": "integer"
+          },
+          "price": {
+            "type": "number"
+          },
+          "material": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        }
+      },
+      "Ofertas": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "nombreOferta": {
+            "type": "string"
+          },
+          "DescuentoRealizado": {
+            "type": "number"
+          },
+          "productos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Products"
+            }
+          },
+          "creada": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expirada": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "activa": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OfertaInput": {
+        "required": [
+          "DescuentoRealizado",
+          "expirada",
+          "nombreOferta",
+          "productos"
+        ],
+        "type": "object",
+        "properties": {
+          "nombreOferta": {
+            "type": "string"
+          },
+          "DescuentoRealizado": {
+            "type": "number"
+          },
+          "productos": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "ID del producto"
+            }
+          },
+          "expirada": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "activa": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OfertaUpdateInput": {
+        "type": "object",
+        "properties": {
+          "nombreOferta": {
+            "type": "string"
+          },
+          "DescuentoRealizado": {
+            "type": "number"
+          },
+          "productos": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "ID del producto"
+            }
+          },
+          "expirada": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "activa": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CarritoCompra": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CarritoCompra_products"
+            }
+          },
+          "idUser": {
+            "$ref": "#/components/schemas/User"
+          },
+          "Ofertas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CarritoCompra_Ofertas"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        }
+      },
+      "CarritoCompraInput": {
+        "type": "object",
+        "properties": {
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CarritoCompraInput_products"
+            }
+          },
+          "idUser": {
+            "type": "string"
+          },
+          "Ofertas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CarritoCompraInput_Ofertas"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        }
+      },
+      "CarritoCompraUpdateInput": {
+        "type": "object",
+        "properties": {
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CarritoCompraInput_products"
+            }
+          },
+          "idUser": {
+            "type": "string"
+          },
+          "Ofertas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CarritoCompraInput_Ofertas"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        }
+      },
+      "ResenaProducto": {
+        "type": "object"
+      },
+      "ResenaProductoInput": {
+        "type": "object"
+      },
+      "ResenaProductoUpdateInput": {
+        "type": "object"
+      },
+      "ResenaGeneral": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "ranking": {
+            "type": "integer",
+            "description": "Calificación de 1 a 5."
+          },
+          "titulo": {
+            "type": "string"
+          },
+          "tiposExperiencia": {
+            "type": "array",
+            "description": "Etiquetas que describen la experiencia (ej. \"Calidad-Precio\", \"Servicio al Cliente\").",
+            "items": {
+              "type": "string"
+            }
+          },
+          "detalle": {
+            "type": "string"
+          },
+          "id_user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "id_producto": {
+            "type": "string",
+            "description": "ID del producto asociado."
+          },
+          "fechaResena": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "util": {
+            "type": "integer",
+            "description": "Contador de cuántas veces fue marcada como útil."
+          },
+          "activa": {
+            "type": "boolean",
+            "description": "Indica si la reseña está visible."
+          }
+        }
+      },
+      "ResenaGeneralInput": {
+        "required": [
+          "detalle",
+          "id_producto",
+          "id_user",
+          "ranking",
+          "titulo"
+        ],
+        "type": "object",
+        "properties": {
+          "ranking": {
+            "type": "integer"
+          },
+          "titulo": {
+            "type": "string"
+          },
+          "tiposExperiencia": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "detalle": {
+            "type": "string"
+          },
+          "id_user": {
+            "type": "string"
+          },
+          "id_producto": {
+            "type": "string"
+          }
+        }
+      },
+      "ResenaGeneralUpdateInput": {
+        "type": "object",
+        "properties": {
+          "ranking": {
+            "type": "integer"
+          },
+          "titulo": {
+            "type": "string"
+          },
+          "tiposExperiencia": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "detalle": {
+            "type": "string"
+          },
+          "activa": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Provedores": {
+        "title": "Provedores",
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "productosBrindados": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "numero": {
+            "type": "string"
+          },
+          "correo": {
+            "type": "string",
+            "format": "email"
+          },
+          "imgProvedor": {
+            "type": "string",
+            "format": "uri"
+          },
+          "direccion": {
+            "type": "string"
+          },
+          "activo": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ProvedorInput": {
+        "required": [
+          "correo",
+          "nombre",
+          "numero"
+        ],
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string"
+          },
+          "productosBrindados": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "numero": {
+            "type": "string"
+          },
+          "correo": {
+            "type": "string",
+            "format": "email"
+          },
+          "imgProvedor": {
+            "type": "string",
+            "format": "uri"
+          },
+          "direccion": {
+            "type": "string"
+          },
+          "activo": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "ProvedorUpdateInput": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string"
+          },
+          "productosBrindados": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "numero": {
+            "type": "string"
+          },
+          "correo": {
+            "type": "string",
+            "format": "email"
+          },
+          "imgProvedor": {
+            "type": "string",
+            "format": "uri"
+          },
+          "direccion": {
+            "type": "string"
+          },
+          "activo": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PersonalizedProducts": {
+        "title": "PersonalizedProducts",
+        "type": "object",
+        "properties": {}
+      },
+      "passwordrecovery_requestcode_body": {
+        "required": [
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      },
+      "passwordrecovery_newpassword_body": {
+        "required": [
+          "newPassword"
+        ],
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string",
+            "format": "password"
+          }
+        }
+      },
+      "id_agregarproducto_body": {
+        "type": "object",
+        "properties": {
+          "producto": {
+            "type": "string"
+          }
+        }
+      },
+      "id_removerproducto_body": {
+        "type": "object",
+        "properties": {
+          "producto": {
+            "type": "string"
+          }
+        }
+      },
+      "CarritoCompra_products": {
+        "type": "object",
+        "properties": {
+          "idProducts": {
+            "$ref": "#/components/schemas/Products"
+          },
+          "cantidad": {
+            "type": "integer"
+          }
+        }
+      },
+      "CarritoCompra_Ofertas": {
+        "type": "object",
+        "properties": {
+          "idOfertas": {
+            "$ref": "#/components/schemas/Ofertas"
+          }
+        }
+      },
+      "CarritoCompraInput_products": {
+        "type": "object",
+        "properties": {
+          "idProducts": {
+            "type": "string"
+          },
+          "cantidad": {
+            "type": "integer"
+          }
+        }
+      },
+      "CarritoCompraInput_Ofertas": {
+        "type": "object",
+        "properties": {
+          "idOfertas": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

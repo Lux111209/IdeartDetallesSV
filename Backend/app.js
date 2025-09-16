@@ -21,6 +21,10 @@ import personalizedProducts from "./src/routes/personalizedProducts.js";
 import passwordRecovery from "./src/routes/passswordRecovery.js";
 import dashboardRoutes from "./src/routes/dashboardRoutes.js"; // NUEVO
 
+import swaggerUi from "swagger-ui-express";
+import fs from "fs";
+import path from "path";
+
 // Crear instancia de Express
 const app = express();
 
@@ -39,6 +43,16 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Middleware para parsear cookies
 app.use(cookieParser());
+
+
+
+// traemos el archivo json:
+const swaggerDocument = JSON.parse(
+  fs.readFileSync(path.resolve("./documentacionIdeartDetalles.json"), "utf-8")
+
+);
+// Mosramos el archivo al ingresar a /api/docs
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Servir archivos estáticos (por ejemplo, imágenes subidas)
 app.use("/uploads", express.static("uploads"));
