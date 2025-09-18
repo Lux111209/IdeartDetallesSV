@@ -1,11 +1,10 @@
-import express from 'express';
-
-import { createPayment,paymentWebhook} from '../controllers/paymentscontroller.js';
+import express from "express";
+import { getToken, testPayment, payment3ds } from "../controllers/paymentController.js";
 
 const router = express.Router();
 
-
-router.post("/create", createPayment);
-router.post("/webhook", paymentWebhook);
+router.post("/token", getToken);
+router.post("/testPayment", testPayment);
+router.post("/payment3ds", payment3ds);
 
 export default router;

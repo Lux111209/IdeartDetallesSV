@@ -1,94 +1,91 @@
-import fetch from 'node-fetch';
-import Ventas from '../models/Ventas.js';
+import fetch from "node-fetch";
 
-// SE CREA UNA TRANSACCION DE PAGO
-export const createPayment = async (req, res) => {
+// Obtener token
+export const getToken = async (req, res) => {
   try {
-    const {
-      monto, nombre, apellido, email, ciudad,
-      direccion, codigoPostal, telefono, idShoppingCart
-    } = req.body;
+    const response = await fetch("https://id.wompi.sv/connect/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: process.env.GRANT_TYPE,
+        client_id: process.env.CLIENT_ID,
+        client_secret: process.env.CLIENT_SECRET,
+        audience: process.env.AUDIENCE,
+      }),
+    });
 
-    if (!monto || !nombre || !apellido || !email || !idShoppingCart) {
-      return res.status(400).json({ error: "Faltan campos obligatorios" });
+    if (!response.ok) {
+      const error = await response.text();
+      return res.status(response.status).json({ error });
     }
 
-    // Llamada al API de Wompi (tarjeta no se guarda en DB)
-    const response = await fetch("https://endpoint-wompi/TransaccionCompra/3DS", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        tarjetaCreditoDebido: req.body.tarjetaCreditoDebido, // solo para enviar a Wompi
-        monto,
-        urlRedirect: "http://localhost:3000/pagos/confirmacion",
-        nombre,
-        apellido,
-        email,
-        ciudad,
-        direccion,
-        idPais: "SV",
-        idRegion: "SV-SS",
-        codigoPostal,
-        telefono,
-        configuracion: { urlWebhook: "https://tu-backend.com/api/pagos/webhook" }
-      })
-    });
-
     const data = await response.json();
-
-    // Guardamos solo info necesaria
-    const nuevaVenta = await Ventas.create({
-      idShoppingCart,
-      direccion,
-      metodoPago: "tarjeta",
-      statusPago: "pendiente",
-      statusTransaccion: "procesando",
-      idTransaccion: data.idTransaccion,
-      monto,
-      nombre,
-      apellido,
-      email,
-      telefono,
-      ciudad,
-      codigoPostal,
-      idPais: "SV",
-      idRegion: "SV-SS",
-      rawResponse: data
-    });
-
-    res.json({
-      venta: nuevaVenta,
-      urlPago3DS: data.urlCompletarPago3Ds
-    });
-
-  } catch (error) {
-    console.error("Error creando transacción:", error.message);
-    res.status(500).json({ error: "Error creando transacción" });
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al obtener token" });
   }
 };
 
-// Webhook para actualizar estado de la venta
-export const paymentWebhook = async (req, res) => {
+//  Pago de prueba (sin 3DS)
+export const testPayment = async (req, res) => {
   try {
-    const { idTransaccion, estado } = req.body;
+    const { token, formData } = req.body;
 
-    const ventaActualizada = await Ventas.findOneAndUpdate(
-      { idTransaccion },
+    if (!token) return res.status(400).json({ error: "Token requerido" });
+    if (!formData) return res.status(400).json({ error: "Datos requeridos" });
+
+    const response = await fetch(
+      "https://api.wompi.sv/TransaccionCompra/TokenizadaSin3Ds",
       {
-        statusPago: estado === "APPROVED" ? "completado" : "fallido",
-        statusTransaccion: estado === "APPROVED" ? "completada" : "cancelada",
-        rawResponse: req.body
-      },
-      { new: true }
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      }
     );
 
-    if (!ventaActualizada) return res.status(404).json({ error: "Venta no encontrada" });
+    if (!response.ok) {
+      const error = await response.text();
+      return res.status(response.status).json({ error });
+    }
 
-    console.log(`Webhook procesado: ${idTransaccion} -> ${estado}`);
-    res.sendStatus(200);
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al procesar el pago" });
+  }
+};
 
-  } catch (error) {
-    console.error("Error en webhook:", error.message);
-    res.sendStatus(500);
+// Pago real con 3DS
+export const payment3ds = async (req, res) => {
+  try {
+    const { token, formData } = req.body;
+
+    if (!token) return res.status(400).json({ error: "Token requerido" });
+    if (!formData) return res.status(400).json({ error: "Datos requeridos" });
+
+    const response = await fetch("https://api.wompi.sv/TransaccionCompra/3Ds", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      return res.status(response.status).json({ error });
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al procesar el pago" });
   }
 };
