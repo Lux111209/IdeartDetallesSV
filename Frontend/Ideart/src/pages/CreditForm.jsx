@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import TopBar from "../components/TopBar";
 import InlineToast from "../components/Toast";
-import usePaymentForm from "../hooks/usePaymentForm";
+import usePaymentForm from "../hooks/usePayment.jsx";
 import "../css/Checkout.css";
 
 const CreditForm = () => {
@@ -48,7 +48,35 @@ const CreditForm = () => {
   };
 
   const handleNameChange = (e) => {
-    handleChangeData({ target: { name: "nombre", value: e.target.value.replace(/[^a-zA-Z\s]/g, "").toUpperCase() } });
+    let value = e.target.value;
+    value = value.replace(/[^\p{L}\s'-]/gu, ""); // letras, espacios, guion y apóstrofo
+    value = value.replace(/\s+/g, " "); // colapsar espacios
+    value = value.toLocaleUpperCase("es-ES");
+    handleChangeData({ target: { name: "nombre", value } });
+  };
+
+  const handleApellidoChange = (e) => {
+    let value = e.target.value;
+    value = value.replace(/[^\p{L}\s'-]/gu, "");
+    value = value.replace(/\s+/g, " ");
+    value = value.toLocaleUpperCase("es-ES");
+    handleChangeData({ target: { name: "apellido", value } });
+  };
+
+  const handleEmailChange = (e) => {
+    handleChangeData({ target: { name: "email", value: e.target.value } });
+  };
+
+  const handleCiudadChange = (e) => {
+    handleChangeData({ target: { name: "ciudad", value: e.target.value } });
+  };
+
+  const handleDireccionChange = (e) => {
+    handleChangeData({ target: { name: "direccion", value: e.target.value } });
+  };
+
+  const handleTelefonoChange = (e) => {
+    handleChangeData({ target: { name: "telefono", value: e.target.value.replace(/\D/g, "") } });
   };
 
   const handlePay = async () => {
@@ -64,15 +92,37 @@ const CreditForm = () => {
         <button className="back-button" onClick={() => navigate("/checkout")}>
           ← Regresar
         </button>
+
         <div className="form-card credit-form">
           <div className="form-left">
-            {Object.values(errors).map((msg, idx) => msg && <InlineToast key={idx} type="warning" message={msg} />)}
+            {Object.entries(errors).map(
+              ([field, msg]) => msg && <InlineToast key={field} type="warning" message={msg} />
+            )}
 
-            <label>Nombre en la Tarjeta</label>
-            <input placeholder="Nombre Apellido" value={formData.nombre} onChange={handleNameChange} />
+            <label>Nombre</label>
+            <input placeholder="Nombre" value={formData.nombre} onChange={handleNameChange} />
+
+            <label>Apellido</label>
+            <input placeholder="Apellido" value={formData.apellido} onChange={handleApellidoChange} />
+
+            <label>Email</label>
+            <input placeholder="correo@ejemplo.com" value={formData.email} onChange={handleEmailChange} />
+
+            <label>Ciudad</label>
+            <input placeholder="Ciudad" value={formData.ciudad} onChange={handleCiudadChange} />
+
+            <label>Dirección</label>
+            <input placeholder="Dirección" value={formData.direccion} onChange={handleDireccionChange} />
+
+            <label>Teléfono</label>
+            <input placeholder="Telefono" value={formData.telefono} onChange={handleTelefonoChange} />
 
             <label>Número de Tarjeta</label>
-            <input placeholder="1234 5678 9012 3456" value={formDataTarjeta.numeroTarjeta} onChange={handleCardNumberChange} />
+            <input
+              placeholder="1234 5678 9012 3456"
+              value={formDataTarjeta.numeroTarjeta}
+              onChange={handleCardNumberChange}
+            />
 
             <label>Fecha de Vencimiento</label>
             <input placeholder="MM/AA" value={formDataTarjeta.expiry} onChange={handleExpiryChange} />
@@ -106,7 +156,11 @@ const CreditForm = () => {
                 <div className="cvv-value">{formDataTarjeta.cvv || "•••"}</div>
               </div>
             </div>
-            <p className="Tittle"><strong>Total a Pagar</strong><br />${formData.monto.toFixed(2)}</p>
+            <p className="Tittle">
+              <strong>Total a Pagar</strong>
+              <br />
+              ${formData.monto.toFixed(2)}
+            </p>
           </div>
         </div>
       </div>

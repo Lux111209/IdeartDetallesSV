@@ -38,7 +38,7 @@ function App() {
         <Route path="/category" element={<Category />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/checkout" element={<CheckoutInfo />} />
-        <Route path="/creditform" element={<CreditForm />} />
+        
         <Route path="/settings" element={<Settings />} />
         <Route path="/language" element={<Language />} />
         <Route path="/reviews" element={<Reviews />} />
@@ -51,6 +51,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/recover-password" element={<RecoverPassword />} />
+         <Route path="/creditform" element={<CreditForm />} />
       </Route>
 
       {/* Rutas accesibles a todos */}

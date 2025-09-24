@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 
 // Obtener token
 export const getToken = async (req, res) => {

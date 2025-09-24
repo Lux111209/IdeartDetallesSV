@@ -1,13 +1,13 @@
 import { useState } from "react";
 
 // Validaciones
-const validateCardNumber = (num) => /^\d{4} \d{4} \d{4} \d{4}$/.test(num);
+const validateCardNumber = (num) => /^\d{16}$/.test(num.replace(/\s/g, ""));
 const validateCVV = (cvv) => /^\d{3,4}$/.test(cvv);
 const validateExpiry = (date) => /^(0[1-9]|1[0-2])\/\d{2}$/.test(date);
 
 const parseExpiry = (date) => {
   const [mm, yy] = date.split("/");
-  return { month: mm, year: "20" + yy };
+  return { month: Number(mm), year: Number("20" + yy) };
 };
 
 const usePaymentForm = () => {
@@ -26,45 +26,42 @@ const usePaymentForm = () => {
   const [formData, setFormData] = useState({
     monto: 112.67,
     urlRedirect: "https://www.ricaldone.edu.sv",
-    nombre: "",
-    apellido: "",
-    email: "",
-    ciudad: "",
-    direccion: "",
+    nombre: "JUAN",
+    apellido: "PEREZ",
+    email: "correo@test.com",
+    ciudad: "SAN SALVADOR",
+    direccion: "AVENIDA PRUEBA 123",
     idPais: "SV",
     idRegion: "SV-SS",
     codigoPostal: "1101",
-    telefono: "",
+    telefono: "77771234",
   });
 
   const [errors, setErrors] = useState({});
 
-  // 🔹 Cambiar datos del cliente
   const handleChangeData = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 🔹 Cambiar datos de la tarjeta
   const handleChangeTarjeta = (e) => {
     const { name, value } = e.target;
     setFormDataTarjeta((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 🔹 Limpiar formularios
   const limpiarFormulario = () => {
     setFormData({
       monto: 112.67,
       urlRedirect: "https://www.ricaldone.edu.sv",
-      nombre: "",
-      apellido: "",
-      email: "",
-      ciudad: "",
-      direccion: "",
+      nombre: "JUAN",
+      apellido: "PEREZ",
+      email: "correo@test.com",
+      ciudad: "SAN SALVADOR",
+      direccion: "AVENIDA PRUEBA 123",
       idPais: "SV",
       idRegion: "SV-SS",
       codigoPostal: "1101",
-      telefono: "",
+      telefono: "77771234",
     });
     setDatosEnviados(null);
     setStep(1);
@@ -79,7 +76,6 @@ const usePaymentForm = () => {
     setErrors({});
   };
 
-  // 🔹 Validar tarjeta antes de enviar
   const validarTarjeta = () => {
     const newErrors = {
       numeroTarjeta: validateCardNumber(formDataTarjeta.numeroTarjeta)
@@ -93,12 +89,11 @@ const usePaymentForm = () => {
     return !Object.values(newErrors).some((e) => e);
   };
 
-  // 🔹 Paso 1: Obtener Token
   const handleFirstStep = async () => {
     if (!validarTarjeta()) return;
 
     try {
-      const res = await fetch("http://localhost:3001/api/token", { method: "POST" });
+      const res = await fetch("http://localhost:5000/api/payment/token", { method: "POST" });
       if (!res.ok) throw new Error(`Error al obtener token: ${res.status}`);
       const tokenData = await res.json();
       setAccessToken(tokenData.access_token);
@@ -109,10 +104,10 @@ const usePaymentForm = () => {
     }
   };
 
-  // 🔹 Paso 2: Finalizar pago
   const handleFinishPayment = async () => {
     try {
       const { month, year } = parseExpiry(formDataTarjeta.expiry);
+
       const paymentData = {
         ...formData,
         tarjetaCreditoDebido: {
@@ -123,20 +118,22 @@ const usePaymentForm = () => {
         },
       };
 
-      const res = await fetch("http://localhost:3001/api/payment3ds", {
+      console.log("PAYLOAD ENVIADO:", { token: accessToken, formData: paymentData });
+
+      const res = await fetch("http://localhost:5000/api/payment/payment3ds", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: accessToken, formData: paymentData }),
       });
 
-      if (!res.ok) throw new Error(`Error al procesar pago: ${res.status}`);
-      const data = await res.json();
-
-      if (data.estado === "APPROVED") {
-        alert("✅ Pago aprobado con éxito");
-      } else {
-        alert(`❌ Pago fallido: ${data.mensaje || "Error"}`);
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Error al procesar pago: ${res.status} - ${errorText}`);
       }
+
+      const data = await res.json();
+      if (data.estado === "APPROVED") alert("✅ Pago aprobado en sandbox");
+      else alert(`❌ Pago fallido: ${data.mensaje || "Error"}`);
     } catch (error) {
       console.error(error);
       alert(`Error en el proceso de pago: ${error.message}`);
@@ -146,7 +143,6 @@ const usePaymentForm = () => {
     }
   };
 
-  // 🔹 Enviar los datos del formulario al state
   const handleSubmit = (e) => {
     e.preventDefault();
     setDatosEnviados(formData);

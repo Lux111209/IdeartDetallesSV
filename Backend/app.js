@@ -20,6 +20,7 @@ import ventasRoutes from "./src/routes/venta.js";
 import personalizedProducts from "./src/routes/personalizedProducts.js";
 import passwordRecovery from "./src/routes/passswordRecovery.js";
 import dashboardRoutes from "./src/routes/dashboardRoutes.js"; // NUEVO
+import paymentRoutes from "./src/routes/payments.js";
 
 import swaggerUi from "swagger-ui-express";
 import fs from "fs";
@@ -66,6 +67,7 @@ app.use("/api/registerUser", registerUserRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/ofertas", ofertasRoutes);
 app.use("/api/passwordRecovery", passwordRecovery);
+app.use("/api/payment", paymentRoutes);
 
 // Rutas protegidas
 app.use("/api/carrito", carritoRoutes);
