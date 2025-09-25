@@ -1,15 +1,14 @@
-
-// Obtener token
+import {config} from "../../config.js";
 export const getToken = async (req, res) => {
   try {
-    const response = await fetch("https://id.wompi.sv/connect/token", {
+    const response = await fetch("https://id-sandbox.wompi.sv/connect/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
-        grant_type: process.env.GRANT_TYPE,
-        client_id: process.env.CLIENT_ID,
-        client_secret: process.env.CLIENT_SECRET,
-        audience: process.env.AUDIENCE,
+        grant_type:config.WOMPI.GRANT_TYPE,
+        client_id:config.WOMPI.CLIENT_ID,
+        client_secret:config.WOMPI.CLIENT_SECRET, 
+        audience:config.WOMPI.AUDIENCE ,
       }),
     });
 
@@ -35,7 +34,7 @@ export const testPayment = async (req, res) => {
     if (!formData) return res.status(400).json({ error: "Datos requeridos" });
 
     const response = await fetch(
-      "https://api.wompi.sv/TransaccionCompra/TokenizadaSin3Ds",
+      "https://api-sandbox.wompi.sv/TransaccionCompra/TokenizadaSin3Ds",
       {
         method: "POST",
         headers: {
@@ -52,6 +51,15 @@ export const testPayment = async (req, res) => {
     }
 
     const data = await response.json();
+
+    // Log para verificar la transacción
+    console.log("🟢 Transacción procesada (SANDBOX):", {
+      status: data.status,
+      mensaje: data.mensaje,
+      idTransaccion: data.idTransaccion,
+      raw: data
+    });
+
     res.json(data);
   } catch (err) {
     console.error(err);
@@ -67,7 +75,7 @@ export const payment3ds = async (req, res) => {
     if (!token) return res.status(400).json({ error: "Token requerido" });
     if (!formData) return res.status(400).json({ error: "Datos requeridos" });
 
-    const response = await fetch("https://api.wompi.sv/TransaccionCompra/3Ds", {
+    const response = await fetch("https://api-sandbox.wompi.sv/TransaccionCompra/3Ds", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -78,10 +86,20 @@ export const payment3ds = async (req, res) => {
 
     if (!response.ok) {
       const error = await response.text();
+      console.log("🔴 Error en transacción 3DS (SANDBOX):", error);
       return res.status(response.status).json({ error });
     }
 
     const data = await response.json();
+
+    // Log para verificar la transacción 3DS
+    console.log("🟢 Transacción 3DS procesada (SANDBOX):", {
+      status: data.status,
+      mensaje: data.mensaje,
+      idTransaccion: data.idTransaccion,
+      raw: data
+    });
+
     res.json(data);
   } catch (err) {
     console.error(err);

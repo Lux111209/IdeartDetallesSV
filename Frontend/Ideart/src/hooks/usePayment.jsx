@@ -1,167 +1,121 @@
+// src/hooks/usePayment.jsx
 import { useState } from "react";
 
-// Validaciones
-const validateCardNumber = (num) => /^\d{16}$/.test(num.replace(/\s/g, ""));
-const validateCVV = (cvv) => /^\d{3,4}$/.test(cvv);
-const validateExpiry = (date) => /^(0[1-9]|1[0-2])\/\d{2}$/.test(date);
+export const usePayment = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [token, setToken] = useState(null);
+  const [paymentResponse, setPaymentResponse] = useState(null);
 
-const parseExpiry = (date) => {
-  const [mm, yy] = date.split("/");
-  return { month: Number(mm), year: Number("20" + yy) };
-};
-
-const usePaymentForm = () => {
-  const [datosEnviados, setDatosEnviados] = useState(null);
-  const [step, setStep] = useState(1);
-  const [accessToken, setAccessToken] = useState(null);
-
-  const [formDataTarjeta, setFormDataTarjeta] = useState({
-    numeroTarjeta: "",
-    cvv: "",
-    mesVencimiento: 0,
-    anioVencimiento: 0,
-    expiry: "", // MM/AA
-  });
-
-  const [formData, setFormData] = useState({
-    monto: 112.67,
-    urlRedirect: "https://www.ricaldone.edu.sv",
-    nombre: "JUAN",
-    apellido: "PEREZ",
-    email: "correo@test.com",
-    ciudad: "SAN SALVADOR",
-    direccion: "AVENIDA PRUEBA 123",
-    idPais: "SV",
-    idRegion: "SV-SS",
-    codigoPostal: "1101",
-    telefono: "77771234",
-  });
-
-  const [errors, setErrors] = useState({});
-
-  const handleChangeData = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleChangeTarjeta = (e) => {
-    const { name, value } = e.target;
-    setFormDataTarjeta((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const limpiarFormulario = () => {
-    setFormData({
-      monto: 112.67,
-      urlRedirect: "https://www.ricaldone.edu.sv",
-      nombre: "JUAN",
-      apellido: "PEREZ",
-      email: "correo@test.com",
-      ciudad: "SAN SALVADOR",
-      direccion: "AVENIDA PRUEBA 123",
-      idPais: "SV",
-      idRegion: "SV-SS",
-      codigoPostal: "1101",
-      telefono: "77771234",
-    });
-    setDatosEnviados(null);
-    setStep(1);
-    setAccessToken(null);
-    setFormDataTarjeta({
-      numeroTarjeta: "",
-      cvv: "",
-      mesVencimiento: 0,
-      anioVencimiento: 0,
-      expiry: "",
-    });
-    setErrors({});
-  };
-
-  const validarTarjeta = () => {
-    const newErrors = {
-      numeroTarjeta: validateCardNumber(formDataTarjeta.numeroTarjeta)
-        ? ""
-        : "Número inválido (16 dígitos)",
-      cvv: validateCVV(formDataTarjeta.cvv) ? "" : "CVV inválido (3-4 dígitos)",
-      expiry: validateExpiry(formDataTarjeta.expiry) ? "" : "Fecha inválida (MM/AA)",
-      nombre: formData.nombre.trim() ? "" : "Nombre requerido",
-    };
-    setErrors(newErrors);
-    return !Object.values(newErrors).some((e) => e);
-  };
-
-  const handleFirstStep = async () => {
-    if (!validarTarjeta()) return;
-
+  // 🔹 1. Obtener token desde tu backend
+  const getToken = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/payment/token", { method: "POST" });
-      if (!res.ok) throw new Error(`Error al obtener token: ${res.status}`);
-      const tokenData = await res.json();
-      setAccessToken(tokenData.access_token);
-      setStep(2);
-    } catch (error) {
-      console.error(error);
-      alert(`Error obteniendo token: ${error.message}`);
+      setLoading(true);
+      setError(null);
+
+      const res = await fetch("http://localhost:5000/api/payment/token", {
+        method: "POST",
+      });
+
+      if (!res.ok) {
+        const { error } = await res.json();
+        throw new Error(error || "Error al obtener token");
+      }
+
+      const data = await res.json();
+      setToken(data.access_token);
+      return data.access_token;
+    } catch (err) {
+      setError(err.message);
+      return null;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleFinishPayment = async () => {
+  // 🔹 2. Pago de prueba (sin 3DS)
+  const testPayment = async (formData) => {
     try {
-      const { month, year } = parseExpiry(formDataTarjeta.expiry);
+      setLoading(true);
+      setError(null);
 
-      const paymentData = {
-        ...formData,
-        tarjetaCreditoDebido: {
-          numeroTarjeta: formDataTarjeta.numeroTarjeta.replace(/\s/g, ""),
-          cvv: formDataTarjeta.cvv,
-          mesVencimiento: month,
-          anioVencimiento: year,
-        },
-      };
+      const res = await fetch("http://localhost:5000/api/payment/testPayment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, formData }),
+      });
 
-      console.log("PAYLOAD ENVIADO:", { token: accessToken, formData: paymentData });
+      if (!res.ok) {
+        const { error } = await res.json();
+        throw new Error(error || "Error en el pago de prueba");
+      }
+
+      const data = await res.json();
+      setPaymentResponse(data);
+      return data;
+    } catch (err) {
+      setError(err.message);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔹 3. Pago real con 3DS
+  const payment3ds = async (formData) => {
+    try {
+      setLoading(true);
+      setError(null);
 
       const res = await fetch("http://localhost:5000/api/payment/payment3ds", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: accessToken, formData: paymentData }),
+        body: JSON.stringify({ token, formData }),
       });
 
       if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Error al procesar pago: ${res.status} - ${errorText}`);
+        const { error } = await res.json();
+        throw new Error(error || "Error en el pago 3DS");
       }
 
       const data = await res.json();
-      if (data.estado === "APPROVED") alert("✅ Pago aprobado en sandbox");
-      else alert(`❌ Pago fallido: ${data.mensaje || "Error"}`);
-    } catch (error) {
-      console.error(error);
-      alert(`Error en el proceso de pago: ${error.message}`);
+      setPaymentResponse(data);
+      return data;
+    } catch (err) {
+      setError(err.message);
+      return null;
     } finally {
-      setStep(3);
-      limpiarFormulario();
+      setLoading(false);
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setDatosEnviados(formData);
+  // 🔹 4. Flujo completo para iniciar y pagar
+  const handlePay = async (formData, with3ds = false) => {
+    let activeToken = token;
+
+    // Si no hay token en memoria, lo obtenemos primero
+    if (!activeToken) {
+      activeToken = await getToken();
+      if (!activeToken) return;
+    }
+
+    if (with3ds) {
+      return await payment3ds(formData);
+    } else {
+      return await testPayment(formData);
+    }
   };
 
   return {
-    formData,
-    datosEnviados,
-    formDataTarjeta,
-    step,
-    errors,
-    setStep,
-    handleChangeData,
-    handleChangeTarjeta,
-    handleSubmit,
-    limpiarFormulario,
-    handleFirstStep,
-    handleFinishPayment,
+    loading,
+    error,
+    token,
+    paymentResponse,
+    getToken,
+    testPayment,
+    payment3ds,
+    handlePay,
   };
 };
 
-export default usePaymentForm;
+export default usePayment;
