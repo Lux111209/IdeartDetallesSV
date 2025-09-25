@@ -23,6 +23,22 @@ const useFetchShoppingCart = () => {
     }
   }, []);
 
+  // ===== OBTENER UN CARRITO POR ID =====
+  const getById = async (id) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetch(`${API_URL}/${id}`, { credentials: "include" });
+      if (!res.ok) throw new Error(`Error al obtener carrito (${res.status})`);
+      return await res.json();
+    } catch (err) {
+      setError(err.message);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // ===== CREAR UN NUEVO CARRITO =====
   const create = async (newCarrito) => {
     try {
@@ -95,6 +111,7 @@ const useFetchShoppingCart = () => {
     loading,
     error,
     getAll,
+    getById,
     create,
     update,
     remove,
