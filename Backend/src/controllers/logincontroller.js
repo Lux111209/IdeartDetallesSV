@@ -41,10 +41,10 @@ loginController.login = async (req, res) => {
 
     // Guardar token en cookie segura
     res.cookie("authToken", token, {
-      httpOnly: true,
+      //httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 día
-      sameSite: "Lax",
-      secure: config.NODE_ENV === "production",
+      //sameSite: "Lax",
+      //secure: true,
     });
 
     // Respuesta con datos del usuario
