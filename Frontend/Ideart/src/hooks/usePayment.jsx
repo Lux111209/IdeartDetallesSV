@@ -114,7 +114,7 @@ export const usePayment = () => {
     getToken,
     testPayment,
     payment3ds,
-    handlePay,sss
+    handlePay,
   };
 };
 
