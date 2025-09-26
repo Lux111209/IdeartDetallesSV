@@ -4,8 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import TopBar from "../components/TopBar";
 import InlineToast from "../components/Toast";
-import usePaymentForm from "../hooks/usePaymentForm.jsx";
-import usePayment from "../hooks/usePayment.jsx";
+import usePaymentUnified from "../hooks/usePayment.jsx";
 import "../css/Checkout.css";
 
 const CreditForm = () => {
@@ -14,22 +13,24 @@ const CreditForm = () => {
   const {
     formData,
     formDataTarjeta,
-    errors = {},
     step,
     handleChangeData,
     handleChangeTarjeta,
     handleFirstStep,
     handleFinishPayment,
-  } = usePaymentForm();
-
-  const { handlePay, loading, error, paymentResponse } = usePayment();
+    loading,
+    accessToken,
+    limpiarFormulario,
+  } = usePaymentUnified();
 
   const [isCvvFocused, setIsCvvFocused] = useState(false);
+  const [error, setError] = useState(null);
+  const [paymentResponse, setPaymentResponse] = useState(null);
 
-  // Handlers para los inputs
+  // Handlers con validaciones de límites
   const handleNameChange = (e) => {
     let value = e.target.value;
-    value = value.replace(/[^\p{L}\s'-]/gu, "");
+    value = value.replace(/[^\p{L}\s'-]/gu, "").slice(0, 50);
     value = value.replace(/\s+/g, " ");
     value = value.toLocaleUpperCase("es-ES");
     handleChangeData({ target: { name: "nombre", value } });
@@ -37,76 +38,92 @@ const CreditForm = () => {
 
   const handleApellidoChange = (e) => {
     let value = e.target.value;
-    value = value.replace(/[^\p{L}\s'-]/gu, "");
+    value = value.replace(/[^\p{L}\s'-]/gu, "").slice(0, 50);
     value = value.replace(/\s+/g, " ");
     value = value.toLocaleUpperCase("es-ES");
     handleChangeData({ target: { name: "apellido", value } });
   };
 
   const handleEmailChange = (e) => {
-    handleChangeData({ target: { name: "email", value: e.target.value } });
+    const value = e.target.value.slice(0, 100);
+    handleChangeData({ target: { name: "email", value } });
   };
 
   const handleCiudadChange = (e) => {
-    handleChangeData({ target: { name: "ciudad", value: e.target.value } });
+    const value = e.target.value.slice(0, 100);
+    handleChangeData({ target: { name: "ciudad", value } });
   };
 
   const handleDireccionChange = (e) => {
-    handleChangeData({ target: { name: "direccion", value: e.target.value } });
+    const value = e.target.value.slice(0, 100);
+    handleChangeData({ target: { name: "direccion", value } });
   };
 
   const handleTelefonoChange = (e) => {
-    handleChangeData({ target: { name: "telefono", value: e.target.value.replace(/\D/g, "") } });
-  };
-
-  const formatCardNumber = (value) => {
-    const digits = value.replace(/\D/g, "").slice(0, 16);
-    return digits.replace(/(.{4})/g, "$1 ").trim();
+    const value = e.target.value.replace(/\D/g, "").slice(0, 15);
+    handleChangeData({ target: { name: "telefono", value } });
   };
 
   const handleCardNumberChange = (e) => {
-    handleChangeTarjeta({
-      target: { name: "numeroTarjeta", value: formatCardNumber(e.target.value) },
-    });
+    let value = e.target.value.replace(/\D/g, "").slice(0, 16);
+    value = value.replace(/(.{4})/g, "$1 ").trim();
+    handleChangeTarjeta({ target: { name: "numeroTarjeta", value } });
   };
 
   const handleExpiryChange = (e) => {
     let value = e.target.value.replace(/\D/g, "").slice(0, 4);
-    if (value.length > 2) value = value.slice(0, 2) + "/" + value.slice(2);
+    if (value.length >= 3) {
+      value = value.slice(0, 2) + "/" + value.slice(2);
+    }
     handleChangeTarjeta({ target: { name: "expiry", value } });
   };
 
   const handleCvvChange = (e) => {
-    handleChangeTarjeta({
-      target: { name: "cvv", value: e.target.value.replace(/\D/g, "").slice(0, 4) },
-    });
+    const value = e.target.value.replace(/\D/g, "").slice(0, 4);
+    handleChangeTarjeta({ target: { name: "cvv", value } });
   };
 
-  // Procesar el pago con los datos del formulario
-  const onPay = async () => {
-    const paymentData = { ...formData, ...formDataTarjeta };
-    console.log("Botón de pago presionado, datos:", paymentData);
-    await handlePay(paymentData, true);
-    console.log("handlePay ejecutado");
+  const handleMontoChange = (e) => {
+    let value = e.target.value.replace(/[^\d.]/g, "");
+    const parts = value.split(".");
+    if (parts.length > 2) {
+      value = parts[0] + "." + parts[1];
+    }
+    if (parts[1] && parts[1].length > 2) {
+      value = parts[0] + "." + parts[1].slice(0, 2);
+    }
+    if (parts[0] && parts[0].length > 10) {
+      parts[0] = parts[0].slice(0, 10);
+      value = parts.join(".");
+    }
+    const numericValue = value === "" ? 0 : parseFloat(value) || 0;
+    handleChangeData({ target: { name: "monto", value: numericValue } });
   };
 
-  // Botón de pasos
+  // Animación: nombre y apellido juntos
+  const cardName =
+    (formData?.nombre ? formData.nombre : "") +
+    (formData?.apellido ? " " + formData.apellido : "");
+
+  // Botón de pasos con debugging detallado
   const handleButtonClick = async () => {
-    console.log("Botón clickeado, step:", step);
-    if (step === 1) {
-      console.log("Ejecutando handleFirstStep");
-      await handleFirstStep();
+    console.log("=== DEBUGGING PAYMENT FLOW ===");
+    console.log("Current step:", step);
+    console.log("AccessToken:", accessToken);
+    console.log("FormData:", JSON.stringify(formData, null, 2));
+    console.log("FormDataTarjeta:", JSON.stringify(formDataTarjeta, null, 2));
+    try {
+      if (step === 1) {
+        await handleFirstStep();
+      } else if (step === 2) {
+        await handleFinishPayment();
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error("Error en el flujo de pago:", err);
     }
-    if (step === 2) {
-      console.log("Ejecutando handleFinishPayment");
-      await handleFinishPayment(onPay);
-    }
+    console.log("=== END DEBUGGING ===");
   };
-
-  // Log para ver cambios en error y paymentResponse
-  React.useEffect(() => {
-    console.log("error:", error, "paymentResponse:", paymentResponse);
-  }, [error, paymentResponse]);
 
   return (
     <>
@@ -119,8 +136,11 @@ const CreditForm = () => {
 
         <div className="form-card credit-form">
           <div className="form-left">
-            {Object.entries(errors).map(
-              ([field, msg]) => msg && <InlineToast key={field} type="warning" message={msg} />
+            {error && (
+              <InlineToast
+                type="error"
+                message={`Error al procesar el pago: ${error}`}
+              />
             )}
 
             <label>Nombre</label>
@@ -129,6 +149,7 @@ const CreditForm = () => {
               value={formData?.nombre || ""}
               onChange={handleNameChange}
               name="nombre"
+              maxLength="50"
             />
 
             <label>Apellido</label>
@@ -137,6 +158,7 @@ const CreditForm = () => {
               value={formData?.apellido || ""}
               onChange={handleApellidoChange}
               name="apellido"
+              maxLength="50"
             />
 
             <label>Email</label>
@@ -145,6 +167,8 @@ const CreditForm = () => {
               value={formData?.email || ""}
               onChange={handleEmailChange}
               name="email"
+              type="email"
+              maxLength="100"
             />
 
             <label>Ciudad</label>
@@ -153,6 +177,7 @@ const CreditForm = () => {
               value={formData?.ciudad || ""}
               onChange={handleCiudadChange}
               name="ciudad"
+              maxLength="100"
             />
 
             <label>Dirección</label>
@@ -161,6 +186,7 @@ const CreditForm = () => {
               value={formData?.direccion || ""}
               onChange={handleDireccionChange}
               name="direccion"
+              maxLength="100"
             />
 
             <label>Teléfono</label>
@@ -169,6 +195,8 @@ const CreditForm = () => {
               value={formData?.telefono || ""}
               onChange={handleTelefonoChange}
               name="telefono"
+              type="tel"
+              maxLength="15"
             />
 
             <label>Número de Tarjeta</label>
@@ -177,6 +205,7 @@ const CreditForm = () => {
               value={formDataTarjeta?.numeroTarjeta || ""}
               onChange={handleCardNumberChange}
               name="numeroTarjeta"
+              maxLength="19"
             />
 
             <label>Fecha de Vencimiento</label>
@@ -185,6 +214,7 @@ const CreditForm = () => {
               value={formDataTarjeta?.expiry || ""}
               onChange={handleExpiryChange}
               name="expiry"
+              maxLength="5"
             />
 
             <label>CVV</label>
@@ -195,35 +225,24 @@ const CreditForm = () => {
               onBlur={() => setIsCvvFocused(false)}
               onChange={handleCvvChange}
               name="cvv"
+              type="password"
+              maxLength="4"
+            />
+
+            <label>Monto</label>
+            <input
+              placeholder="Monto"
+              value={formData?.monto || ""}
+              onChange={handleMontoChange}
+              name="monto"
+              type="number"
+              min="0"
+              step="0.01"
             />
 
             <button className="confirm-button" onClick={handleButtonClick} disabled={loading}>
               {step === 1 ? "Generar Token" : step === 2 ? "Procesar Pago" : "Pago Completo"}
             </button>
-
-            {/* Toasts de éxito y error */}
-            {error && (
-              <InlineToast
-                type="error"
-                message={`Error al procesar el pago: ${error}`}
-              />
-            )}
-            {paymentResponse && paymentResponse.status === "success" && (
-              <InlineToast
-                type="success"
-                message={
-                  paymentResponse.id
-                    ? `Pago realizado correctamente. ID: ${paymentResponse.id}`
-                    : "Pago realizado correctamente"
-                }
-              />
-            )}
-            {paymentResponse && paymentResponse.status !== "success" && (
-              <InlineToast
-                type="warning"
-                message="El pago fue procesado pero la respuesta no indica éxito."
-              />
-            )}
           </div>
 
           <div className="form-right summary">
@@ -235,7 +254,7 @@ const CreditForm = () => {
                 </div>
                 <div className="card-footer">
                   <div className="card-name">
-                    {formData?.nombre || "NOMBRE APELLIDO"}
+                    {cardName.trim() || "NOMBRE APELLIDO"}
                   </div>
                   <div className="card-expiry">
                     {formDataTarjeta?.expiry || "MM/AA"}

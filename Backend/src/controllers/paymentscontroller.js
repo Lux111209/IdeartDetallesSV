@@ -8,10 +8,10 @@ export const getToken = async (req, res) => {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
-        grant_type: config.WOMPI.GRANT_TYPE,
-        client_id: config.WOMPI.CLIENT_ID,
-        client_secret: config.WOMPI.CLIENT_SECRET,
-        audience: config.WOMPI.AUDIENCE,
+        grant_type:"client_credentials",
+        client_id: "4cbb0dc0-edc6-4100-a682-121bb03cba39",
+        client_secret: "48cf2030-9e8e-46ed-ba8e-b1a9351ecb8d",
+        audience: "wompi_api",
       }),
     });
 
@@ -21,6 +21,7 @@ export const getToken = async (req, res) => {
     }
 
     const data = await response.json();
+    console.log("🟢 Token obtenido (PRODUCCIÓN):", data);
     res.json(data);
   } catch (err) {
     console.error(err);
