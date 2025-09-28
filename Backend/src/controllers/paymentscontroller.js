@@ -1,15 +1,17 @@
+import {config} from "../../config.js";
 
-// Obtener token
+console.log("WOMPI ENV:", config.WOMPI);
+
 export const getToken = async (req, res) => {
   try {
     const response = await fetch("https://id.wompi.sv/connect/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
-        grant_type: process.env.GRANT_TYPE,
-        client_id: process.env.CLIENT_ID,
-        client_secret: process.env.CLIENT_SECRET,
-        audience: process.env.AUDIENCE,
+        grant_type:"client_credentials",
+        client_id: "4cbb0dc0-edc6-4100-a682-121bb03cba39",
+        client_secret: "48cf2030-9e8e-46ed-ba8e-b1a9351ecb8d",
+        audience: "wompi_api",
       }),
     });
 
@@ -19,6 +21,7 @@ export const getToken = async (req, res) => {
     }
 
     const data = await response.json();
+    console.log("🟢 Token obtenido (PRODUCCIÓN):", data);
     res.json(data);
   } catch (err) {
     console.error(err);
@@ -52,6 +55,15 @@ export const testPayment = async (req, res) => {
     }
 
     const data = await response.json();
+
+    // Log para verificar la transacción
+    console.log("🟢 Transacción procesada (PRODUCCIÓN):", {
+      status: data.status,
+      mensaje: data.mensaje,
+      idTransaccion: data.idTransaccion,
+      raw: data
+    });
+
     res.json(data);
   } catch (err) {
     console.error(err);
@@ -78,10 +90,20 @@ export const payment3ds = async (req, res) => {
 
     if (!response.ok) {
       const error = await response.text();
+      console.log("🔴 Error en transacción 3DS (PRODUCCIÓN):", error);
       return res.status(response.status).json({ error });
     }
 
     const data = await response.json();
+
+    // Log para verificar la transacción 3DS
+    console.log("🟢 Transacción 3DS procesada (PRODUCCIÓN):", {
+      status: data.status,
+      mensaje: data.mensaje,
+      idTransaccion: data.idTransaccion,
+      raw: data
+    });
+
     res.json(data);
   } catch (err) {
     console.error(err);

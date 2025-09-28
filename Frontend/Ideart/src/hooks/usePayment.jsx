@@ -1,67 +1,63 @@
 import { useState } from "react";
 
-// Validaciones
-const validateCardNumber = (num) => /^\d{16}$/.test(num.replace(/\s/g, ""));
-const validateCVV = (cvv) => /^\d{3,4}$/.test(cvv);
-const validateExpiry = (date) => /^(0[1-9]|1[0-2])\/\d{2}$/.test(date);
-
-const parseExpiry = (date) => {
-  const [mm, yy] = date.split("/");
-  return { month: Number(mm), year: Number("20" + yy) };
-};
-
-const usePaymentForm = () => {
+const usePaymentUnified = () => {
   const [datosEnviados, setDatosEnviados] = useState(null);
   const [step, setStep] = useState(1);
   const [accessToken, setAccessToken] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const [formDataTarjeta, setFormDataTarjeta] = useState({
     numeroTarjeta: "",
     cvv: "",
-    mesVencimiento: 0,
-    anioVencimiento: 0,
-    expiry: "", // MM/AA
+    expiry: "", // ahora se guarda MM/AA en un solo campo
   });
 
   const [formData, setFormData] = useState({
-    monto: 112.67,
+    monto: 0.01,
     urlRedirect: "https://www.ricaldone.edu.sv",
-    nombre: "JUAN",
-    apellido: "PEREZ",
-    email: "correo@test.com",
-    ciudad: "SAN SALVADOR",
-    direccion: "AVENIDA PRUEBA 123",
+    nombre: "",
+    apellido: "",
+    email: "",
+    ciudad: "",
+    direccion: "",
     idPais: "SV",
     idRegion: "SV-SS",
     codigoPostal: "1101",
-    telefono: "77771234",
+    telefono: "",
   });
 
-  const [errors, setErrors] = useState({});
-
+  // Cambios en datos personales
   const handleChangeData = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
+  // Cambios en datos de tarjeta
   const handleChangeTarjeta = (e) => {
     const { name, value } = e.target;
-    setFormDataTarjeta((prev) => ({ ...prev, [name]: value }));
+    setFormDataTarjeta((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
+  // Limpiar formulario
   const limpiarFormulario = () => {
     setFormData({
-      monto: 112.67,
+      monto: 0.01,
       urlRedirect: "https://www.ricaldone.edu.sv",
-      nombre: "JUAN",
-      apellido: "PEREZ",
-      email: "correo@test.com",
-      ciudad: "SAN SALVADOR",
-      direccion: "AVENIDA PRUEBA 123",
+      nombre: "",
+      apellido: "",
+      email: "",
+      ciudad: "",
+      direccion: "",
       idPais: "SV",
       idRegion: "SV-SS",
       codigoPostal: "1101",
-      telefono: "77771234",
+      telefono: "",
     });
     setDatosEnviados(null);
     setStep(1);
@@ -69,99 +65,105 @@ const usePaymentForm = () => {
     setFormDataTarjeta({
       numeroTarjeta: "",
       cvv: "",
-      mesVencimiento: 0,
-      anioVencimiento: 0,
       expiry: "",
     });
-    setErrors({});
   };
 
-  const validarTarjeta = () => {
-    const newErrors = {
-      numeroTarjeta: validateCardNumber(formDataTarjeta.numeroTarjeta)
-        ? ""
-        : "Número inválido (16 dígitos)",
-      cvv: validateCVV(formDataTarjeta.cvv) ? "" : "CVV inválido (3-4 dígitos)",
-      expiry: validateExpiry(formDataTarjeta.expiry) ? "" : "Fecha inválida (MM/AA)",
-      nombre: formData.nombre.trim() ? "" : "Nombre requerido",
-    };
-    setErrors(newErrors);
-    return !Object.values(newErrors).some((e) => e);
-  };
-
+  // Paso 1: Obtener token
   const handleFirstStep = async () => {
-    if (!validarTarjeta()) return;
-
     try {
-      const res = await fetch("http://localhost:5000/api/payment/token", { method: "POST" });
-      if (!res.ok) throw new Error(`Error al obtener token: ${res.status}`);
-      const tokenData = await res.json();
+      setLoading(true);
+      const tokenResponse = await fetch("http://localhost:5000/api/payment/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!tokenResponse.ok) {
+        const errorText = await tokenResponse.text();
+        throw new Error(`Error al obtener token: ${errorText}`);
+      }
+
+      const tokenData = await tokenResponse.json();
       setAccessToken(tokenData.access_token);
       setStep(2);
     } catch (error) {
-      console.error(error);
-      alert(`Error obteniendo token: ${error.message}`);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Paso 2: Enviar pago
   const handleFinishPayment = async () => {
     try {
-      const { month, year } = parseExpiry(formDataTarjeta.expiry);
+      setLoading(true);
+      let { expiry, numeroTarjeta, cvv } = formDataTarjeta;
 
-      const paymentData = {
+      // Parsear MM/AA → mes y año
+      const [mesRaw, anioRaw] = expiry.split("/");
+      let mesVencimiento = mesRaw?.padStart(2, "0");
+      let anioVencimiento =
+        anioRaw?.length === 2 ? `20${anioRaw}` : anioRaw;
+
+      if (!mesVencimiento || parseInt(mesVencimiento) < 1 || parseInt(mesVencimiento) > 12) {
+        throw new Error("El mes de vencimiento debe estar entre 01 y 12");
+      }
+
+      if (!anioVencimiento || anioVencimiento.length !== 4) {
+        throw new Error("El año de vencimiento debe tener 4 dígitos (ejemplo: 2025)");
+      }
+
+      const formDataPayment = {
         ...formData,
         tarjetaCreditoDebido: {
-          numeroTarjeta: formDataTarjeta.numeroTarjeta.replace(/\s/g, ""),
-          cvv: formDataTarjeta.cvv,
-          mesVencimiento: month,
-          anioVencimiento: year,
+          numeroTarjeta,
+          cvv,
+          mesVencimiento,
+          anioVencimiento,
         },
       };
 
-      console.log("PAYLOAD ENVIADO:", { token: accessToken, formData: paymentData });
+      const paymentResponse = await fetch(
+        "http://localhost:5000/api/payment/payment3ds",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: accessToken, formData: formDataPayment }),
+        }
+      );
 
-      const res = await fetch("http://localhost:5000/api/payment/payment3ds", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: accessToken, formData: paymentData }),
-      });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Error al procesar pago: ${res.status} - ${errorText}`);
+      if (!paymentResponse.ok) {
+        const errorText = await paymentResponse.text();
+        throw new Error(`Error al procesar pago: ${errorText}`);
       }
 
-      const data = await res.json();
-      if (data.estado === "APPROVED") alert("✅ Pago aprobado en sandbox");
-      else alert(`❌ Pago fallido: ${data.mensaje || "Error"}`);
-    } catch (error) {
-      console.error(error);
-      alert(`Error en el proceso de pago: ${error.message}`);
-    } finally {
+      const paymentData = await paymentResponse.json();
+      alert("Pago realizado correctamente");
+      console.log("Respuesta del pago:", paymentData);
       setStep(3);
       limpiarFormulario();
+    } catch (error) {
+      console.error("Error en el proceso de pago:", error);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setDatosEnviados(formData);
   };
 
   return {
     formData,
     datosEnviados,
-    formDataTarjeta,
-    step,
-    errors,
-    setStep,
     handleChangeData,
     handleChangeTarjeta,
-    handleSubmit,
+    formDataTarjeta,
     limpiarFormulario,
     handleFirstStep,
     handleFinishPayment,
+    step,
+    setStep,
+    accessToken,
+    loading,
   };
 };
 
-export default usePaymentForm;
+export default usePaymentUnified;

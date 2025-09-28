@@ -41,6 +41,15 @@ export const config = {
         API_SECRET: process.env.CLOUDINARY_API_SECRET,
         SECURE: true
     },
+    //Se creo la config de wompi
+    WOMPI:{
+    GRANT_TYPE:process.env.GRANT_TYPE,
+    CLIENT_ID: process.env.CLIENT_ID,
+    CLIENT_SECRET: process.env.CLIENT_SECRET,
+    AUDIENCE: process.env.AUDIENCE,
+
+        //
+    }
 };
 
 // Exportar configuración por defecto
