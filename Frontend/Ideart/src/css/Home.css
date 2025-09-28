@@ -377,3 +377,15 @@
     height: 140px;
   }
 }
+
+.promotions-link {
+  color: inherit;           /* Mantiene el color del h2 */
+  text-decoration: none;    /* Quita el subrayado */
+  font: inherit;            /* Hereda tipografía y tamaño */
+  cursor: pointer;          /* Que se sienta clickeable */
+  transition: opacity 0.2s ease-in-out;
+}
+
+.promotions-link:hover {
+  opacity: 0.8;             /* Sutil efecto al pasar el mouse */
+}

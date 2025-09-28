@@ -23,13 +23,27 @@ import RecoverPassword from "./pages/RecoverPassword";
 import Favorites from "./pages/Favorites";
 import Promotions from "./pages/Promotions";
 
+// Componente para manejar la redirección inicial
+const DefaultRedirect = () => {
+  const isLoggedIn = !!localStorage.getItem("token"); // ajusta según tu lógica de auth
+  return isLoggedIn ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />;
+};
+
 function App() {
   return (
     <Routes>
       {/* Redirección inicial */}
-      <Route path="/" element={<Navigate to="/register" replace />} />
+      <Route path="/" element={<DefaultRedirect />} />
 
-      {/* Rutas protegidas */}
+      {/* Rutas públicas (sin login) */}
+      <Route element={<PublicRoute />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/recover-password" element={<RecoverPassword />} />
+        <Route path="/creditform" element={<CreditForm />} />
+      </Route>
+
+      {/* Rutas protegidas (requieren login) */}
       <Route element={<ProtectedRoute />}>
         <Route path="/home" element={<Home />} />
         <Route path="/products" element={<Product />} />
@@ -38,7 +52,6 @@ function App() {
         <Route path="/category" element={<Category />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/checkout" element={<CheckoutInfo />} />
-        
         <Route path="/settings" element={<Settings />} />
         <Route path="/language" element={<Language />} />
         <Route path="/reviews" element={<Reviews />} />
@@ -46,21 +59,13 @@ function App() {
         <Route path="/promotions" element={<Promotions />} />
       </Route>
 
-      {/* Rutas públicas */}
-      <Route element={<PublicRoute />}>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/recover-password" element={<RecoverPassword />} />
-         <Route path="/creditform" element={<CreditForm />} />
-      </Route>
-
-      {/* Rutas accesibles a todos */}
+      {/* Rutas accesibles para todos */}
       <Route path="/contactus" element={<ContactUs />} />
-      <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+      <Route path="/terms" element={<TermsAndConditions />} />
       <Route path="/verificar-email" element={<EmailVerification />} />
 
-      {/* Ruta por defecto */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      {/* Ruta por defecto si no existe */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

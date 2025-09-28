@@ -1,25 +1,43 @@
-import React from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import TopBar from '../components/TopBar';
-import '../css/Home.css';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import TopBar from "../components/TopBar";
+import "../css/Home.css";
 
 const Home = () => {
+  const [promotions, setPromotions] = useState([]);
+
+  useEffect(() => {
+    // Función para obtener promociones activas
+    const fetchPromotions = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/ofertas/activas");
+        if (!res.ok) throw new Error("Error al obtener promociones");
+        const data = await res.json();
+        setPromotions(data);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    fetchPromotions();
+  }, []); // <-- Array vacío evita bucles infinitos
+
   return (
     <>
-      {/* Barra superior con información adicional */}
+      {/* Barra superior */}
       <div className="top-bar">
         <TopBar />
       </div>
 
-      {/* Navegación principal */}
+      {/* Navbar */}
       <div className="navbar-wrapper">
         <Navbar />
       </div>
 
-      {/* Contenido principal de la página */}
       <div className="home">
-        {/* Collage de imágenes decorativas */}
+        {/* Collage de imágenes */}
         <section className="collage-grid">
           <div className="grid-item img5">
             <img src="/H2.jpg" alt="Decoración 1" />
@@ -38,37 +56,47 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Sección con promociones destacadas */}
+        {/* Sección de promociones */}
         <section className="promotions">
-          <h2>Promociones</h2>
-          <div className="promotion-cards">
-            <div className="promotion-card">
-              <img src="/H8.jpg" alt="Camiseta promocional" />
-            </div>
-            <div className="promotion-card">
-              <img src="/H7.jpg" alt="Taza promocional" />
-            </div>
-            <div className="promotion-card">
-              <img src="/H9.jpg" alt="Llaveros promocionales" />
-            </div>
+          <h2>
+            <Link to="/promotions" className="promotions-link">
+              Promociones
+            </Link>
+          </h2>
+
+          <div className="promotion-cards promotion-scroll">
+            {promotions.length > 0 ? (
+              promotions.map((promo) => (
+                <div key={promo.id} className="promotion-card">
+                  <img
+                    src={promo.imagen || "/placeholder.jpg"}
+                    alt={promo.titulo}
+                  />
+                  <h3>{promo.titulo}</h3>
+                  <p>{promo.descripcion}</p>
+                </div>
+              ))
+            ) : (
+              <p>No hay promociones activas.</p>
+            )}
           </div>
         </section>
 
-        {/* Sección de confianza con texto e imagen */}
+        {/* Sección de confianza */}
         <section className="trust">
           <div className="trust-text">
             <h2>¿Por qué confiar en Ideart?</h2>
             <p>
               En Ideart, no solo imprimimos, damos vida a tus ideas.<br />
-              Somos una empresa salvadoreña especializada en productos personalizados y sublimación de alta calidad,
-              con un enfoque en el detalle, la durabilidad y la creatividad.
+              Somos una empresa salvadoreña especializada en productos
+              personalizados y sublimación de alta calidad, con un enfoque en el
+              detalle, la durabilidad y la creatividad.
             </p>
           </div>
-          <img src="/H4.jpg" />
+          <img src="/H4.jpg" alt="Confianza Ideart" />
         </section>
       </div>
 
-      {/* Pie de página común */}
       <Footer />
     </>
   );

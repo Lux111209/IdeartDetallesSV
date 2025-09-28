@@ -1,14 +1,21 @@
 // src/components/EditNameModal.jsx
-import React, { useState } from 'react';
-import '../css/Profile.css'; // Estilos del modal
+import React, { useState } from "react";
+import "../css/Profile.css"; // Estilos del modal
 
 // Componente modal para editar el nombre del usuario
-const EditNameModal = ({ user, setUser, onClose }) => {
+const EditNameModal = ({ user, setUser, updateUser, onClose }) => {
   const [newName, setNewName] = useState(user.name); // Estado local con el nombre actual
 
   // Guarda el nuevo nombre y cierra el modal
   const handleSave = () => {
-    setUser({ ...user, name: newName }); // Actualiza el usuario
+    // Actualiza el estado local sin perder el resto de datos
+    setUser((prev) => ({ ...prev, name: newName }));
+
+    // Llama al updateUser para actualizar en el backend
+    if (typeof updateUser === "function") {
+      updateUser({ ...user, name: newName });
+    }
+
     onClose(); // Cierra el modal
   };
 

@@ -1,49 +1,46 @@
+// src/components/ProfileCard.jsx
 import React, { useState, useRef } from 'react';
-import { Pencil, Lock, Camera } from 'lucide-react';
+import { Pencil, Lock, Camera, Phone } from 'lucide-react';
 import EditNameModal from './EditNameModal';
 import ChangePasswordModal from './ChangePasswordModal';
+import NumberModal from './NumberModal';
 import '../css/Profile.css';
 
 const ProfileCard = ({ user, setUser, updateUser }) => {
-  // Estado para mostrar/ocultar modal de editar nombre
+  // Estados para mostrar/ocultar modales
   const [showNameModal, setShowNameModal] = useState(false);
-  // Estado para mostrar/ocultar modal de cambiar contraseña
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
+
   // Referencia para input file oculto que permite cambiar la imagen de perfil
   const fileInputRef = useRef(null);
 
   // Función que maneja el cambio de imagen seleccionada
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (!file) return; // Si no se seleccionó archivo, salir
+    if (!file) return;
 
     const reader = new FileReader();
-    // Cuando termine de leer el archivo, actualizar la imagen en el estado
     reader.onloadend = () => {
       const imageUrl = reader.result;
-      setUser((prev) => ({ ...prev, image: imageUrl })); // Actualiza imagen localmente
-
-      // Si hay función para actualizar usuario externamente, llamarla
+      const updatedUser = { ...user, image: imageUrl };
+      setUser(updatedUser); // Actualiza estado local
       if (typeof updateUser === 'function') {
-        updateUser({ ...user, image: imageUrl });
-      } else {
-        console.warn('updateUser is not a function');
+        updateUser(updatedUser); // Actualiza backend
       }
     };
-    reader.readAsDataURL(file); // Lee el archivo como URL base64
+    reader.readAsDataURL(file);
   };
 
   return (
     <div className="profile-card">
-      {/* Contenedor de la imagen con posición relativa para el icono */}
+      {/* Imagen del usuario */}
       <div className="profile-image-wrapper">
-        {/* Imagen del perfil o imagen por defecto */}
         <img
           src={user.image || '/default-profile.png'}
           alt="Foto de perfil"
           className="profile-img"
         />
-        {/* Input file oculto para seleccionar imagen */}
         <input
           type="file"
           ref={fileInputRef}
@@ -51,7 +48,6 @@ const ProfileCard = ({ user, setUser, updateUser }) => {
           style={{ display: 'none' }}
           onChange={handleImageChange}
         />
-        {/* Icono de cámara para cambiar foto, clickeable */}
         <div
           className="camera-icon"
           onClick={() => fileInputRef.current?.click()}
@@ -72,7 +68,6 @@ const ProfileCard = ({ user, setUser, updateUser }) => {
       <div className="profile-info">
         <p>
           <span className="label">Nombre:</span> {user.name}
-          {/* Botón para abrir modal de editar nombre */}
           <button onClick={() => setShowNameModal(true)} aria-label="Editar nombre">
             <Pencil size={16} />
           </button>
@@ -84,18 +79,20 @@ const ProfileCard = ({ user, setUser, updateUser }) => {
 
         <p>
           <span className="label">Contraseña:</span> ••••••••
-          {/* Botón para abrir modal de cambiar contraseña */}
           <button onClick={() => setShowPasswordModal(true)} aria-label="Cambiar contraseña">
             <Lock size={16} />
           </button>
         </p>
 
         <p>
-          <span className="label">Teléfono:</span> {user.phone}
+          <span className="label">Teléfono:</span> {user.phone || ''}
+          <button onClick={() => setShowPhoneModal(true)} aria-label="Editar teléfono">
+            <Phone size={16} />
+          </button>
         </p>
       </div>
 
-      {/* Modales que se muestran según el estado */}
+      {/* Modales */}
       {showNameModal && (
         <EditNameModal
           user={user}
@@ -111,6 +108,15 @@ const ProfileCard = ({ user, setUser, updateUser }) => {
           setUser={setUser}
           updateUser={updateUser}
           onClose={() => setShowPasswordModal(false)}
+        />
+      )}
+
+      {showPhoneModal && (
+        <NumberModal
+          user={user}
+          setUser={setUser}
+          updateUser={updateUser}
+          onClose={() => setShowPhoneModal(false)}
         />
       )}
     </div>

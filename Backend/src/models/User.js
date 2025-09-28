@@ -1,5 +1,3 @@
-// models/User.js
-
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
@@ -33,19 +31,16 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-
   loginAttempts: {
     type: Number,
-    default: 0
+    default: 0,
   },
-
   timeOut: {
     type: Date,
-    default: null
+    default: null,
   }
-
 }, {
-  timestamps: true, // Agrega createdAt y updatedAt automáticamente
+  timestamps: true,
 });
 
 export default mongoose.model("User", userSchema);

@@ -1,31 +1,95 @@
-// pages/Profile.jsx
-import React from "react";
-import TopBar from "../components/TopBar";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
+import TopBar from "../components/TopBar";
 import Footer from "../components/Footer";
 import ProfileCard from "../components/ProfileCard";
-import useUser from "../hooks/useFetchUser";
 import "../css/Profile.css";
 
-// Componente para mostrar el perfil del usuario
 const Profile = () => {
-  // ✅ Ahora ya no leemos localStorage manualmente
-  const { user, setUser, loading, error, updateUser } = useUser();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  if (loading) return <p>Cargando...</p>;
-  if (error) return <p>Error: {error}</p>;
-  if (!user) return <p>No se encontró usuario</p>;
+  // Función para actualizar usuario en backend
+  const updateUser = async (updatedData) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token || !user?._id) return false;
+
+      const res = await fetch(`http://localhost:5000/api/users/${user._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (!res.ok) throw new Error("Error al actualizar usuario");
+
+      const data = await res.json();
+      setUser({
+        _id: data._id,
+        name: data.nombre,
+        email: data.correo,
+        phone: data.telefono || "No registrado",
+        image: data.image || null,
+      });
+      return true;
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const res = await fetch("http://localhost:5000/api/users/me/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+
+          // Mapear backend → frontend
+          setUser({
+            _id: data._id,
+            name: data.nombre,
+            email: data.correo,
+            phone: data.telefono || "No registrado",
+            image: data.image || null,
+          });
+        }
+      } catch (error) {
+        console.error("Error al obtener perfil:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   return (
     <>
       <TopBar />
       <Navbar />
-      <div className="profile-page">
-        <div className="profile-container">
-          <h2>Mi Perfil</h2>
+
+      <main className="profile-container">
+        <h2 className="profile-title">Mi Perfil</h2>
+
+        {loading ? (
+          <p>Cargando perfil...</p>
+        ) : user ? (
           <ProfileCard user={user} setUser={setUser} updateUser={updateUser} />
-        </div>
-      </div>
+        ) : (
+          <p>No se encontró información del usuario</p>
+        )}
+      </main>
+
       <Footer />
     </>
   );

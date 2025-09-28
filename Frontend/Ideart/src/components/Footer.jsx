@@ -33,7 +33,7 @@ const Footer = () => {
 
       {/* Enlace a términos usando Link de React Router */}
       <p>
-        <Link to="/terminos" className="text-blue-600 hover:underline">
+        <Link to="/terms" className="text-blue-600 hover:underline">
           Términos y Condiciones
         </Link>
       </p>

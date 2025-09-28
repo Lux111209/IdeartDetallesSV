@@ -7,27 +7,27 @@ const useFetchShoppingCart = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ===== OBTENER TODOS LOS CARRITOS =====
   const getAll = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
       const res = await fetch(API_URL, { credentials: "include" });
       if (!res.ok) throw new Error(`Error al obtener carritos (${res.status})`);
       const data = await res.json();
-      setCarritos(data);
+      console.log("Respuesta backend getAll:", data); // 👈 verifica la estructura
+      setCarritos(Array.isArray(data) ? data : data.carritos || []);
     } catch (err) {
       setError(err.message);
+      setCarritos([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // ===== OBTENER UN CARRITO POR ID =====
   const getById = async (id) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
       const res = await fetch(`${API_URL}/${id}`, { credentials: "include" });
       if (!res.ok) throw new Error(`Error al obtener carrito (${res.status})`);
       return await res.json();
@@ -39,11 +39,10 @@ const useFetchShoppingCart = () => {
     }
   };
 
-  // ===== CREAR UN NUEVO CARRITO =====
   const create = async (newCarrito) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
       const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -62,11 +61,10 @@ const useFetchShoppingCart = () => {
     }
   };
 
-  // ===== ACTUALIZAR UN CARRITO =====
   const update = async (id, updatedCarrito) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
       const res = await fetch(`${API_URL}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -85,11 +83,10 @@ const useFetchShoppingCart = () => {
     }
   };
 
-  // ===== ELIMINAR UN CARRITO =====
   const remove = async (id) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
       const res = await fetch(`${API_URL}/${id}`, {
         method: "DELETE",
         credentials: "include",
