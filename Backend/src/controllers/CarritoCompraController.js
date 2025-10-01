@@ -37,18 +37,18 @@ CarritoCompraController.getCarritoCompraById = async (req, res) => {
   }
 };
 
-// ===== CREAR =====
+// ===== CREAR (CON VALIDACIÓN PARA EVITAR DUPLICADOS) ===== ✅
 CarritoCompraController.createCarritoCompra = async (req, res) => {
   const { products, idUser, Ofertas = [], total = 0 } = req.body;
 
   try {
+    // Validaciones iniciales
     if (!products || !Array.isArray(products) || products.length === 0) {
       return res.status(400).json({ message: "Products debe ser un array con al menos un producto" });
     }
     if (!idUser || !mongoose.Types.ObjectId.isValid(idUser)) {
       return res.status(400).json({ message: "ID de usuario inválido" });
     }
-
     for (let product of products) {
       if (!product.idProducts || !mongoose.Types.ObjectId.isValid(product.idProducts)) {
         return res.status(400).json({ message: "ID de producto inválido" });
@@ -58,6 +58,18 @@ CarritoCompraController.createCarritoCompra = async (req, res) => {
       }
     }
 
+    // 1. VERIFICAR SI YA EXISTE UN CARRITO PARA ESTE USUARIO
+    const existingCart = await cartModel.findOne({ idUser: idUser });
+
+    if (existingCart) {
+      // Si ya existe, devolvemos un error de conflicto (409) para indicar la situación.
+      return res.status(409).json({
+        message: "El usuario ya tiene un carrito de compras activo.",
+        carritoId: existingCart._id
+      });
+    }
+
+    // 2. SI NO EXISTE, PROCEDEMOS A CREARLO
     const newCarrito = new cartModel({ products, idUser, Ofertas, total });
     await newCarrito.save();
 
@@ -66,6 +78,7 @@ CarritoCompraController.createCarritoCompra = async (req, res) => {
     res.status(500).json({ message: "Error al crear el carrito", error: error.message });
   }
 };
+
 
 // ===== ACTUALIZAR =====
 CarritoCompraController.updateCarrito = async (req, res) => {
@@ -110,5 +123,30 @@ CarritoCompraController.deleteCarrito = async (req, res) => {
     res.status(500).json({ message: "Error al eliminar el carrito", error: error.message });
   }
 };
+
+// ===== OBTENER CARRITO POR ID DE USUARIO =====
+CarritoCompraController.getCarritoByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "ID de usuario inválido" });
+    }
+
+    const carrito = await cartModel.findOne({ idUser: userId })
+      .populate("products.idProducts", "name image stock price")
+      .populate("idUser", "username email")
+      .populate("Ofertas.idOfertas", "nombreOferta DescuentoRealizado");
+
+    if (!carrito) {
+      return res.status(404).json({ message: "No se encontró carrito para este usuario" });
+    }
+
+    res.status(200).json(carrito);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener carrito", error: error.message });
+  }
+};
+
 
 export default CarritoCompraController;

@@ -1,49 +1,26 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useRef } from "react";
 import imgPass from "../assets/imgPass.png";
 import "../css/CheckNumber.css";
 
-const CheckNumberForm = () => {
-  const navigate = useNavigate();
+const CheckNumberForm = ({
+  email,
+  codeDigits,
+  setCodeDigits,
+  loading,
+  error,
+  successMessage,
+  handleVerifyCode,
+}) => {
   const inputRefs = useRef([]);
 
-  // Estados para el email (recuperado) y el código (como array de dígitos)
-  const [email, setEmail] = useState("");
-  const [codeDigits, setCodeDigits] = useState(["", "", "", "", ""]);
-  
-  // Estados de la petición
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
-
-  // useEffect para recuperar el email de localStorage
-  useEffect(() => {
-    const storedEmail = localStorage.getItem('recoveryEmail');
-    if (storedEmail) {
-      setEmail(storedEmail);
-    } else {
-      setError("No se pudo encontrar un correo. Por favor, vuelva a empezar.");
-      setTimeout(() => {
-        navigate('/');
-      }, 3000);
-    }
-  }, [navigate]);
-
-  // Función para manejar el cambio en los inputs de código
   const handleCodeChange = (index, value) => {
     // Solo permitir números y un carácter
-    if (value.length > 1 || (value && !/^\d$/.test(value))) {
-      return;
-    }
-
+    if (value.length > 1 || (value && !/^\d$/.test(value))) return;
     const newCodeDigits = [...codeDigits];
     newCodeDigits[index] = value;
     setCodeDigits(newCodeDigits);
-
     // Auto-focus al siguiente input
-    if (value && index < 4) {
-      inputRefs.current[index + 1]?.focus();
-    }
+    if (value && index < 4) inputRefs.current[index + 1]?.focus();
   };
 
   // Función para manejar el backspace
@@ -58,77 +35,16 @@ const CheckNumberForm = () => {
     e.preventDefault();
     const pastedText = e.clipboardData.getData('text');
     const digits = pastedText.replace(/\D/g, '').slice(0, 5).split('');
-    
     const newCodeDigits = [...codeDigits];
     digits.forEach((digit, index) => {
-      if (index < 5) {
-        newCodeDigits[index] = digit;
-      }
+      if (index < 5) newCodeDigits[index] = digit;
     });
-    
     setCodeDigits(newCodeDigits);
-    
     // Focus en el siguiente input vacío o el último
     const nextEmptyIndex = newCodeDigits.findIndex(digit => !digit);
     const focusIndex = nextEmptyIndex === -1 ? 4 : nextEmptyIndex;
     inputRefs.current[focusIndex]?.focus();
   };
-
-  const handleGoBack = () => {
-    navigate("/recupassword");
-  };
-
-  // Función para verificar el código
-  const handleVerifyCode = async () => {
-    const code = codeDigits.join('');
-    
-    if (code.length !== 5) {
-      setError("Por favor, ingrese el código de verificación completo.");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    setSuccessMessage(null);
-
-    try {
-      const url = 'http://localhost:5000/api/passwordRecovery/verifyCode';
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, code }),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'El código de verificación es incorrecto o ha expirado.');
-      }
-
-      const data = await response.json();
-      setSuccessMessage(data.message || 'Código verificado correctamente. Redirigiendo...');
-
-      setTimeout(() => {
-        navigate("/NewPassword");
-      }, 2000);
-
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Auto-submit cuando se complete el código
-  useEffect(() => {
-    const code = codeDigits.join('');
-    if (code.length === 5 && !loading) {
-      handleVerifyCode();
-    }
-  }, [codeDigits, loading]);
 
   return (
     <div className="check-number-container">
@@ -177,21 +93,6 @@ const CheckNumberForm = () => {
           >
             {loading ? 'Verificando...' : 'Verificar código'}
           </button>
-
-          <button 
-            onClick={handleGoBack}
-            disabled={loading}
-            className="check-number-button secondary"
-          >
-            Volver
-          </button>
-          
-          {/* Indicadores de progreso */}
-          <div className="check-number-progress">
-            <span className="check-number-progress-bar inactive"></span>
-            <span className="check-number-progress-bar active"></span>
-            <span className="check-number-progress-bar inactive"></span>
-          </div>
         </div>
 
         {/* Imagen */}

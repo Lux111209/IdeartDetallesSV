@@ -48,17 +48,24 @@ export const useFetchRecoverPassword = () => {
       localStorage.setItem("recoveryEmail", email);
 
       setCurrentStep(2);
-      navigate("/CheckNumber"); // 👈 Ir a pantalla de verificación de código
+      navigate("/CheckNumber");
     } catch (err) {
       setError(err.message);
+      console.error("Error en handleRequestCode:", err);
     } finally {
       setLoading(false);
     }
   };
 
   // ===== 2. VERIFICAR CÓDIGO =====
-  const handleVerifyCode = async () => {
-    if (!code) {
+  const handleVerifyCode = async (inputCode) => {
+    const codeToUse = inputCode || code;
+    const emailToUse = localStorage.getItem("recoveryEmail");
+    if (!emailToUse) {
+      setError("No se encontró el email para recuperar la contraseña.");
+      return;
+    }
+    if (!codeToUse) {
       setError("Por favor, ingrese el código de verificación.");
       return;
     }
@@ -71,8 +78,8 @@ export const useFetchRecoverPassword = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: localStorage.getItem("recoveryEmail"),
-          code,
+          email: emailToUse,
+          code: codeToUse,
         }),
         credentials: "include",
       });
@@ -83,9 +90,10 @@ export const useFetchRecoverPassword = () => {
       setSuccessMessage(data.message || "Código verificado correctamente.");
       setCurrentStep(3);
 
-      navigate("/NewPassword"); // 👈 Ir a pantalla para escribir nueva contraseña
+      navigate("/NewPassword");
     } catch (err) {
       setError(err.message);
+      console.error("Error en handleVerifyCode:", err);
     } finally {
       setLoading(false);
     }
@@ -93,6 +101,11 @@ export const useFetchRecoverPassword = () => {
 
   // ===== 3. NUEVA CONTRASEÑA =====
   const handleNewPassword = async () => {
+    const emailToUse = localStorage.getItem("recoveryEmail");
+    if (!emailToUse) {
+      setError("No se encontró el email para recuperar la contraseña.");
+      return;
+    }
     if (!newPassword || !confirmPassword) {
       setError("Por favor, complete ambos campos de contraseña.");
       return;
@@ -114,7 +127,7 @@ export const useFetchRecoverPassword = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: localStorage.getItem("recoveryEmail"),
+          email: emailToUse,
           newPassword,
         }),
         credentials: "include",
@@ -126,9 +139,10 @@ export const useFetchRecoverPassword = () => {
       setSuccessMessage(data.message || "Contraseña actualizada correctamente.");
       localStorage.removeItem("recoveryEmail");
 
-      setTimeout(() => navigate("/login"), 2000); // 👈 Ir al login tras éxito
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       setError(err.message);
+      console.error("Error en handleNewPassword:", err);
     } finally {
       setLoading(false);
     }

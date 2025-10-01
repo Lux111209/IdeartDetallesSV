@@ -22,6 +22,8 @@ import EmailVerification from "./pages/EmailVerification";
 import RecoverPassword from "./pages/RecoverPassword";
 import Favorites from "./pages/Favorites";
 import Promotions from "./pages/Promotions";
+import CheckNumber from "./pages/CheckNumber";
+import NewPassword from "./pages/NewPassword";
 
 // Componente para manejar la redirección inicial
 const DefaultRedirect = () => {
@@ -41,6 +43,9 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/recover-password" element={<RecoverPassword />} />
         <Route path="/creditform" element={<CreditForm />} />
+        <Route path="/checknumber" element={<CheckNumber />} />
+         <Route path="/NewPassword" element={<NewPassword />} />
+
       </Route>
 
       {/* Rutas protegidas (requieren login) */}

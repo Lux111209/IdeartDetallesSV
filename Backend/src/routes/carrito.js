@@ -11,5 +11,8 @@ router.route("/:id")
 .put(CarritoCompraController.updateCarrito)
 .delete(CarritoCompraController.deleteCarrito);
 
+router.get("/usuario/:userId", CarritoCompraController.getCarritoByUser);
+
+
 export default router;
 

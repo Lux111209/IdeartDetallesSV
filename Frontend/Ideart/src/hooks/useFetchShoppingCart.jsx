@@ -1,59 +1,67 @@
-import { useState, useCallback } from "react";
+// hooks/useShoppingCart.js
+import { useState, useCallback, useEffect } from "react";
 
 const API_URL = "http://localhost:5000/api/carrito";
 
-const useFetchShoppingCart = () => {
-  const [carritos, setCarritos] = useState([]);
-  const [loading, setLoading] = useState(false);
+export function useShoppingCart() {
+  // 1. El estado ahora es 'cart' (un objeto), no 'carritos' (un array)
+  const [cart, setCart] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const getAll = useCallback(async () => {
+  // 2. Función central para obtener el carrito del usuario logueado
+  const fetchUserCart = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(API_URL, { credentials: "include" });
-      if (!res.ok) throw new Error(`Error al obtener carritos (${res.status})`);
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        // Si no hay usuario, no hay carrito que mostrar.
+        setCart(null); 
+        throw new Error("No se encontró un ID de usuario en la sesión.");
+      }
+
+      const res = await fetch(`${API_URL}/usuario/${userId}`);
+      
+      // Si el usuario no tiene un carrito aún, la API puede devolver 404.
+      if (res.status === 404) {
+        setCart(null); // No es un error, simplemente no tiene carrito.
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error("Error al obtener el carrito del usuario.");
+      }
+
       const data = await res.json();
-      console.log("Respuesta backend getAll:", data); // 👈 verifica la estructura
-      setCarritos(Array.isArray(data) ? data : data.carritos || []);
+      setCart(data);
     } catch (err) {
       setError(err.message);
-      setCarritos([]);
+      setCart(null); // Limpiamos el carrito en caso de error
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const getById = async (id) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`${API_URL}/${id}`, { credentials: "include" });
-      if (!res.ok) throw new Error(`Error al obtener carrito (${res.status})`);
-      return await res.json();
-    } catch (err) {
-      setError(err.message);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  };
+  // 3. useEffect para cargar el carrito cuando el hook se usa por primera vez
+  useEffect(() => {
+    fetchUserCart();
+  }, [fetchUserCart]);
 
-  const create = async (newCarrito) => {
+
+  // 4. Las funciones CRUD ahora llaman a fetchUserCart() para actualizar el estado
+  const create = async (newCartData) => {
     setLoading(true);
     setError(null);
     try {
       const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCarrito),
-        credentials: "include",
+        body: JSON.stringify(newCartData),
       });
-      if (!res.ok) {
-        const errMsg = await res.json();
-        throw new Error(errMsg.message || "Error al crear carrito");
-      }
-      await getAll();
+      if (!res.ok) throw new Error("Error al crear el carrito");
+      
+      await fetchUserCart(); // Refresca el estado con el carrito recién creado
     } catch (err) {
       setError(err.message);
     } finally {
@@ -61,21 +69,18 @@ const useFetchShoppingCart = () => {
     }
   };
 
-  const update = async (id, updatedCarrito) => {
+  const update = async (cartId, updatedData) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API_URL}/${id}`, {
+      const res = await fetch(`${API_URL}/${cartId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedCarrito),
-        credentials: "include",
+        body: JSON.stringify(updatedData),
       });
-      if (!res.ok) {
-        const errMsg = await res.json();
-        throw new Error(errMsg.message || "Error al actualizar carrito");
-      }
-      await getAll();
+      if (!res.ok) throw new Error("Error al actualizar el carrito");
+
+      await fetchUserCart(); // Refresca el estado del carrito
     } catch (err) {
       setError(err.message);
     } finally {
@@ -83,19 +88,17 @@ const useFetchShoppingCart = () => {
     }
   };
 
-  const remove = async (id) => {
+  const remove = async (cartId) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API_URL}/${id}`, {
+      const res = await fetch(`${API_URL}/${cartId}`, {
         method: "DELETE",
-        credentials: "include",
       });
-      if (!res.ok) {
-        const errMsg = await res.json();
-        throw new Error(errMsg.message || "Error al eliminar carrito");
-      }
-      await getAll();
+      if (!res.ok) throw new Error("Error al eliminar el carrito");
+
+      setCart(null); // Actualización optimista: lo borramos de la UI inmediatamente
+      // fetchUserCart(); Opcional: podrías volver a llamar para re-sincronizar, pero con setCart(null) es suficiente.
     } catch (err) {
       setError(err.message);
     } finally {
@@ -104,16 +107,13 @@ const useFetchShoppingCart = () => {
   };
 
   return {
-    carritos,
+    cart,
     loading,
     error,
-    getAll,
-    getById,
     create,
     update,
     remove,
-    setCarritos,
+  
+    refreshCart: fetchUserCart, 
   };
-};
-
-export default useFetchShoppingCart;
+}
