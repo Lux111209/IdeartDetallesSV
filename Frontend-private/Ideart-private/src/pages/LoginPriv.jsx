@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // 👈 para redirigir
+import { useNavigate } from "react-router-dom"; //  para redirigir
 import "../css/LoginPriv.css";
 
 const LoginPriv = () => {

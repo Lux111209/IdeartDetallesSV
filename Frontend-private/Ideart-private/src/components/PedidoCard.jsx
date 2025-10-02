@@ -31,7 +31,7 @@ export default function PedidoCard({ pedido, onClick, activo }) {
           marginRight: "12px",
         }}
       >
-        👤
+        
       </div>
       <div className="info" style={{ flex: 1 }}>
         <p className="nombre" style={{ fontWeight: "bold", margin: "0 0 4px 0" }}>

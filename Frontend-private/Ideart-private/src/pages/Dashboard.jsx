@@ -57,10 +57,10 @@ const Dashboard = () => {
 
         {/* Cards de resumen */}
         <div className="overview">
-          <div className="card">🛒<p>Total Productos</p><strong>{stats.totalProductos}</strong></div>
-          <div className="card">📦<p>Stock Total</p><strong>{stats.stock}</strong></div>
-          <div className="card">❌<p>Sin Stock</p><strong>{stats.productosSinStock}</strong></div>
-          <div className="card">👥<p>Total Usuarios</p><strong>{stats.totalUsuarios}</strong></div>
+          <div className="card"><p>Total Productos</p><strong>{stats.totalProductos}</strong></div>
+          <div className="card"><p>Stock Total</p><strong>{stats.stock}</strong></div>
+          <div className="card"><p>Sin Stock</p><strong>{stats.productosSinStock}</strong></div>
+          <div className="card"><p>Total Usuarios</p><strong>{stats.totalUsuarios}</strong></div>
         </div>
 
         {/* Gráficos */}
