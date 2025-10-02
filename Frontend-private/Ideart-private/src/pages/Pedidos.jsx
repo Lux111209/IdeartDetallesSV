@@ -202,7 +202,7 @@ export default function Pedidos() {
 
       // Actualizar el pedido seleccionado
       setSeleccionado(prev => ({ ...prev, estado: 'completado' }));
-      toast.success("✅ Pedido marcado como completado");
+      toast.success("Pedido marcado como completado");
       cerrarPanel();
       
     } catch (error) {
@@ -244,7 +244,7 @@ export default function Pedidos() {
 
       // Actualizar el pedido seleccionado
       setSeleccionado(prev => ({ ...prev, estado: 'cancelado' }));
-      toast.info("❌ Pedido cancelado");
+      toast.info("Pedido cancelado");
       cerrarPanel();
       
     } catch (error) {
@@ -286,7 +286,7 @@ export default function Pedidos() {
 
       // Actualizar el pedido seleccionado
       setSeleccionado(prev => ({ ...prev, estadoPago: 'pagado' }));
-      toast.success("💰 Pago confirmado");
+      toast.success("Pago confirmado");
       
     } catch (error) {
       console.error('Error marcando como pagado:', error);
@@ -363,7 +363,7 @@ Generado el: ${new Date().toLocaleString()}
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      toast.success("📥 Comprobante descargado exitosamente");
+      toast.success("Comprobante descargado exitosamente");
     } catch (error) {
       console.error('Error descargando comprobante:', error);
       toast.error('Error al descargar comprobante');
@@ -456,7 +456,7 @@ Generado el: ${new Date().toLocaleString()}
               marginBottom: '20px',
               border: '1px solid #ffeaa7'
             }}>
-              ⚠️ <strong>Modo de prueba:</strong> API no disponible. Mostrando datos de ejemplo.
+              <strong>Modo de prueba:</strong> API no disponible. Mostrando datos de ejemplo.
             </div>
           )}
 

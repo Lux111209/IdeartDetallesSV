@@ -42,13 +42,13 @@ const Sidebar = ({ children }) => {
     });
   };
 
-  // 🔒 Cerrar sesión (logout)
+  //  Cerrar sesión (logout)
   const handleLogout = async () => {
     try {
       // 🔹 Llamada opcional al backend para cerrar sesión y limpiar cookies
       await fetch("http://localhost:5000/api/logout", {
         method: "POST",
-        credentials: "include", // 👈 asegura borrar cookies HttpOnly en backend
+        credentials: "include", //  asegura borrar cookies HttpOnly en backend
       });
     } catch (err) {
       console.warn("Error al cerrar sesión en el servidor", err);

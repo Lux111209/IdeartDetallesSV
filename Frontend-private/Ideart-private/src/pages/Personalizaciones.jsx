@@ -383,8 +383,8 @@ export default function Personalizaciones() {
                 borderRadius: '8px',
                 border: '2px dashed #ddd'
               }}>
-                <div style={{ fontSize: '48px', marginBottom: '16px' }}>🎨</div>
-                <h3>¡Excelente trabajo! 🎉</h3>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}></div>
+                <h3>¡Excelente trabajo! </h3>
                 <p>No hay solicitudes pendientes en este momento</p>
                 <p>Las nuevas solicitudes aparecerán aquí automáticamente</p>
               </div>

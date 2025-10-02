@@ -321,14 +321,6 @@ const DetallePedido = ({
             {loading ? "Procesando..." : "Marcar como Pagado"}
           </button>
         )}
-
-        <button
-          className="btn descargar"
-          onClick={onDescargar}
-          disabled={loading}
-        >
-          {loading ? "⏳ Generando..." : "Descargar Comprobante"}
-        </button>
       </div>
     </div>
   );

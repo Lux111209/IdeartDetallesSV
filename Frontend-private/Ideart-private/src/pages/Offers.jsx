@@ -135,7 +135,7 @@ const OfferManager = () => {
       const isSuccess = result.success !== false && response.ok;
 
       if (isSuccess) {
-        alert('✅ Oferta creada exitosamente!');
+        alert('Oferta creada exitosamente!');
         setShowAddModal(false);
         resetForm();
         loadData(); // Recargar los datos para mostrar la nueva oferta
@@ -180,7 +180,7 @@ const OfferManager = () => {
       const isSuccess = result.success !== false && response.ok;
 
       if (isSuccess) {
-        alert('✅ Oferta eliminada exitosamente');
+        alert('Oferta eliminada exitosamente');
         loadData(); // Recargar datos para actualizar la lista
       } else {
         throw new Error(result.message || 'Error desconocido');

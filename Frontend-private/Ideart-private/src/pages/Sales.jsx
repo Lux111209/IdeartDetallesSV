@@ -579,7 +579,7 @@ Generado el: ${new Date().toLocaleString()}
                 borderRadius: '8px',
                 border: '2px dashed #ddd'
               }}>
-                <div style={{ fontSize: '48px', marginBottom: '16px' }}>📦</div>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}></div>
                 <h3>No hay pedidos disponibles</h3>
                 <p>Los pedidos aparecerán aquí cuando se realicen ventas</p>
                 {usingFallback && (
