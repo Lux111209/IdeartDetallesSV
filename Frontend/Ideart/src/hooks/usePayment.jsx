@@ -71,8 +71,8 @@ const usePaymentUnified = () => {
 
   // Paso 1: Obtener token
   const handleFirstStep = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const tokenResponse = await fetch("http://localhost:5000/api/payment/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -86,8 +86,10 @@ const usePaymentUnified = () => {
       const tokenData = await tokenResponse.json();
       setAccessToken(tokenData.access_token);
       setStep(2);
+      return { success: true };
     } catch (error) {
-      alert(`Error: ${error.message}`);
+      // NO alert aquí
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -95,20 +97,16 @@ const usePaymentUnified = () => {
 
   // Paso 2: Enviar pago
   const handleFinishPayment = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       let { expiry, numeroTarjeta, cvv } = formDataTarjeta;
-
-      // Parsear MM/AA → mes y año
       const [mesRaw, anioRaw] = expiry.split("/");
       let mesVencimiento = mesRaw?.padStart(2, "0");
-      let anioVencimiento =
-        anioRaw?.length === 2 ? `20${anioRaw}` : anioRaw;
+      let anioVencimiento = anioRaw?.length === 2 ? `20${anioRaw}` : anioRaw;
 
       if (!mesVencimiento || parseInt(mesVencimiento) < 1 || parseInt(mesVencimiento) > 12) {
         throw new Error("El mes de vencimiento debe estar entre 01 y 12");
       }
-
       if (!anioVencimiento || anioVencimiento.length !== 4) {
         throw new Error("El año de vencimiento debe tener 4 dígitos (ejemplo: 2025)");
       }
@@ -138,13 +136,12 @@ const usePaymentUnified = () => {
       }
 
       const paymentData = await paymentResponse.json();
-      alert("Pago realizado correctamente");
-      console.log("Respuesta del pago:", paymentData);
-      setStep(3);
       limpiarFormulario();
+      setStep(3); // <-- Cambia el paso después de limpiar
+      return { success: true, data: paymentData };
     } catch (error) {
-      console.error("Error en el proceso de pago:", error);
-      alert(`Error: ${error.message}`);
+      // NO alert aquí
+      throw error;
     } finally {
       setLoading(false);
     }

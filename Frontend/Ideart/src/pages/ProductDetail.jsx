@@ -3,31 +3,27 @@ import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import TopBar from "../components/TopBar";
-import { useCart } from "../hooks/useCart";
 import { useProductLocation } from "../hooks/useProductLocation";
 import { useImageUpload } from "../hooks/useImageUpload";
 import Toast from "../components/Toast";
+import { useShoppingCart } from "../hooks/useFetchShoppingCart";
 import "../css/ProductDetail.css";
 
 const ProductDetail = () => {
-  const { nombre } = useParams(); // Obtiene el parámetro de producto en URL
+  const { nombre } = useParams();
+  const { cart, create, update } = useShoppingCart();
   const navigate = useNavigate();
-  const { addToCart } = useCart(); // Función para agregar productos al carrito
-  const product = useProductLocation(); // Obtiene datos del producto actual
-  const { uploadedImage, handleImageUpload } = useImageUpload(); // Maneja la subida de imagen personalizada
+  const product = useProductLocation();
+  const { uploadedImage, handleImageUpload } = useImageUpload();
 
-  // Estados para seleccionar talla y color
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
-
-  // Estado para controlar el mensaje toast (alertas)
   const [toast, setToast] = useState({
     show: false,
     type: "info",
     message: "",
   });
 
-  // Efecto para ocultar el toast automáticamente después de 3 segundos
   useEffect(() => {
     if (toast.show) {
       const id = setTimeout(() => setToast({ ...toast, show: false }), 3000);
@@ -35,15 +31,12 @@ const ProductDetail = () => {
     }
   }, [toast]);
 
-  // Si no hay producto, muestra un mensaje de carga
   if (!product) return <p>Cargando producto...</p>;
 
   const { image, title, price } = product;
 
-  // Maneja la acción de agregar producto al carrito con validación básica
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!selectedSize || !selectedColor) {
-      // Mostrar advertencia si falta seleccionar talla o color
       setToast({
         show: true,
         type: "warning",
@@ -52,28 +45,81 @@ const ProductDetail = () => {
       return;
     }
 
-    // Añade producto al carrito con las opciones seleccionadas y la imagen subida
-    addToCart({
-      title,
-      image,
-      price,
+    if (!product._id) {
+      setToast({
+        show: true,
+        type: "error",
+        message: "Error interno: el producto no tiene un ID válido.",
+      });
+      return;
+    }
+
+    const productoParaCarrito = {
+      idProducts: product._id,
       size: selectedSize,
       color: selectedColor,
-      quantity: 1,
       customImage: uploadedImage,
-    });
+      cantidad: 1
+    };
 
-    // Muestra mensaje de éxito
+    if (cart && Array.isArray(cart.products) && cart.products.length > 0) {
+      const existe = cart.products.find(
+        (item) => item.idProducts?._id === product._id || item.idProducts === product._id
+      );
+      let nuevosProductos;
+      if (existe) {
+        nuevosProductos = cart.products.map((item) =>
+          (item.idProducts?._id === product._id || item.idProducts === product._id)
+            ? { ...item, cantidad: item.cantidad + 1 }
+            : item
+        );
+      } else {
+        nuevosProductos = [
+          ...cart.products,
+          productoParaCarrito
+        ];
+      }
+      const nuevoTotal = nuevosProductos.reduce((sum, item) => {
+        const precio = item.idProducts?.price || product.price;
+        return sum + (precio || 0) * item.cantidad;
+      }, 0);
+
+      await update(cart._id, {
+        products: nuevosProductos,
+        idUser: localStorage.getItem("userId"),
+        total: nuevoTotal
+      });
+    } else if (cart) {
+      await update(cart._id, {
+        products: [productoParaCarrito],
+        idUser: localStorage.getItem("userId"),
+        total: product.price
+      });
+    } else {
+      await create({
+        products: [
+          {
+            idProducts: product._id,
+            cantidad: 1,
+            size: selectedSize,
+            color: selectedColor,
+            customImage: uploadedImage
+          }
+        ],
+        idUser: localStorage.getItem("userId"),
+        total: product.price
+      });
+    }
+
     setToast({
       show: true,
       type: "success",
       message: "¡Producto añadido al carrito!",
     });
 
-    // Redirige a la página de productos después de 2.5 segundos
     setTimeout(() => {
-      navigate("/products");
-    }, 2500);
+      navigate("/shoppingcart");
+    }, 1500);
   };
 
   return (
@@ -81,7 +127,6 @@ const ProductDetail = () => {
       <TopBar />
       <Navbar />
 
-      {/* Mostrar mensaje toast cuando está activo */}
       {toast.show && (
         <div className="toast-wrapper">
           <Toast type={toast.type} message={toast.message} />
@@ -94,7 +139,6 @@ const ProductDetail = () => {
         </button>
 
         <div className="product-detail-card">
-          {/* Sección izquierda: imagen, miniaturas y descripción */}
           <div className="left-section">
             <img src={image} alt={title} className="main-image" />
             <div className="thumbnail-row">
@@ -108,7 +152,6 @@ const ProductDetail = () => {
             </p>
           </div>
 
-          {/* Sección derecha: opciones de talla, color, carga de imagen y añadir al carrito */}
           <div className="right-section">
             <h4>Tallas</h4>
             <div className="sizes">
@@ -161,7 +204,6 @@ const ProductDetail = () => {
               ))}
             </div>
 
-            {/* Subida y vista previa de imagen personalizada */}
             <div className="custom-image-upload">
               <h4>Imagen de estampado o referencia</h4>
               <label className="upload-box">
@@ -179,7 +221,6 @@ const ProductDetail = () => {
               )}
             </div>
 
-            {/* Botón para añadir al carrito */}
             <button className="add-to-cart" onClick={handleAddToCart}>
               Añadir carrito
             </button>

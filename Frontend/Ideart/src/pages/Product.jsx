@@ -31,6 +31,7 @@ const Product = () => {
               {products.map((product) => (
                 <ProductCard
                   key={product._id}
+                  _id={product._id}
                   image={product.images?.[0] || '/default.jpg'}
                   title={product.name}
                   price={product.price}

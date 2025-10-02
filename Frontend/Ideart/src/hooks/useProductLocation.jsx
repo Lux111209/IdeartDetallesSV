@@ -10,7 +10,7 @@ export const useProductLocation = () => {
   // Verifica si los datos del producto están disponibles en el estado de la ubicación
   useEffect(() => {
     const data = location.state;
-    if (!data?.title || !data?.image || !data?.price) {
+    if (!data?._id || !data?.title || !data?.image || !data?.price) {
       alert("Datos del producto no encontrados.");
       navigate("/products");
     } else {

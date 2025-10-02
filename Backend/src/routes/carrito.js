@@ -4,6 +4,7 @@ import CarritoCompraController from "../controllers/CarritoCompraController.js";
 
 // 🚨 IMPORTANTE: primero las rutas más específicas
 router.get("/usuario/:userId", CarritoCompraController.getCarritoByUser);
+router.delete('/vaciar/:userId', CarritoCompraController.vaciarCarritoPorUsuario);
 
 router.route("/")
   .get(CarritoCompraController.getCarritoCompra)

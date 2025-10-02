@@ -59,10 +59,9 @@ CarritoCompraController.createCarritoCompra = async (req, res) => {
     }
 
     // 1. VERIFICAR SI YA EXISTE UN CARRITO PARA ESTE USUARIO
-    const existingCart = await cartModel.findOne({ idUser: idUser });
+    const existingCart = await cartModel.findOne({ idUser: new mongoose.Types.ObjectId(idUser) });
 
     if (existingCart) {
-      // Si ya existe, devolvemos un error de conflicto (409) para indicar la situación.
       return res.status(409).json({
         message: "El usuario ya tiene un carrito de compras activo.",
         carritoId: existingCart._id
@@ -78,7 +77,6 @@ CarritoCompraController.createCarritoCompra = async (req, res) => {
     res.status(500).json({ message: "Error al crear el carrito", error: error.message });
   }
 };
-
 
 // ===== ACTUALIZAR =====
 CarritoCompraController.updateCarrito = async (req, res) => {
@@ -128,12 +126,13 @@ CarritoCompraController.deleteCarrito = async (req, res) => {
 CarritoCompraController.getCarritoByUser = async (req, res) => {
   try {
     const { userId } = req.params;
+    console.log("Buscando carrito para userId:", userId);
 
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ message: "ID de usuario inválido" });
     }
 
-    const carrito = await cartModel.findOne({ idUser: userId })
+    const carrito = await cartModel.findOne({ idUser: new mongoose.Types.ObjectId(userId) })
       .populate("products.idProducts", "name image stock price")
       .populate("idUser", "username email")
       .populate("Ofertas.idOfertas", "nombreOferta DescuentoRealizado");
@@ -144,7 +143,32 @@ CarritoCompraController.getCarritoByUser = async (req, res) => {
 
     res.status(200).json(carrito);
   } catch (error) {
+    console.error("Error en getCarritoByUser:", error);
     res.status(500).json({ message: "Error al obtener carrito", error: error.message });
+  }
+};
+
+// ===== VACIAR CARRITO POR ID DE USUARIO =====
+CarritoCompraController.vaciarCarritoPorUsuario = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "ID de usuario inválido" });
+    }
+
+    // Busca usando ObjectId
+    const carrito = await cartModel.findOne({ idUser: new mongoose.Types.ObjectId(userId) });
+    if (!carrito) {
+      return res.status(404).json({ message: "No se encontró carrito para este usuario" });
+    }
+
+    carrito.products = [];
+    carrito.total = 0;
+    await carrito.save();
+
+    res.status(200).json({ message: "Carrito vaciado exitosamente" });
+  } catch (error) {
+    res.status(500).json({ message: "Error al vaciar el carrito", error: error.message });
   }
 };
 
