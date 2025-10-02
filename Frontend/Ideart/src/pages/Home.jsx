@@ -57,7 +57,7 @@ const Home = () => {
         </section>
 
         {/* Sección de promociones */}
-        <section className="promotions">
+        {/* <section className="promotions">
           <h2>
             <Link to="/promotions" className="promotions-link">
               Promociones
@@ -80,7 +80,7 @@ const Home = () => {
               <p>No hay promociones activas.</p>
             )}
           </div>
-        </section>
+        </section>*/}
 
         {/* Sección de confianza */}
         <section className="trust">
