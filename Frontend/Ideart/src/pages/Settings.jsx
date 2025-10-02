@@ -69,7 +69,7 @@ const Settings = () => {
           </div>
 
           {/* Idioma → Language.jsx */}
-          <div
+           {/*<div
             className="settings-item clickable"
             onClick={() => navigate("/language")}
           >
@@ -93,7 +93,7 @@ const Settings = () => {
           </div>
 
           {/* Favoritos */}
-          <div
+          {/* <div
             className="settings-item clickable"
             onClick={() => navigate("/favorites")}
           >
@@ -105,7 +105,7 @@ const Settings = () => {
           </div>
 
           {/* Promociones */}
-          <div
+           {/*<div
             className="settings-item clickable"
             onClick={() => navigate("/promotions")}
           >
@@ -113,9 +113,9 @@ const Settings = () => {
               <Tag size={24} />
               <span>Promociones y Ofertas</span>
             </div>
-            <ChevronRight size={20} />
-          </div>
-        </div>
+            <ChevronRight size={20} /> 
+          </div>*/}
+        </div> 
       </div>
 
       <Footer />

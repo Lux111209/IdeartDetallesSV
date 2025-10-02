@@ -60,8 +60,8 @@ const AuthLogin = () => {
   return (
     <div className="login-wrapper">
       <div className="login-left">
-        <img src="/ideartL.png" alt="Logo" className="logo" />
-        <img src="/persona.png" alt="Illustration" className="illustration" />
+        <img src="./ideartL.png" alt="Logo" className="logo" />
+        <img src="/persona.jpeg" alt="Illustration" className="illustration" />
       </div>
       <div className="login-right">
         <h2 className="login-title">Iniciar sesión</h2>
