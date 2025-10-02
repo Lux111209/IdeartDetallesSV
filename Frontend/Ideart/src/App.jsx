@@ -42,7 +42,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/recover-password" element={<RecoverPassword />} />
-        <Route path="/creditform" element={<CreditForm />} />
+       
         <Route path="/checknumber" element={<CheckNumber />} />
          <Route path="/NewPassword" element={<NewPassword />} />
 
@@ -62,6 +62,7 @@ function App() {
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/promotions" element={<Promotions />} />
+         <Route path="/creditform" element={<CreditForm />} />
       </Route>
 
       {/* Rutas accesibles para todos */}

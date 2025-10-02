@@ -92,6 +92,26 @@ export function useShoppingCart() {
     }
   };
 
+  // Vaciar carrito completamente para el usuario actual
+  const clearCart = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const userId = localStorage.getItem("userId");
+      if (!userId) throw new Error("No se encontró un ID de usuario en la sesión.");
+      const res = await fetch(`${API_URL}/vaciar/${userId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Error al vaciar el carrito");
+      // Refresca el carrito para obtener el estado actualizado (vacío)
+      await fetchUserCart();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     cart,
     loading,
@@ -99,6 +119,7 @@ export function useShoppingCart() {
     create,
     update,
     remove,
+    clearCart, // <-- ahora disponible
     refreshCart: fetchUserCart,
   };
 }
