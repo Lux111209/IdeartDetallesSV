@@ -166,7 +166,7 @@ ofertasSchema.pre('save', function(next) {
 
 // Middleware pre-remove para logging
 ofertasSchema.pre('findOneAndDelete', function(next) {
-  console.log(`🗑️ Eliminando oferta con ID: ${this.getQuery()._id}`);
+  console.log(`Eliminando oferta con ID: ${this.getQuery()._id}`);
   next();
 });
 

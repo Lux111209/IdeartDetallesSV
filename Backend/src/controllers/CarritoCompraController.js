@@ -37,7 +37,7 @@ CarritoCompraController.getCarritoCompraById = async (req, res) => {
   }
 };
 
-// ===== CREAR (CON VALIDACIÓN PARA EVITAR DUPLICADOS) ===== ✅
+// ===== CREAR (CON VALIDACIÓN PARA EVITAR DUPLICADOS) ===== 
 CarritoCompraController.createCarritoCompra = async (req, res) => {
   const { products, idUser, Ofertas = [], total = 0 } = req.body;
 
