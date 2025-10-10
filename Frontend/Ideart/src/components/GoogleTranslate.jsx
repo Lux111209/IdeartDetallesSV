@@ -12,8 +12,13 @@ const GoogleTranslate = () => {
     window.googleTranslateElementInit = () => {
       new window.google.translate.TranslateElement(
         {
+
           pageLanguage: "es", // 👈 idioma base de tu app
           includedLanguages: "es,en,fr,de", // 👈 idiomas permitidos
+
+          pageLanguage: "es", // idioma base de tu app
+          includedLanguages: "es,en,fr,de", // idiomas permitidos
+
           layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
         },
         "google_translate_element"

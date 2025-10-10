@@ -2,14 +2,14 @@ import personalizedModel from "../models/PersonalizedProducts.js";
 
 const personalizedProductsController = {};
 
-// 📋 OBTENER TODAS LAS SOLICITUDES - SÚPER SIMPLE
+// OBTENER TODAS LAS SOLICITUDES - SÚPER SIMPLE
 personalizedProductsController.getAllPersonalizedProducts = async (req, res) => {
     try {
-        console.log('🔄 Obteniendo productos personalizados...');
+        console.log('Obteniendo productos personalizados...');
         
         const products = await personalizedModel.find().sort({ createdAt: -1 });
         
-        console.log(`✅ Encontrados ${products.length} productos`);
+        console.log(`Encontrados ${products.length} productos`);
         
         res.status(200).json({
             success: true,
@@ -18,7 +18,7 @@ personalizedProductsController.getAllPersonalizedProducts = async (req, res) => 
         });
         
     } catch (error) {
-        console.error('❌ Error:', error.message);
+        console.error('Error:', error.message);
         
         res.status(500).json({
             success: false,
@@ -28,11 +28,11 @@ personalizedProductsController.getAllPersonalizedProducts = async (req, res) => 
     }
 };
 
-// 📋 OBTENER POR ID - SÚPER SIMPLE  
+// OBTENER POR ID - SÚPER SIMPLE  
 personalizedProductsController.getPersonalzizedProdcutById = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log(`🔍 Buscando producto ID: ${id}`);
+        console.log(`Buscando producto ID: ${id}`);
         
         const product = await personalizedModel.findById(id);
         
@@ -49,7 +49,7 @@ personalizedProductsController.getPersonalzizedProdcutById = async (req, res) =>
         });
         
     } catch (error) {
-        console.error('❌ Error:', error.message);
+        console.error('Error:', error.message);
         
         res.status(500).json({
             success: false,
@@ -59,16 +59,16 @@ personalizedProductsController.getPersonalzizedProdcutById = async (req, res) =>
     }
 };
 
-// ✅ CREAR PRODUCTO - SÚPER SIMPLE
+// CREAR PRODUCTO - SÚPER SIMPLE
 personalizedProductsController.insertPersonalizedProduct = async (req, res) => {
     try {
-        console.log('📝 Creando nuevo producto...');
-        console.log('📦 Datos recibidos:', req.body);
+        console.log('Creando nuevo producto...');
+        console.log('Datos recibidos:', req.body);
         
         const newProduct = new personalizedModel(req.body);
         const savedProduct = await newProduct.save();
         
-        console.log(`✅ Producto creado con ID: ${savedProduct._id}`);
+        console.log(`Producto creado con ID: ${savedProduct._id}`);
         
         res.status(201).json({
             success: true,
@@ -77,7 +77,7 @@ personalizedProductsController.insertPersonalizedProduct = async (req, res) => {
         });
         
     } catch (error) {
-        console.error('❌ Error creando:', error.message);
+        console.error('Error creando:', error.message);
         
         res.status(500).json({
             success: false,
@@ -87,14 +87,14 @@ personalizedProductsController.insertPersonalizedProduct = async (req, res) => {
     }
 };
 
-// 🎯 ACTUALIZAR ESTADO - SÚPER SIMPLE
+// ACTUALIZAR ESTADO - SÚPER SIMPLE
 personalizedProductsController.updateEstadoSolicitud = async (req, res) => {
     try {
         const { id } = req.params;
         const updateData = req.body;
         
-        console.log(`🔄 Actualizando producto ID: ${id}`);
-        console.log('📝 Datos de actualización:', updateData);
+        console.log(`Actualizando producto ID: ${id}`);
+        console.log('Datos de actualización:', updateData);
         
         const updatedProduct = await personalizedModel.findByIdAndUpdate(
             id,
@@ -109,7 +109,7 @@ personalizedProductsController.updateEstadoSolicitud = async (req, res) => {
             });
         }
         
-        console.log(`✅ Producto actualizado: ${id}`);
+        console.log(`Producto actualizado: ${id}`);
         
         res.status(200).json({
             success: true,
@@ -118,7 +118,7 @@ personalizedProductsController.updateEstadoSolicitud = async (req, res) => {
         });
         
     } catch (error) {
-        console.error('❌ Error actualizando:', error.message);
+        console.error('Error actualizando:', error.message);
         
         res.status(500).json({
             success: false,
@@ -128,12 +128,12 @@ personalizedProductsController.updateEstadoSolicitud = async (req, res) => {
     }
 };
 
-// ✏️ ACTUALIZAR PRODUCTO COMPLETO - SÚPER SIMPLE
+// ACTUALIZAR PRODUCTO COMPLETO - SÚPER SIMPLE
 personalizedProductsController.updatePersonalizedProduct = async (req, res) => {
     try {
         const { id } = req.params;
         
-        console.log(`🔄 Actualizando producto completo ID: ${id}`);
+        console.log(`Actualizando producto completo ID: ${id}`);
         
         const updatedProduct = await personalizedModel.findByIdAndUpdate(
             id,
@@ -155,7 +155,7 @@ personalizedProductsController.updatePersonalizedProduct = async (req, res) => {
         });
         
     } catch (error) {
-        console.error('❌ Error:', error.message);
+        console.error('Error:', error.message);
         
         res.status(500).json({
             success: false,
@@ -165,12 +165,12 @@ personalizedProductsController.updatePersonalizedProduct = async (req, res) => {
     }
 };
 
-// 🗑️ ELIMINAR PRODUCTO - SÚPER SIMPLE
+// ELIMINAR PRODUCTO - SÚPER SIMPLE
 personalizedProductsController.deletePersonalizedProduct = async (req, res) => {
     try {
         const { id } = req.params;
         
-        console.log(`🗑️ Eliminando producto ID: ${id}`);
+        console.log(`Eliminando producto ID: ${id}`);
         
         const deletedProduct = await personalizedModel.findByIdAndDelete(id);
         
@@ -187,7 +187,7 @@ personalizedProductsController.deletePersonalizedProduct = async (req, res) => {
         });
         
     } catch (error) {
-        console.error('❌ Error eliminando:', error.message);
+        console.error('Error eliminando:', error.message);
         
         res.status(500).json({
             success: false,

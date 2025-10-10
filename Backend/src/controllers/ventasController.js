@@ -11,7 +11,7 @@ ventasController.getallVenta = async (req, res) => {
             .populate("idShoppingCart")
             .sort({ createdAt: -1 });
 
-        console.log('✅ Ventas obtenidas exitosamente:', ventas.length);
+        console.log('Ventas obtenidas exitosamente:', ventas.length);
 
         const ventasFormateadas = ventas.map(venta => {
             const ventaObj = venta.toObject();
@@ -127,7 +127,7 @@ ventasController.createVenta = async (req, res) => {
         const ventaCompleta = await ventasModel.findById(ventaGuardada._id)
             .populate("idShoppingCart");
 
-        console.log(`✅ Nueva venta creada: ${ventaGuardada._id}`);
+        console.log(`Nueva venta creada: ${ventaGuardada._id}`);
 
         res.status(201).json({
             success: true,
@@ -145,18 +145,18 @@ ventasController.createVenta = async (req, res) => {
     }
 };
 
-// ✅ ACTUALIZAR VENTA - VERSIÓN SIMPLIFICADA QUE FUNCIONA
+// ACTUALIZAR VENTA - VERSIÓN SIMPLIFICADA QUE FUNCIONA
 ventasController.updateVenta = async (req, res) => {
     try {
         const { id } = req.params;
         const updateData = req.body;
 
-        console.log('📝 Actualizando venta ID:', id);
-        console.log('📝 Datos recibidos:', updateData);
+        console.log('Actualizando venta ID:', id);
+        console.log('Datos recibidos:', updateData);
 
         // Validar ID
         if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-            console.log('❌ ID inválido:', id);
+            console.log('ID inválido:', id);
             return res.status(400).json({
                 success: false,
                 message: "ID de venta inválido"
@@ -166,14 +166,14 @@ ventasController.updateVenta = async (req, res) => {
         // Verificar que la venta existe
         const ventaExistente = await ventasModel.findById(id);
         if (!ventaExistente) {
-            console.log('❌ Venta no encontrada para ID:', id);
+            console.log('Venta no encontrada para ID:', id);
             return res.status(404).json({
                 success: false,
                 message: "Venta no encontrada"
             });
         }
 
-        console.log('✅ Venta encontrada:', ventaExistente._id);
+        console.log('Venta encontrada:', ventaExistente._id);
 
         // Preparar datos de actualización - solo campos permitidos
         const datosLimpios = {};
@@ -194,7 +194,7 @@ ventasController.updateVenta = async (req, res) => {
             datosLimpios.metodoPago = updateData.metodoPago;
         }
 
-        console.log('📝 Datos a actualizar:', datosLimpios);
+        console.log('Datos a actualizar:', datosLimpios);
 
         // Verificar que hay algo que actualizar
         if (Object.keys(datosLimpios).length === 0) {
@@ -215,15 +215,15 @@ ventasController.updateVenta = async (req, res) => {
         ).populate("idShoppingCart");
 
         if (!ventaActualizada) {
-            console.log('❌ Error en la actualización');
+            console.log('Error en la actualización');
             return res.status(500).json({
                 success: false,
                 message: "Error al actualizar la venta"
             });
         }
 
-        console.log('✅ Venta actualizada exitosamente:', ventaActualizada._id);
-        console.log('✅ Nuevos valores:', {
+        console.log('Venta actualizada exitosamente:', ventaActualizada._id);
+        console.log('Nuevos valores:', {
             statusTransaccion: ventaActualizada.statusTransaccion,
             statusPago: ventaActualizada.statusPago
         });
@@ -235,8 +235,8 @@ ventasController.updateVenta = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('❌ Error completo actualizando venta:', error);
-        console.error('❌ Stack trace:', error.stack);
+        console.error('Error completo actualizando venta:', error);
+        console.error('Stack trace:', error.stack);
         
         res.status(500).json({
             success: false,
@@ -267,7 +267,7 @@ ventasController.deleteVenta = async (req, res) => {
             });
         }
 
-        console.log(`🗑️ Venta eliminada: ${id}`);
+        console.log(`Venta eliminada: ${id}`);
 
         res.status(200).json({
             success: true,

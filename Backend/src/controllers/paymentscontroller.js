@@ -21,7 +21,7 @@ export const getToken = async (req, res) => {
     }
 
     const data = await response.json();
-    console.log("🟢 Token obtenido (PRODUCCIÓN):", data);
+    console.log("Token obtenido (PRODUCCIÓN):", data);
     res.json(data);
   } catch (err) {
     console.error(err);
@@ -57,7 +57,7 @@ export const testPayment = async (req, res) => {
     const data = await response.json();
 
     // Log para verificar la transacción
-    console.log("🟢 Transacción procesada (PRODUCCIÓN):", {
+    console.log("Transacción procesada (PRODUCCIÓN):", {
       status: data.status,
       mensaje: data.mensaje,
       idTransaccion: data.idTransaccion,
@@ -90,14 +90,14 @@ export const payment3ds = async (req, res) => {
 
     if (!response.ok) {
       const error = await response.text();
-      console.log("🔴 Error en transacción 3DS (PRODUCCIÓN):", error);
+      console.log("Error en transacción 3DS (PRODUCCIÓN):", error);
       return res.status(response.status).json({ error });
     }
 
     const data = await response.json();
 
     // Log para verificar la transacción 3DS
-    console.log("🟢 Transacción 3DS procesada (PRODUCCIÓN):", {
+    console.log("Transacción 3DS procesada (PRODUCCIÓN):", {
       status: data.status,
       mensaje: data.mensaje,
       idTransaccion: data.idTransaccion,

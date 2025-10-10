@@ -158,9 +158,9 @@ OfertasController.createOferta = async (req, res) => {
     // Poblar los productos para la respuesta
     await ofertaGuardada.populate('productos', 'name price productType stock images');
 
-    console.log(`✅ Oferta creada exitosamente: ${nombreOferta}`);
-    console.log(`📦 Productos incluidos: ${productos.length}`);
-    console.log(`💰 Descuento: ${DescuentoRealizado}%`);
+    console.log(`Oferta creada exitosamente: ${nombreOferta}`);
+    console.log(`Productos incluidos: ${productos.length}`);
+    console.log(`Descuento: ${DescuentoRealizado}%`);
     
     // Respuesta exitosa
     res.status(201).json({ 
@@ -289,7 +289,7 @@ OfertasController.updateOferta = async (req, res) => {
     const actualizada = await Ofertas.findByIdAndUpdate(id, updateData, { new: true })
       .populate('productos', 'name price productType stock images');
 
-    console.log(`✅ Oferta actualizada: ${actualizada.nombreOferta}`);
+    console.log(`Oferta actualizada: ${actualizada.nombreOferta}`);
 
     // Respuesta exitosa
     res.status(200).json({ 
@@ -332,7 +332,7 @@ OfertasController.deleteOferta = async (req, res) => {
       });
     }
 
-    console.log(`🗑️ Oferta eliminada: ${eliminada.nombreOferta}`);
+    console.log(`Oferta eliminada: ${eliminada.nombreOferta}`);
 
     // Respuesta exitosa
     res.status(200).json({ 
@@ -542,7 +542,7 @@ OfertasController.toggleOferta = async (req, res) => {
       { new: true }
     ).populate('productos', 'name price productType stock images');
 
-    console.log(`🔄 Oferta ${nuevoEstado ? 'activada' : 'desactivada'}: ${ofertaActualizada.nombreOferta}`);
+    console.log(`Oferta ${nuevoEstado ? 'activada' : 'desactivada'}: ${ofertaActualizada.nombreOferta}`);
 
     res.status(200).json({
       success: true,
