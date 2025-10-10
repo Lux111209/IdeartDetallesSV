@@ -11,36 +11,46 @@ import "../css/Dashboard.css";
 const colores = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042"];
 
 const Dashboard = () => {
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState({
+    totalProductos: 0,
+    stock: 0,
+    productosSinStock: 0,
+    totalUsuarios: 0,
+    promedioResenasProducto: [],
+    promedioResenasGeneral: [],
+    ventasMes: []
+  });
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/dashboard") // Endpoint único
+    axios.get("http://localhost:5000/api/dashboard")
       .then(res => setStats(res.data))
       .catch(err => console.error(err));
   }, []);
 
-  if (!stats) return <div>Cargando estadísticas...</div>;
-
   // Datos para gráficos
   const pastelData = [
-    { name: "Stock disponible", value: stats.stock },
-    { name: "Sin Stock", value: stats.productosSinStock },
+    { name: "Stock disponible", value: stats.stock || 0 },
+    { name: "Sin Stock", value: stats.productosSinStock || 0 },
   ];
 
-  const reseñasProductoPromedio = stats.promedioResenasProducto.reduce(
-    (acc, cur) => acc + cur.promedio, 0
-  ) / (stats.promedioResenasProducto.length || 1);
+  const reseñasProductoPromedio =
+    stats.promedioResenasProducto.length > 0
+      ? stats.promedioResenasProducto.reduce((acc, cur) => acc + cur.promedio, 0) /
+        stats.promedioResenasProducto.length
+      : 0;
 
-  const reseñasGeneralPromedio = stats.promedioResenasGeneral.reduce(
-    (acc, cur) => acc + cur.promedio, 0
-  ) / (stats.promedioResenasGeneral.length || 1);
+  const reseñasGeneralPromedio =
+    stats.promedioResenasGeneral.length > 0
+      ? stats.promedioResenasGeneral.reduce((acc, cur) => acc + cur.promedio, 0) /
+        stats.promedioResenasGeneral.length
+      : 0;
 
   const reseñasData = [
     { name: "Reseñas Producto", value: reseñasProductoPromedio },
     { name: "Reseñas General", value: reseñasGeneralPromedio },
   ];
 
-  const lineaData = stats.ventasMes.map(v => ({
+  const lineaData = (stats.ventasMes || []).map(v => ({
     mes: ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"][v._id - 1],
     totalVentas: v.totalVentas,
     totalDinero: v.totalDinero
