@@ -8,12 +8,11 @@ const useUser = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Traer usuario desde backend
+  // ------- OBTENER USUARIO LOGUEADO -------
   const fetchUser = useCallback(async () => {
-    const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("token");
 
-    if (!userId || !token) {
+    if (!token) {
       setLoading(false);
       return;
     }
@@ -22,10 +21,11 @@ const useUser = () => {
       setLoading(true);
       setError(null);
 
-      const res = await fetch(`${API_URL}/${userId}`, {
+      const res = await fetch(`${API_URL}/me/profile`, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // 👈 token obligatorio
         },
         credentials: "include",
       });
@@ -33,7 +33,7 @@ const useUser = () => {
       if (!res.ok) throw new Error("Error al obtener usuario");
 
       const data = await res.json();
-      setUser(data.user); // Guardamos en el estado
+      setUser(data.user); // 👈 Ajusta según cómo responda tu backend
     } catch (err) {
       setError(err.message);
     } finally {
@@ -45,26 +45,23 @@ const useUser = () => {
     fetchUser();
   }, [fetchUser]);
 
-  // ---------------- UPDATE USER ----------------
+  // ------- ACTUALIZAR USUARIO -------
   const updateUser = async (updatedData) => {
-    if (!user) return null;
-    const userId = user._id;
     const token = localStorage.getItem("token");
+    if (!user || !token) return null;
 
     try {
-      const res = await fetch(`${API_URL}/${userId}`, {
+      const res = await fetch(`${API_URL}/me/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // 👈 token obligatorio
         },
         body: JSON.stringify(updatedData),
         credentials: "include",
       });
 
-      if (!res.ok) {
-        throw new Error("Error al actualizar usuario");
-      }
+      if (!res.ok) throw new Error("Error al actualizar usuario");
 
       const data = await res.json();
 

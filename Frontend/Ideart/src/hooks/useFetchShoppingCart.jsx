@@ -17,7 +17,7 @@ export function useShoppingCart() {
         throw new Error("No se encontró un ID de usuario en la sesión.");
       }
 
-      const res = await fetch(`${API_URL}/usuario/${userId}`);
+      const res = await fetch(${API_URL}/usuario/${userId});
       if (res.status === 404) {
         setCart(null);
         return;
@@ -62,7 +62,7 @@ export function useShoppingCart() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API_URL}/${cartId}`, {
+      const res = await fetch(${API_URL}/${cartId}, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedData),
@@ -80,7 +80,7 @@ export function useShoppingCart() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API_URL}/${cartId}`, {
+      const res = await fetch(${API_URL}/${cartId}, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Error al eliminar el carrito");
@@ -99,7 +99,7 @@ export function useShoppingCart() {
     try {
       const userId = localStorage.getItem("userId");
       if (!userId) throw new Error("No se encontró un ID de usuario en la sesión.");
-      const res = await fetch(`${API_URL}/vaciar/${userId}`, {
+      const res = await fetch(${API_URL}/vaciar/${userId}, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Error al vaciar el carrito");

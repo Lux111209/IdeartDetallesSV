@@ -28,4 +28,3 @@ const ProductCard = ({ _id, image, title, price = 19900 }) => {
 };
 
 export default ProductCard;
-
