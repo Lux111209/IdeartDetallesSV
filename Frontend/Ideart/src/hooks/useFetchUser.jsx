@@ -1,7 +1,7 @@
 // src/hooks/useUser.js
 import { useState, useEffect, useCallback } from "react";
 
-const API_URL = "http://localhost:5000/api/users";
+const API_URL = "https://ideartdetallessv-1.onrender.com/users";
 
 const useUser = () => {
   const [user, setUser] = useState(null);

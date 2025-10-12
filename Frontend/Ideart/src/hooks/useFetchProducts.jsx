@@ -9,7 +9,7 @@ const useFetchProducts = () => {
   // Función para obtener productos
   const getProducts = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/products');
+      const response = await fetch('https://ideartdetallessv-1.onrender.com/products');
       if (!response.ok) {
         alert('Error al traer los productos');
         return;

@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 
-const API_URL = "http://localhost:5000/api/carrito";
+const API_URL = "https://ideartdetallessv-1.onrender.com/carrito";
 
 export function useShoppingCart() {
   const [cart, setCart] = useState(null);

@@ -73,7 +73,7 @@ const usePaymentUnified = () => {
   const handleFirstStep = async () => {
     setLoading(true);
     try {
-      const tokenResponse = await fetch("http://localhost:5000/api/payment/token", {
+      const tokenResponse = await fetch("https://ideartdetallessv-1.onrender.com/payment/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
@@ -122,7 +122,7 @@ const usePaymentUnified = () => {
       };
 
       const paymentResponse = await fetch(
-        "http://localhost:5000/api/payment/payment3ds",
+        "https://ideartdetallessv-1.onrender.com/payment/payment3ds",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
