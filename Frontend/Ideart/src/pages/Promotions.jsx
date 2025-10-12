@@ -12,7 +12,7 @@ const Promotions = () => {
   useEffect(() => {
     const fetchPromotions = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/ofertas/activas");
+        const res = await fetch("https://ideartdetallessv-1.onrender.com/login/activas");
         const data = await res.json();
         if (data.success) {
           setPromotions(data.data); // aquí "data.data" viene del backend

@@ -15,7 +15,7 @@ const Profile = () => {
       const token = localStorage.getItem("token");
       if (!token || !user?._id) return false;
 
-      const res = await fetch(`http://localhost:5000/api/users/${user._id}`, {
+      const res = await fetch(`https://ideartdetallessv-1.onrender.com/login/users/${user._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
