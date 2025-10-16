@@ -1,6 +1,6 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const controller = require("../controllers/paymentRecordsController");
+import controller from "../controllers/paymentRecordsController";
 
 router.post("/", controller.createPaymentRecord);
 router.get("/", controller.getAllPaymentRecords);
