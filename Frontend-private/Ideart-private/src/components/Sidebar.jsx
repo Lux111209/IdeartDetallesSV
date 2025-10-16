@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useNavigate } from "react-router-dom"; // 👈 usamos navigate
+import { NavLink, useNavigate } from "react-router-dom"; 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../css/Sidebar.css";
@@ -46,7 +46,7 @@ const Sidebar = ({ children }) => {
   const handleLogout = async () => {
     try {
       // 🔹 Llamada opcional al backend para cerrar sesión y limpiar cookies
-      await fetch("http://localhost:5000/api/logout", {
+      await fetch("http://localhost:5000/api", {
         method: "POST",
         credentials: "include", //  asegura borrar cookies HttpOnly en backend
       });
@@ -95,8 +95,8 @@ const Sidebar = ({ children }) => {
         {/* Perfil */}
         <div className="profile">
           <img src="/icono.jpg" alt="Usuario" className="avatar" />
-          <h3>Luz Gazpario</h3>
-          <p>20210404@alumnos.edu.sv</p>
+          <h3>Exequiel Miranda</h3>
+          <p>exequiel.miranda@gmail.com</p>
         </div>
 
         {/* Menú */}

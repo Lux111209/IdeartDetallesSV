@@ -1,165 +1,144 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useState } from "react";
+import "../css/AddProductModal.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "../css/AddProductModal.css";
 
 const AddProductModal = ({ onClose, onAdd }) => {
-  const [categories, setCategories] = useState([]);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-    setValue,
-  } = useForm({
-    defaultValues: {
-      name: "",
-      price: "",
-      stock: "",
-      productType: "",
-      size: "",
-      color: "#000000",
-      description: "",
-      material: "",
-      tags: [],
-      imageFile: null,
-    },
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    stock: "",
+    productType: "",
+    size: "",
+    color: "#000000",
+    imageFile: null,
+    imagePreview: null,
   });
+  const [errors, setErrors] = useState({});
 
-  const imageFile = watch("imageFile");
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.name.trim()) newErrors.name = "Nombre es requerido";
+    if (!formData.price || Number(formData.price) <= 0) newErrors.price = "Precio debe ser mayor a 0";
+    if (formData.stock === "" || Number(formData.stock) < 0) newErrors.stock = "Stock debe ser cero o más";
+    if (!formData.productType.trim()) newErrors.productType = "Tipo es requerido";
+    if (!formData.size.trim()) newErrors.size = "Tamaño es requerido";
+    if (!formData.color.trim()) newErrors.color = "Color es requerido";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-  useEffect(() => {
-    // Fetch de categorías desde el backend
-    fetch("http://localhost:5000/api/products/categories")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) setCategories(data.data);
-      })
-      .catch((err) => console.error(err));
-  }, []);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const onSubmit = async (data) => {
-    try {
-      const formData = new FormData();
-      formData.append("name", data.name.trim());
-      formData.append("price", data.price);
-      formData.append("stock", data.stock);
-      formData.append("productType", data.productType);
-      formData.append("size", data.size);
-      formData.append("color", data.color);
-      formData.append("description", data.description);
-      formData.append("material", data.material);
-      data.tags.forEach((tag) => formData.append("tags[]", tag));
-      if (data.imageFile && data.imageFile[0]) {
-        formData.append("images", data.imageFile[0]);
-      }
-
-      const res = await fetch("http://localhost:5000/api/products", {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await res.json();
-
-      if (result.success) {
-        toast.success("Producto agregado con éxito", { autoClose: 2500 });
-        onAdd(result.data);
-        onClose();
-      } else {
-        toast.error(result.message || "Error al agregar producto");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Error al agregar producto");
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        imageFile: file,
+        imagePreview: URL.createObjectURL(file),
+      }));
     }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!validate()) {
+      toast.error("Corrige los errores antes de guardar", { autoClose: 2500 });
+      return;
+    }
+    const newProduct = {
+      _id: Date.now().toString(),
+      name: formData.name.trim(),
+      price: Number(formData.price),
+      stock: Number(formData.stock),
+      productType: formData.productType.trim(),
+      size: formData.size.trim(),
+      color: formData.color.trim(),
+      images: [formData.imagePreview || "/images/placeholder.png"],
+    };
+    onAdd(newProduct);
+    toast.success("Producto agregado con éxito", { autoClose: 2500 });
+    onClose();
   };
 
   return (
     <div className="modal-overlay">
-      <form className="modal-content" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <div className="modal-inner-box">
-          <h2>Agregar Nuevo Producto</h2>
+      <form className="modal-content" onSubmit={handleSubmit} noValidate>
+        <h2>Agregar Nuevo Producto</h2>
+        <div className="modal-form-content">
+          <input
+            type="text"
+            name="name"
+            placeholder="Nombre"
+            value={formData.name}
+            onChange={handleInputChange}
+          />
+          {errors.name && <p className="error">{errors.name}</p>}
 
-          <div className="modal-form-content">
+          <input
+            type="number"
+            step="0.01"
+            name="price"
+            placeholder="Precio"
+            value={formData.price}
+            onChange={handleInputChange}
+          />
+          {errors.price && <p className="error">{errors.price}</p>}
+
+          <input
+            type="number"
+            name="stock"
+            placeholder="Stock"
+            value={formData.stock}
+            onChange={handleInputChange}
+          />
+          {errors.stock && <p className="error">{errors.stock}</p>}
+
+          <input
+            type="text"
+            name="productType"
+            placeholder="Tipo de producto"
+            value={formData.productType}
+            onChange={handleInputChange}
+          />
+          {errors.productType && <p className="error">{errors.productType}</p>}
+
+          <input
+            type="text"
+            name="size"
+            placeholder="Tamaño"
+            value={formData.size}
+            onChange={handleInputChange}
+          />
+          {errors.size && <p className="error">{errors.size}</p>}
+
+          <label>
+            Color:
             <input
-              type="text"
-              placeholder="Nombre"
-              {...register("name", { required: "El nombre es requerido", minLength: { value: 3, message: "Mínimo 3 caracteres" } })}
+              type="color"
+              name="color"
+              value={formData.color}
+              onChange={handleInputChange}
+              style={{ marginLeft: "8px", cursor: "pointer", width: "50px", height: "30px" }}
             />
-            {errors.name && <p className="error">{errors.name.message}</p>}
+          </label>
+          {errors.color && <p className="error">{errors.color}</p>}
 
-            <input
-              type="number"
-              step="0.01"
-              placeholder="Precio"
-              {...register("price", { required: "El precio es requerido", min: { value: 0.01, message: "El precio debe ser mayor a 0" } })}
-            />
-            {errors.price && <p className="error">{errors.price.message}</p>}
+          <label>
+            Seleccionar imagen:
+            <input type="file" accept="image/*" onChange={handleImageChange} />
+          </label>
 
-            <input
-              type="number"
-              placeholder="Stock"
-              {...register("stock", { required: "El stock es requerido", min: { value: 0, message: "El stock no puede ser negativo" } })}
-            />
-            {errors.stock && <p className="error">{errors.stock.message}</p>}
-
-            <select {...register("productType", { required: "La categoría es requerida" })}>
-              <option value="">Selecciona una categoría</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.name}>{cat.name}</option>
-              ))}
-            </select>
-            {errors.productType && <p className="error">{errors.productType.message}</p>}
-
-            <input
-              type="text"
-              placeholder="Tamaño"
-              {...register("size", { required: "El tamaño es requerido" })}
-            />
-            {errors.size && <p className="error">{errors.size.message}</p>}
-
-            <label>
-              Color:
-              <input
-                type="color"
-                {...register("color", { required: "El color es requerido" })}
-                style={{ marginLeft: "8px", cursor: "pointer", width: "50px", height: "30px" }}
-              />
-            </label>
-            {errors.color && <p className="error">{errors.color.message}</p>}
-
-            <textarea
-              placeholder="Descripción"
-              {...register("description")}
-            />
-
-            <input
-              type="text"
-              placeholder="Material"
-              {...register("material")}
-            />
-
-            <label>
-              Seleccionar imagen:
-              <input
-                type="file"
-                accept="image/*"
-                {...register("imageFile", { required: "La imagen es obligatoria" })}
-                onChange={(e) => setValue("imageFile", e.target.files)}
-              />
-            </label>
-            {errors.imageFile && <p className="error">{errors.imageFile.message}</p>}
-
-            {imageFile && imageFile[0] && (
-              <div className="image-preview">
-                <img src={URL.createObjectURL(imageFile[0])} alt="Preview" style={{ maxWidth: "150px" }} />
-              </div>
-            )}
-          </div>
+          {formData.imagePreview && (
+            <div className="image-preview">
+              <img src={formData.imagePreview} alt="Preview" />
+            </div>
+          )}
         </div>
-
         <div className="modal-buttons">
           <button type="submit" className="save">Guardar</button>
           <button type="button" className="cancel" onClick={onClose}>Cancelar</button>
