@@ -9,7 +9,7 @@ const useFetchProducts = () => {
   // Función para obtener productos
   const getProducts = async () => {
     try {
-      const response = await fetch('https://ideartdetallessv-1.onrender.com/products');
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/products`);
       if (!response.ok) {
         alert('Error al traer los productos');
         return;

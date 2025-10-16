@@ -1,8 +1,8 @@
 // hooks/useFetchLogin.js
 import { useState, useCallback } from "react";
 
-// Usa solo `import.meta.env` con fallback
-const API_URL = import.meta.env.VITE_API_URL || "https://ideartdetallessv-1.onrender.com/login";
+// Usa la variable de entorno para la URL base
+const API_URL = `${import.meta.env.VITE_API_URL}/login`;
 
 const useLogin = () => {
   const [loading, setLoading] = useState(false);
