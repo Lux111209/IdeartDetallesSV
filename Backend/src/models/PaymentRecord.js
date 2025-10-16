@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
 
-const paymentRecordSchema = new mongoose.Schema(
+const paymentRecordSchema = new Schema(
   {
     userName: { type: String, required: true },
     paymentMethod: { type: String, required: true },
@@ -9,4 +9,4 @@ const paymentRecordSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default model ("PaymentRecord", paymentRecordSchema);
+export default model("PaymentRecord", paymentRecordSchema);
