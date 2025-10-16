@@ -25,7 +25,12 @@ const AuthLogin = () => {
 
     try {
       setLoading(true);
-      const res = await fetch("https://ideartdetallessv-1.onrender.com/login/login", {
+
+      // Define la URL del backend
+      const API_URL = `${import.meta.env.VITE_API_URL}/login`;
+
+      // Realiza la solicitud al backend
+      const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo: email, password }),
@@ -35,8 +40,10 @@ const AuthLogin = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        setToast({ type: "error", message: data.message || "Credenciales incorrectas." });
-        setLoading(false);
+        setToast({
+          type: "error",
+          message: data.message || "Credenciales incorrectas.",
+        });
         return;
       }
 
@@ -48,7 +55,6 @@ const AuthLogin = () => {
       setToast({ type: "success", message: "Inicio de sesión exitoso." });
 
       setTimeout(() => navigate("/profile"), 1000);
-
     } catch (err) {
       console.error(err);
       setToast({ type: "error", message: "Error de conexión con el servidor" });
@@ -57,6 +63,7 @@ const AuthLogin = () => {
     }
   };
 
+  // El return del JSX **va aquí**, fuera de handleSubmit
   return (
     <div className="login-wrapper">
       <div className="login-left">

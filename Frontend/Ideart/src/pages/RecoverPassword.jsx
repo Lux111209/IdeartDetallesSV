@@ -25,7 +25,7 @@ const RecoverPassword = () => {
     setSuccessMessage(null);
 
     try {
-      const response = await fetch("https://ideartdetallessv-1.onrender.com/login/passwordRecovery/requestCode", {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/passwordRecovery/requestCode`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

@@ -9,31 +9,38 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Función para actualizar usuario en backend
+  // 🔧 Actualiza usuario en el backend
   const updateUser = async (updatedData) => {
     try {
       const token = localStorage.getItem("token");
       if (!token || !user?._id) return false;
 
-      const res = await fetch(`https://ideartdetallessv-1.onrender.com/login/users/${user._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedData),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/users/${user._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedData),
+        }
+      );
 
       if (!res.ok) throw new Error("Error al actualizar usuario");
 
       const data = await res.json();
-      setUser({
+
+
+      const newUser = {
         _id: data._id,
         name: data.nombre,
         email: data.correo,
         phone: data.telefono || "No registrado",
-        image: data.image || null,
-      });
+        image: data.image || updatedData.image || user.image,
+      };
+
+      setUser(newUser);
       return true;
     } catch (error) {
       console.error("Error al actualizar:", error);
@@ -41,26 +48,28 @@ const Profile = () => {
     }
   };
 
+  // 🔹 Obtiene perfil al montar el componente (solo una vez)
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) return;
 
+
         const res = await fetch("http://localhost:5000/api/", {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/users/me/profile`, {
+
           headers: { Authorization: `Bearer ${token}` },
         });
         
 
         if (res.ok) {
           const data = await res.json();
-
-          // Mapear backend → frontend
           setUser({
             _id: data._id,
             name: data.nombre,
             email: data.correo,
-            phone: data.telefono || "No registrado",
+            phone: data.telefono || "",
             image: data.image || null,
           });
         }
@@ -72,7 +81,7 @@ const Profile = () => {
     };
 
     fetchProfile();
-  }, []);
+  }, []); // 👈 solo al montar
 
   return (
     <>
