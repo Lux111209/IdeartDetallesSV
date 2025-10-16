@@ -10,7 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 // URL base para las peticiones a la API
 const API_BASE_URL = "http://localhost:5000/api";
 
-// Objeto con todas las funciones para interactuar con la API de productos
+// Objeto con todas las funciones para interactuar con la API de Productos
 const productsAPI = {
   // Obtener todos los productos desde el servidor
   getAll: async () => {
