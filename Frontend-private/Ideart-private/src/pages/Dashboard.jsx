@@ -62,7 +62,7 @@ const Dashboard = () => {
 
       <main className="main">
         <div className="header">
-          <h2>¡Bienvenida, Luz Gazpario!</h2>
+          <h2>¡Bienvenido, Exequiel Miranda!</h2>
         </div>
 
         {/* Cards de resumen */}
