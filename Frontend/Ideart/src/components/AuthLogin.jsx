@@ -25,7 +25,7 @@ const AuthLogin = () => {
 
     try {
       setLoading(true);
-      const res = await fetch("https://ideartdetallessv-1.onrender.com/login/login", {
+      const res = await fetch("https://ideartdetallessv-1.onrender.com/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo: email, password }),
