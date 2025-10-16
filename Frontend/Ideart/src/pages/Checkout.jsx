@@ -6,26 +6,21 @@ import TopBar from "../components/TopBar";
 import InlineToast from "../components/Toast";
 import "../css/Checkout.css";
 
-// Página de Checkout donde se ingresan datos personales y método de pago
 const CheckoutInfo = () => {
   const [paymentMethod, setPaymentMethod] = useState("credit");
-
-  // Campos del formulario
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [note, setNote] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
-  // Validaciones básicas
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const onlyLetters = (text) => /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]*$/.test(text);
 
-  // Confirma los datos, muestra errores si los hay y redirige según el método de pago
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const newErrors = {
       name: name.trim() ? "" : "El nombre es obligatorio.",
       email: !email.trim()
@@ -38,15 +33,35 @@ const CheckoutInfo = () => {
     };
 
     setErrors(newErrors);
-
     const hasError = Object.values(newErrors).some((e) => e);
     if (hasError) return;
 
-    // Navega a la forma de pago correspondiente
-    if (paymentMethod === "credit") {
-      navigate("/creditform");
-    } else {
-      navigate("/paypal");
+    try {
+      setLoading(true);
+
+      // Llamada al backend para crear el link de pago
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/payments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userName: name,
+          paymentMethod,
+          amountInCents: 50000, // ejemplo: $500.00 USD son 50000 (en centavos)
+          currency: "USD",
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "Error al generar el link de pago");
+
+      // Redirigir al link de pago de Wompi
+      window.location.href = data.paymentLink;
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error al generar el link de pago. Intenta nuevamente.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,13 +70,11 @@ const CheckoutInfo = () => {
       <TopBar />
       <Navbar />
       <div className="checkout-container">
-        {/* Botón para regresar al carrito */}
         <button className="back-button" onClick={() => navigate("/shoppingcart")}>
           ← Regresar
         </button>
 
         <div className="form-card">
-          {/* Columna izquierda: datos personales */}
           <div className="form-left">
             <label>Nombre</label>
             <input
@@ -102,7 +115,6 @@ const CheckoutInfo = () => {
             {errors.address && <InlineToast type="warning" message={errors.address} />}
           </div>
 
-          {/* Columna derecha: método de pago y nota */}
           <div className="form-right">
             <label>Método de Pago</label>
             <div className="payment-methods">
@@ -127,8 +139,12 @@ const CheckoutInfo = () => {
               onChange={(e) => setNote(e.target.value)}
             />
 
-            <button className="confirm-button" onClick={handleConfirm}>
-              Confirmar Compra
+            <button
+              className="confirm-button"
+              onClick={handleConfirm}
+              disabled={loading}
+            >
+              {loading ? "Generando pago..." : "Confirmar Compra"}
             </button>
           </div>
         </div>

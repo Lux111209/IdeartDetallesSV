@@ -21,6 +21,7 @@ import personalizedProducts from "./src/routes/personalizedProducts.js";
 import passwordRecovery from "./src/routes/passswordRecovery.js";
 import dashboardRoutes from "./src/routes/dashboardRoutes.js"; // NUEVO
 import paymentRoutes from "./src/routes/payments.js";
+import paymentRecordRoutes from "./src/routes/paymentRecordRoutes.js";
 
 import swaggerUi from "swagger-ui-express";
 import fs from "fs";
@@ -78,6 +79,8 @@ app.use("/api/resenasproducto", resenasProductoRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/ventas", ventasRoutes);
 app.use("/api/personalized-products", personalizedProducts);
+app.use("/api/payments", paymentRoutes);
+
 
 // NUEVA RUTA PARA DASHBOARD
 app.use("/api/dashboard", dashboardRoutes);
@@ -99,6 +102,9 @@ app.get("/", (req, res) => res.send("API funcionando"));
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK", message: "Servidor funcionando correctamente", timestamp: new Date().toISOString(), uptime: process.uptime() });
 });
+
+
+
 
 // ------------------ INICIO DEL SERVIDOR ------------------ //
 

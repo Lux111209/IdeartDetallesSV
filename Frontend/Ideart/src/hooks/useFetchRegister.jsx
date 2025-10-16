@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API_BASE_URL = "https://ideartdetallessv-1.onrender.com/registerUser";
+const API_BASE_URL = `${import.meta.env.VITE_API_URL}/registerUser`;
 
 const useAuth = () => {
   // Estado del formulario

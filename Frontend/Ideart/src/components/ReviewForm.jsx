@@ -52,7 +52,7 @@ const ReviewForm = ({ onCancel, id_user, id_producto, onSuccess }) => {
 
     // Envía la reseña a la API
     try {
-      const res = await axios.post('https://ideartdetallessv-1.onrender.com/login/resenasgeneral', payload);
+  const res = await axios.post(`${import.meta.env.VITE_API_URL}/resenasgeneral`, payload);
       setToast({ type: 'success', message: 'Reseña enviada correctamente!' });
       onSuccess();
       onCancel();

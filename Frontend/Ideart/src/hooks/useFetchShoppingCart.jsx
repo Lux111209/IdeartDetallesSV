@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 
-const API_URL = "https://ideartdetallessv-1.onrender.com/carrito";
+const API_URL = `${import.meta.env.VITE_API_URL}/carrito`;
 
 export function useShoppingCart() {
   const [cart, setCart] = useState(null);

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 // Hook para obtener y manejar las reseñas generales
-const API_URL = 'https://ideartdetallessv-1.onrender.com/resenasgeneral';
+const API_URL = `${import.meta.env.VITE_API_URL}/api/resenasgeneral`;
 
 export const useFetchGeneralReview = () => {
   const [resenas, setResenas] = useState([]);
