@@ -9,7 +9,7 @@ export const config = {
     NODE_ENV: process.env.NODE_ENV ,
     
     // URL del frontend para CORS
-    FRONTEND_URL: process.env.FRONTEND_URL || "https://ideart-detalles-sv-nuevo.vercel.app",
+    FRONTEND_URL: process.env.FRONTEND_URL || "https://ideart-detalles-sv-nuevo.vercel.app, https://ideart-detalles-sv-7g8v.vercel.app",
     
     // Configuración de la base de datos
     DB: {
