@@ -9,4 +9,4 @@ const paymentRecordSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("PaymentRecord", paymentRecordSchema);
+export default model ("PaymentRecord", paymentRecordSchema);
