@@ -32,7 +32,7 @@ const app = express();
 
 // Configuración CORS
 app.use(cors({
-  origin: ["http://localhost:5173", "https://ideart-detalles-sv-nuevo.vercel.app", "http://localhost:5174"],
+  origin: ["http://localhost:5173", "https://ideart-detalles-sv-nuevo.vercel.app", "http://localhost:5174, https://ideart-detalles-sv-7g8v.vercel.app"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 }));
