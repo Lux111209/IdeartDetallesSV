@@ -27,7 +27,7 @@ const AuthLogin = () => {
       setLoading(true);
 
       // Define la URL del backend
-      const API_URL = `${import.meta.env.VITE_API_URL}/login`;
+      const API_URL = `https://ideartdetallessv-1.onrender.com/login`;
 
       // Realiza la solicitud al backend
       const res = await fetch(API_URL, {
