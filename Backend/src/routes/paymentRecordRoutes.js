@@ -7,4 +7,4 @@ router.get("/", controller.getAllPaymentRecords);
 router.put("/:id", controller.updatePaymentRecord);
 router.delete("/:id", controller.deletePaymentRecord);
 
-module.exports = router;
+export default router;
