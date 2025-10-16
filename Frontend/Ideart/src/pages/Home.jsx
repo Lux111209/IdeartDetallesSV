@@ -12,7 +12,7 @@ const Home = () => {
     // Función para obtener promociones activas
     const fetchPromotions = async () => {
       try {
-        const res = await fetch("https://ideartdetallessv-1.onrender.com/login/ofertas/activas");
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/ofertas/activas`);
         if (!res.ok) throw new Error("Error al obtener promociones");
         const data = await res.json();
         setPromotions(data);

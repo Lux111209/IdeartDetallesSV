@@ -40,7 +40,7 @@ const CheckoutInfo = () => {
       setLoading(true);
 
       // Llamada al backend para crear el link de pago
-      const res = await fetch("https://ideartdetallessv-1.onrender.com/payments", {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/payments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

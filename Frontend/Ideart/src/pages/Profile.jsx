@@ -16,7 +16,7 @@ const Profile = () => {
       if (!token || !user?._id) return false;
 
       const res = await fetch(
-        `https://ideartdetallessv-1.onrender.com/login/users/${user._id}`,
+        `${import.meta.env.VITE_API_URL}/users/${user._id}`,
         {
           method: "PUT",
           headers: {
@@ -55,7 +55,7 @@ const Profile = () => {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const res = await fetch("https://ideartdetallessv-1.onrender.com/users/me/profile", {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/users/me/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
