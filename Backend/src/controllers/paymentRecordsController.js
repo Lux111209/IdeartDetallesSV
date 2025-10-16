@@ -6,8 +6,10 @@ const WOMPI_PUBLIC_KEY = "pub_test_xxxxxxxxx";
 const WOMPI_PRIVATE_KEY = "prv_test_xxxxxxxxx";
 const WOMPI_BASE_URL = "https://api.wompi.sv";
 
+const controller = {};
+
 // Crear registro y generar link de pago
-const createPaymentRecord = async (req, res) => {
+controller.createPaymentRecord = async (req, res) => {
   try {
     const { userName, paymentMethod, amountInCents, currency } = req.body;
 
@@ -56,7 +58,7 @@ const createPaymentRecord = async (req, res) => {
 };
 
 // Obtener todos los registros
-const getAllPaymentRecords = async (req, res) => {
+controller.getAllPaymentRecords = async (req, res) => {
   try {
     const records = await PaymentRecord.find().sort({ createdAt: -1 });
     res.status(200).json(records);
@@ -66,7 +68,7 @@ const getAllPaymentRecords = async (req, res) => {
 };
 
 // Actualizar registro
-const updatePaymentRecord = async (req, res) => {
+controller.updatePaymentRecord = async (req, res) => {
   try {
     const { id } = req.params;
     const updated = await PaymentRecord.findByIdAndUpdate(id, req.body, { new: true });
@@ -78,7 +80,7 @@ const updatePaymentRecord = async (req, res) => {
 };
 
 // Eliminar registro
-const deletePaymentRecord = async (req, res) => {
+controller.deletePaymentRecord = async (req, res) => {
   try {
     const { id } = req.params;
     const deleted = await PaymentRecord.findByIdAndDelete(id);
@@ -89,13 +91,6 @@ const deletePaymentRecord = async (req, res) => {
   }
 };
 
-// ✅ Constante con array de funciones
-const paymentFunctions = [
-  createPaymentRecord,
-  getAllPaymentRecords,
-  updatePaymentRecord,
-  deletePaymentRecord,
-];
 
 // ✅ Exportación por defecto
-export default paymentFunctions;
+export default controller;
