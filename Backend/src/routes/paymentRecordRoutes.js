@@ -2,9 +2,12 @@ import express from "express";
 const router = express.Router();
 import controller from "../controllers/paymentRecordsController.js";
 
-router.post("/", controller.createPaymentRecord);
-router.get("/", controller.getAllPaymentRecords);
-router.put("/:id", controller.updatePaymentRecord);
-router.delete("/:id", controller.deletePaymentRecord);
+router.route("/")
+.post(controller.createPaymentRecord)
+.get(controller.getAllPaymentRecords);
+
+router.route("/:id")
+.put(controller.updatePaymentRecord)
+.delete(controller.deletePaymentRecord);
 
 export default router;
