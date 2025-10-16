@@ -29,6 +29,7 @@ const Profile = () => {
 
       if (!res.ok) throw new Error("Error al actualizar usuario");
 
+      
       const data = await res.json();
 
 
@@ -55,15 +56,13 @@ const Profile = () => {
         const token = localStorage.getItem("token");
         if (!token) return;
 
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/users/me/profile`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-        const res = await fetch("http://localhost:5000/api/", {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/users/me/profile`, {
-
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        
-
-        
         if (res.ok) {
           const data = await res.json();
           setUser({
