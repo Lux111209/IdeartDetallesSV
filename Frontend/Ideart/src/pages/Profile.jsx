@@ -16,7 +16,7 @@ const Profile = () => {
       if (!token || !user?._id) return false;
 
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/users/${user._id}`,
+        `${import.meta.env.VITE_API_URL}/api/users/${user._id}`,
         {
           method: "PUT",
           headers: {
@@ -57,7 +57,7 @@ const Profile = () => {
         if (!token) return;
 
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/users/me/profile`,
+          `${import.meta.env.VITE_API_URL}/api/users/me/profile`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

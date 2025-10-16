@@ -1,7 +1,7 @@
 // src/hooks/useUser.js
 import { useState, useEffect, useCallback } from "react";
 
-const API_URL = `${import.meta.env.VITE_API_URL}/users`;
+const API_URL = `${import.meta.env.VITE_API_URL}/api/users`;
 
 const useUser = () => {
   const [user, setUser] = useState(null);
