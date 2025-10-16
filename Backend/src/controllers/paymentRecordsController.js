@@ -29,7 +29,7 @@ controller.createPaymentRecord = async (req, res) => {
         currency,
         amount_in_cents: amountInCents,
         single_use: true,
-        redirect_url: "https://ideart-detalles-sv-six.vercel.app/confirmacion",
+        redirect_url: "https://ideart-detalles-sv-nuevo.vercel.app/confirmacion",
       }),
     });
 
