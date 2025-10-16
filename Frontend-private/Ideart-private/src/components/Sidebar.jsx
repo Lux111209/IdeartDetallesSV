@@ -46,7 +46,7 @@ const Sidebar = ({ children }) => {
   const handleLogout = async () => {
     try {
       // 🔹 Llamada opcional al backend para cerrar sesión y limpiar cookies
-      await fetch("http://localhost:5000/api", {
+      await fetch("https://ideartdetallessv-1.onrender.com/api", {
         method: "POST",
         credentials: "include", //  asegura borrar cookies HttpOnly en backend
       });

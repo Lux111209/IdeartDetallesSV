@@ -5,7 +5,7 @@ import Sidebar from "../components/Sidebar";
 import "../css/providers.css";
 
 // URL base para las peticiones a la API
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "https://ideartdetallessv-1.onrender.com/api";
 
 // Objeto con todas las funciones para interactuar con la API de proveedores
 const proveedoresAPI = {

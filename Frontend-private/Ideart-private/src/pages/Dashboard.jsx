@@ -22,7 +22,7 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/dashboard")
+    axios.get("https://ideartdetallessv-1.onrender.com/api/dashboard")
       .then(res => setStats(res.data))
       .catch(err => console.error(err));
   }, []);
