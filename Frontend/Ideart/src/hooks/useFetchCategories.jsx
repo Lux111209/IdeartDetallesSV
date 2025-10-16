@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 
 // Hook para obtener y construir las categorías de productos
-const API_URL = `${import.meta.env.VITE_API_URL}/products`;
+const API_URL = `${import.meta.env.VITE_API_URL}/api/products`;
 
 const useFetchCategories = () => {
   const [categories, setCategories] = useState([]);

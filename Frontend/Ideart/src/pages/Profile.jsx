@@ -16,7 +16,7 @@ const Profile = () => {
       if (!token || !user?._id) return false;
 
       const res = await fetch(
-        `https://ideartdetallessv-1.onrender.com/login/users/${user._id}`,
+        `${import.meta.env.VITE_API_URL}/users/${user._id}`,
         {
           method: "PUT",
           headers: {
@@ -29,9 +29,10 @@ const Profile = () => {
 
       if (!res.ok) throw new Error("Error al actualizar usuario");
 
+      
       const data = await res.json();
 
-      // 🔥 Mantiene sincronizado el estado con backend sin parpadeo
+
       const newUser = {
         _id: data._id,
         name: data.nombre,
@@ -55,9 +56,12 @@ const Profile = () => {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const res = await fetch("https://ideartdetallessv-1.onrender.com/users/me/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/users/me/profile`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         if (res.ok) {
           const data = await res.json();
