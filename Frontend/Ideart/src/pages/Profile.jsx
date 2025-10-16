@@ -31,7 +31,7 @@ const Profile = () => {
 
       const data = await res.json();
 
-      // 🔥 Mantiene sincronizado el estado con backend sin parpadeo
+
       const newUser = {
         _id: data._id,
         name: data.nombre,
@@ -55,9 +55,13 @@ const Profile = () => {
         const token = localStorage.getItem("token");
         if (!token) return;
 
+
+        const res = await fetch("http://localhost:5000/api/", {
   const res = await fetch(`${import.meta.env.VITE_API_URL}/users/me/profile`, {
+
           headers: { Authorization: `Bearer ${token}` },
         });
+        
 
         if (res.ok) {
           const data = await res.json();
