@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import controller from "../controllers/paymentRecordsController";
+import controller from "../controllers/paymentRecordsController.js";
 
 router.post("/", controller.createPaymentRecord);
 router.get("/", controller.getAllPaymentRecords);
