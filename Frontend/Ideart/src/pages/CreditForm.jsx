@@ -86,8 +86,9 @@ const CreditForm = () => {
       } else if (step === 2) {
         await handleFinishPayment();
         if (typeof clearCart === "function") {
-          console.log("Llamando a clearCart");
-          await clearCart();
+          const userId = localStorage.getItem("userId");
+          console.log("Llamando a clearCart con userId:", userId);
+          await clearCart(userId);
           if (typeof refreshCart === "function") await refreshCart();
         }
         showSuccess("Pago realizado correctamente");

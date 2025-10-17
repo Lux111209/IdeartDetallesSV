@@ -7,75 +7,54 @@ import Navbar from "../components/Navbar";
 import "../css/ShoppingCart.css";
 
 const ShoppingCart = () => {
-  const { cart, loading, error, update, remove, clearCart } = useShoppingCart();
+  const { cart, loading, error, update, remove } = useShoppingCart();
   const navigate = useNavigate();
-
-  // Helper: obtener id del producto y datos seguros
-  const getProductInfo = (item) => {
-    const populated = typeof item.idProducts === "object" && item.idProducts !== null;
-    const productId = populated ? item.idProducts._id : item.idProducts;
-    const productData = populated
-      ? item.idProducts
-      : {
-          _id: item.idProducts,
-          price: Number(item.price) || 0,
-          name: item.name || item.title || "",
-          image: item.image || "",
-          stock: item.stock || "En Stock",
-        };
-    return { productId, productData };
-  };
 
   // Calcula el subtotal
   const subtotal = useMemo(() => {
     if (!Array.isArray(cart?.products)) return 0;
-    return cart.products.reduce((total, item) => {
-      const { productData } = getProductInfo(item);
-      return total + (Number(productData.price) || 0) * (item.cantidad || 0);
-    }, 0);
+    return cart.products.reduce(
+      (total, item) => {
+        // Si viene populado, usa item.idProducts como objeto, si no, como id
+        const producto = typeof item.idProducts === "object" ? item.idProducts : item;
+        return total + (producto?.price || 0) * item.cantidad;
+      },
+      0
+    );
   }, [cart]);
 
   const totalItems = useMemo(() => {
     if (!Array.isArray(cart?.products)) return 0;
-    return cart.products.reduce((total, item) => total + (item.cantidad || 0), 0);
+    return cart.products.reduce((total, item) => total + item.cantidad, 0);
   }, [cart]);
 
   const discountRate = 0.1;
   const discount = subtotal * discountRate;
   const total = subtotal - discount;
 
-  const computeTotalFromProducts = (products) =>
-    products.reduce((sum, it) => {
-      const { productData } = getProductInfo(it);
-      return sum + (Number(productData.price) || 0) * (it.cantidad || 0);
-    }, 0);
-
   const handleQuantityChange = (productId, newQuantity) => {
     if (newQuantity < 1 || !cart || !Array.isArray(cart.products)) return;
-    const updatedProducts = cart.products.map((item) => {
-      const { productId: pid } = getProductInfo(item);
-      return pid === productId ? { ...item, cantidad: newQuantity } : item;
+    const updatedProducts = cart.products.map(item => {
+      const producto = typeof item.idProducts === "object" ? item.idProducts : item;
+      return (producto._id === productId)
+        ? { ...item, cantidad: newQuantity }
+        : item;
     });
-    const newTotal = computeTotalFromProducts(updatedProducts);
-    update(cart._id, { products: updatedProducts, idUser: cart.idUser, total: newTotal });
+    update(cart._id, { products: updatedProducts, idUser: cart.idUser, total: subtotal });
   };
 
   const handleRemoveProduct = (productId) => {
     if (!cart || !Array.isArray(cart.products)) return;
-    const updatedProducts = cart.products.filter((item) => {
-      const { productId: pid } = getProductInfo(item);
-      return pid !== productId;
+    const updatedProducts = cart.products.filter(item => {
+      const producto = typeof item.idProducts === "object" ? item.idProducts : item;
+      return producto._id !== productId;
     });
-    const newTotal = computeTotalFromProducts(updatedProducts);
-    // Si quieres eliminar completamente el documento cuando no haya productos, podrías usar remove(cart._id)
-    update(cart._id, { products: updatedProducts, idUser: cart.idUser, total: newTotal });
+    update(cart._id, { products: updatedProducts, idUser: cart.idUser, total: subtotal });
   };
 
   const handleClearCart = () => {
     if (!cart) return;
-    // Vaciar por usuario (usa la ruta /vaciar/:userId en backend)
-    clearCart();
-    // Si prefieres eliminar el documento: remove(cart._id);
+    remove(cart._id);
   };
 
   const handleSaveToFavorites = (producto) => {
@@ -121,23 +100,23 @@ const ShoppingCart = () => {
 
             <div className="cart-list">
               {cart.products.map((item) => {
-                const { productId, productData } = getProductInfo(item);
+                const producto = typeof item.idProducts === "object" ? item.idProducts : item;
                 const cantidad = item.cantidad;
                 return (
-                  <div key={productId} className="cart-item">
+                  <div key={producto._id} className="cart-item">
                     <div className="product-image">
-                      <img src={productData.image} alt={productData.name || productData.title} />
+                      <img src={producto.image} alt={producto.name || producto.title} />
                     </div>
                     <div className="product-details">
-                      <h3>{productData.name || productData.title}</h3>
+                      <h3>{producto.name || producto.title}</h3>
                       <div className="price-stock">
-                        <span>${Number(productData.price).toFixed(2)}</span>
-                        <span className="stock">| {productData.stock || "En Stock"}</span>
+                        <span>${Number(producto.price).toFixed(2)}</span>
+                        <span className="stock">| {producto.stock || "En Stock"}</span>
                       </div>
                       <div className="quantity-control">
                         <button
                           className="quantity-btn"
-                          onClick={() => handleQuantityChange(productId, cantidad - 1)}
+                          onClick={() => handleQuantityChange(producto._id, cantidad - 1)}
                           disabled={cantidad <= 1}
                         >
                           −
@@ -145,7 +124,7 @@ const ShoppingCart = () => {
                         <span>{cantidad}</span>
                         <button
                           className="quantity-btn"
-                          onClick={() => handleQuantityChange(productId, cantidad + 1)}
+                          onClick={() => handleQuantityChange(producto._id, cantidad + 1)}
                         >
                           +
                         </button>
@@ -153,12 +132,14 @@ const ShoppingCart = () => {
                     </div>
 
                     <div className="product-actions">
-                      <strong>${(Number(productData.price) * cantidad).toFixed(2)}</strong>
+                      <strong>
+                        ${(Number(producto.price) * cantidad).toFixed(2)}
+                      </strong>
                       <div className="action-buttons">
-                        <button className="save-btn" onClick={() => handleSaveToFavorites(productData)}>
+                        <button className="save-btn" onClick={() => handleSaveToFavorites(producto)}>
                           🤍 Guardar
                         </button>
-                        <button className="remove-btn" onClick={() => handleRemoveProduct(productId)}>
+                        <button className="remove-btn" onClick={() => handleRemoveProduct(producto._id)}>
                           🗑️ Eliminar
                         </button>
                       </div>
