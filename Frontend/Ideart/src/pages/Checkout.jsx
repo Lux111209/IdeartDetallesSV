@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import TopBar from "../components/TopBar";
 import InlineToast from "../components/Toast";
+import { useShoppingCart } from "../hooks/useFetchShoppingCart.jsx";
 import "../css/Checkout.css";
 
 const CheckoutInfo = () => {
@@ -16,6 +17,7 @@ const CheckoutInfo = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const { cart, checkout } = useShoppingCart();
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const onlyLetters = (text) => /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]*$/.test(text);
@@ -39,27 +41,21 @@ const CheckoutInfo = () => {
     try {
       setLoading(true);
 
-      // Llamada al backend para crear el link de pago
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/payments`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userName: name,
-          paymentMethod,
-          amountInCents: 50000, // ejemplo: $500.00 USD son 50000 (en centavos)
-          currency: "USD",
-        }),
-      });
+      // Si no hay carrito o total, aborta
+      if (!cart || typeof cart.total !== "number" || cart.total <= 0) {
+        throw new Error("Carrito vacío o total inválido");
+      }
 
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.message || "Error al generar el link de pago");
-
-      // Redirigir al link de pago de Wompi
-      window.location.href = data.paymentLink;
+      // Llamar al checkout del hook (backend /carrito/checkout) y redirigir
+      const redirectUrl = await checkout(cart._id);
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+        return;
+      }
+      throw new Error("No se obtuvo URL de pago");
     } catch (error) {
       console.error("Error:", error);
-      alert("Error al generar el link de pago. Intenta nuevamente.");
+      alert("Error al generar el link de pago. Intenta nuevamente. " + (error.message || ""));
     } finally {
       setLoading(false);
     }
